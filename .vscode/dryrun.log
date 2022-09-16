@@ -1,0 +1,8 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/giulia/Documents/IME/TCC/game_v4'
+g++    -c -o Entidades.o Entidades.cpp
+g++    -c -o drawFunctions.o drawFunctions.cpp
+g++ Entidades.o drawFunctions.o -O3 game.cpp -lm -lSDL2 -lSDL2_image -lSDL2_gfx -lSDL2_mixer -lGL -lGLU -o game
+echo "DONE"
+make: Leaving directory '/home/giulia/Documents/IME/TCC/game_v4'
+ 

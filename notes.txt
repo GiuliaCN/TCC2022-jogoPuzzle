@@ -1,0 +1,31 @@
+NECESSARIO:
+*Undo - limite de 9
+blocos extras
+*pendurar
+*cair - maquina de estados
+*cair blocos
+rotacao direcao
+*som
+*organização do codigo
+telas
+fases
+mapas
+
+EXTRA:
+vertex array ou display list
+animacao do movimento
+
+IMPLEMENTACAO EXTRA:
+dois jogadores - dois mapas
+cuidado onibus
+
+RELATORIO:
+pegou textura do relogio
+codigo de correcao da perspectiva
+aceitacao do jogo original pelo publico
+aspectos inovadores
+
+NOTAS:
+ver outros puzzle
+som - batuques, banda
+som - musica classica sem copyright

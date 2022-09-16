@@ -1,0 +1,494 @@
+Log
+
+handle key = 1073741903
+Player x=3 y=2 z=3
+Rotacao = [0, 1]
+
+handle key = 1073741903
+Player x=3 y=2 z=3
+Rotacao = [-1, 0]
+
+handle key = 1073741903
+Player x=3 y=2 z=3
+Rotacao = [-1, 0]
+
+handle key = 1073741903
+Player x=3 y=2 z=3
+Rotacao = [0, -1]
+
+handle key = 1073741903
+Player x=3 y=2 z=3
+Rotacao = [0, -1]
+
+handle key = 1073741903
+Player x=3 y=2 z=3
+Rotacao = [1, 0]
+
+handle key = 1073742048
+Player x=3 y=2 z=3
+Rotacao = [1, 0]
+
+handle key = 1073741905
+Player x=3 y=2 z=3
+Rotacao = [1, 0]
+
+handle key = 1073741905
+Player x=3 y=2 z=3
+Rotacao = [1, 0]
+
+handle key = 1073741905
+Player x=3 y=2 z=3
+Rotacao = [1, 0]
+
+handle key = 1073741905
+Player x=3 y=2 z=3
+Rotacao = [1, 0]
+
+handle key = 1073742048
+Player x=3 y=2 z=3
+Rotacao = [1, 0]
+
+handle key = 1073741903
+Player x=3 y=2 z=3
+Rotacao = [1, 0]
+
+handle key = 1073741903
+Player x=3 y=2 z=3
+Rotacao = [0, 1]
+
+handle key = 1073741906
+Player x=3 y=2 z=3
+Rotacao = [0, 1]
+
+handle key = 1073741906
+Player x=3 y=2 z=4
+Rotacao = [0, 1]
+
+handle key = 1073741903
+Player x=3 y=2 z=4
+Rotacao = [0, 1]
+
+handle key = 1073741903
+Player x=3 y=2 z=4
+Rotacao = [-1, 0]
+
+handle key = 1073741903
+Player x=3 y=2 z=4
+Rotacao = [-1, 0]
+
+handle key = 1073741903
+Player x=3 y=2 z=4
+Rotacao = [0, -1]
+
+handle key = 1073741903
+Player x=3 y=2 z=4
+Rotacao = [0, -1]
+
+handle key = 1073741903
+Player x=3 y=2 z=4
+Rotacao = [1, 0]
+
+handle key = 1073741906
+Player x=3 y=2 z=4
+Rotacao = [1, 0]
+
+handle key = 1073741906
+Player x=4 y=2 z=4
+Rotacao = [1, 0]
+
+handle key = 1073741903
+Player x=4 y=2 z=4
+Rotacao = [1, 0]
+
+handle key = 1073741903
+Player x=4 y=2 z=4
+Rotacao = [0, 1]
+
+handle key = 1073741903
+Player x=4 y=2 z=4
+Rotacao = [0, 1]
+
+handle key = 1073741903
+Player x=4 y=2 z=4
+Rotacao = [-1, 0]
+
+handle key = 1073741903
+Player x=4 y=2 z=4
+Rotacao = [-1, 0]
+
+handle key = 1073741903
+Player x=4 y=2 z=4
+Rotacao = [0, -1]
+
+handle key = 1073742048
+Player x=4 y=2 z=4
+Rotacao = [0, -1]
+
+handle key = 1073741906
+Player x=4 y=2 z=4
+Rotacao = [0, -1]
+empurra bloco
+
+handle key = 1073741906
+Player x=4 y=2 z=4
+Rotacao = [0, -1]
+
+handle key = 1073742048
+Player x=4 y=2 z=4
+Rotacao = [0, -1]
+
+handle key = 1073741906
+Player x=4 y=2 z=4
+Rotacao = [0, -1]
+
+handle key = 1073741906
+Player x=4 y=2 z=3
+Rotacao = [0, -1]
+
+handle key = 1073742048
+Player x=4 y=2 z=3
+Rotacao = [0, -1]
+
+handle key = 1073741905
+Player x=4 y=2 z=3
+Rotacao = [0, -1]
+puxa bloco
+
+handle key = 1073741905
+Player x=4 y=2 z=4
+Rotacao = [0, -1]
+
+handle key = 1073741905
+Player x=4 y=2 z=4
+Rotacao = [0, -1]
+puxa bloco
+
+handle key = 1073741905
+Player x=4 y=2 z=5
+Rotacao = [0, -1]
+
+handle key = 1073741906
+Player x=4 y=2 z=5
+Rotacao = [0, -1]
+empurra bloco
+
+handle key = 1073741906
+Player x=4 y=2 z=5
+Rotacao = [0, -1]
+
+handle key = 1073741906
+Player x=4 y=2 z=5
+Rotacao = [0, -1]
+
+handle key = 1073741906
+Player x=4 y=2 z=4
+Rotacao = [0, -1]
+
+handle key = 1073741906
+Player x=4 y=2 z=4
+Rotacao = [0, -1]
+empurra bloco
+
+handle key = 1073741906
+Player x=4 y=2 z=4
+Rotacao = [0, -1]
+
+handle key = 1073741906
+Player x=4 y=2 z=4
+Rotacao = [0, -1]
+
+handle key = 1073741906
+Player x=4 y=2 z=3
+Rotacao = [0, -1]
+
+handle key = 1073742048
+Player x=4 y=2 z=3
+Rotacao = [0, -1]
+
+handle key = 1073741904
+Player x=4 y=2 z=3
+Rotacao = [0, -1]
+
+handle key = 1073741904
+Player x=4 y=2 z=3
+Rotacao = [-1, 0]
+
+handle key = 1073741906
+Player x=4 y=2 z=3
+Rotacao = [-1, 0]
+
+handle key = 1073741906
+Player x=3 y=2 z=3
+Rotacao = [-1, 0]
+
+handle key = 1073741903
+Player x=3 y=2 z=3
+Rotacao = [-1, 0]
+
+handle key = 1073741903
+Player x=3 y=2 z=3
+Rotacao = [0, -1]
+
+handle key = 1073741906
+Player x=3 y=2 z=3
+Rotacao = [0, -1]
+
+handle key = 1073741906
+Player x=3 y=2 z=2
+Rotacao = [0, -1]
+
+handle key = 1073741903
+Player x=3 y=2 z=2
+Rotacao = [0, -1]
+
+handle key = 1073741903
+Player x=3 y=2 z=2
+Rotacao = [1, 0]
+
+handle key = 1073742048
+Player x=3 y=2 z=2
+Rotacao = [1, 0]
+
+handle key = 1073741905
+Player x=3 y=2 z=2
+Rotacao = [1, 0]
+puxa bloco
+
+handle key = 1073741905
+Player x=2 y=2 z=2
+Rotacao = [1, 0]
+
+handle key = 1073742048
+Player x=2 y=2 z=2
+Rotacao = [1, 0]
+
+handle key = 1073741905
+Player x=2 y=2 z=2
+Rotacao = [1, 0]
+
+handle key = 1073741905
+Player x=1 y=2 z=2
+Rotacao = [1, 0]
+
+handle key = 1073741903
+Player x=1 y=2 z=2
+Rotacao = [1, 0]
+
+handle key = 1073741903
+Player x=1 y=2 z=2
+Rotacao = [0, 1]
+
+handle key = 1073741906
+Player x=1 y=2 z=2
+Rotacao = [0, 1]
+
+handle key = 1073741906
+Player x=1 y=2 z=3
+Rotacao = [0, 1]
+
+handle key = 1073741903
+Player x=1 y=2 z=3
+Rotacao = [0, 1]
+
+handle key = 1073741903
+Player x=1 y=2 z=3
+Rotacao = [-1, 0]
+
+handle key = 1073741903
+Player x=1 y=2 z=3
+Rotacao = [-1, 0]
+
+handle key = 1073741903
+Player x=1 y=2 z=3
+Rotacao = [0, -1]
+
+handle key = 1073741903
+Player x=1 y=2 z=3
+Rotacao = [0, -1]
+
+handle key = 1073741903
+Player x=1 y=2 z=3
+Rotacao = [1, 0]
+
+handle key = 1073741903
+Player x=1 y=2 z=3
+Rotacao = [1, 0]
+
+handle key = 1073741903
+Player x=1 y=2 z=3
+Rotacao = [0, 1]
+
+handle key = 1073741904
+Player x=1 y=2 z=3
+Rotacao = [0, 1]
+
+handle key = 1073741904
+Player x=1 y=2 z=3
+Rotacao = [1, 0]
+
+handle key = 1073741906
+Player x=1 y=2 z=3
+Rotacao = [1, 0]
+
+handle key = 1073741906
+Player x=2 y=2 z=3
+Rotacao = [1, 0]
+
+handle key = 1073741906
+Player x=2 y=2 z=3
+Rotacao = [1, 0]
+
+handle key = 1073741906
+Player x=3 y=2 z=3
+Rotacao = [1, 0]
+
+handle key = 1073741903
+Player x=3 y=2 z=3
+Rotacao = [1, 0]
+
+handle key = 1073741903
+Player x=3 y=2 z=3
+Rotacao = [0, 1]
+
+handle key = 1073741903
+Player x=3 y=2 z=3
+Rotacao = [0, 1]
+
+handle key = 1073741903
+Player x=3 y=2 z=3
+Rotacao = [-1, 0]
+
+handle key = 1073741903
+Player x=3 y=2 z=3
+Rotacao = [-1, 0]
+
+handle key = 1073741903
+Player x=3 y=2 z=3
+Rotacao = [0, -1]
+
+handle key = 1073741906
+Player x=3 y=2 z=3
+Rotacao = [0, -1]
+
+handle key = 1073741906
+Player x=3 y=3 z=2
+Rotacao = [0, -1]
+
+handle key = 1073741904
+Player x=3 y=3 z=2
+Rotacao = [0, -1]
+
+handle key = 1073741904
+Player x=3 y=3 z=2
+Rotacao = [-1, 0]
+
+handle key = 1073741906
+Player x=3 y=3 z=2
+Rotacao = [-1, 0]
+
+handle key = 1073741906
+Player x=2 y=4 z=2
+Rotacao = [-1, 0]
+
+handle key = 1073741904
+Player x=2 y=4 z=2
+Rotacao = [-1, 0]
+
+handle key = 1073741904
+Player x=2 y=4 z=2
+Rotacao = [0, 1]
+
+handle key = 1073741906
+Player x=2 y=4 z=2
+Rotacao = [0, 1]
+caindo
+caindo
+
+handle key = 1073741906
+Player x=2 y=2 z=3
+Rotacao = [0, 1]
+
+handle key = 1073741903
+Player x=2 y=2 z=3
+Rotacao = [0, 1]
+
+handle key = 1073741903
+Player x=2 y=2 z=3
+Rotacao = [-1, 0]
+
+handle key = 1073741903
+Player x=2 y=2 z=3
+Rotacao = [-1, 0]
+
+handle key = 1073741903
+Player x=2 y=2 z=3
+Rotacao = [0, -1]
+
+handle key = 1073741903
+Player x=2 y=2 z=3
+Rotacao = [0, -1]
+
+handle key = 1073741903
+Player x=2 y=2 z=3
+Rotacao = [1, 0]
+
+handle key = 1073741906
+Player x=2 y=2 z=3
+Rotacao = [1, 0]
+
+handle key = 1073741906
+Player x=3 y=2 z=3
+Rotacao = [1, 0]
+
+handle key = 1073741903
+Player x=3 y=2 z=3
+Rotacao = [1, 0]
+
+handle key = 1073741903
+Player x=3 y=2 z=3
+Rotacao = [0, 1]
+
+handle key = 1073741903
+Player x=3 y=2 z=3
+Rotacao = [0, 1]
+
+handle key = 1073741903
+Player x=3 y=2 z=3
+Rotacao = [-1, 0]
+
+handle key = 1073741903
+Player x=3 y=2 z=3
+Rotacao = [-1, 0]
+
+handle key = 1073741903
+Player x=3 y=2 z=3
+Rotacao = [0, -1]
+
+handle key = 1073742048
+Player x=3 y=2 z=3
+Rotacao = [0, -1]
+
+handle key = 1073741906
+Player x=3 y=2 z=3
+Rotacao = [0, -1]
+empurra bloco
+
+handle key = 1073741906
+Player x=3 y=2 z=3
+Rotacao = [0, -1]
+
+handle key = 1073741905
+Player x=3 y=2 z=3
+Rotacao = [0, -1]
+
+handle key = 1073741905
+Player x=3 y=2 z=4
+Rotacao = [0, -1]
+
+handle key = 1073742048
+Player x=3 y=2 z=4
+Rotacao = [0, -1]
+
+handle key = 27
+Player x=3 y=2 z=4
+Rotacao = [0, -1]
