@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Fri Sep 16 17:18:24 2022
+# Make data base, printed on Fri Sep 16 19:12:30 2022
 
 # Variables
 
@@ -21,7 +21,7 @@ SSH_AGENT_LAUNCHER = gnome-keyring
 # environment
 GJS_DEBUG_OUTPUT = stderr
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-e5636d9c-211d-4016-85f4-70ce84641d2f.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-4c456522-1382-4118-9959-0bd3f5a51a89.sock
 # environment
 LC_NAME = pt_BR.UTF-8
 # environment
@@ -41,7 +41,7 @@ VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # default
 .VARIABLES := 
 # environment
-PWD = /home/giulia/Documents/IME/TCC/game_v4
+PWD = /home/giulia/Documents/IME/TCC/TCC2022-jogoPuzzle
 # automatic
 %D = $(patsubst %/,%,$(dir $%))
 # environment
@@ -65,7 +65,7 @@ XAUTHORITY = /run/user/1000/.mutter-Xwaylandauth.9JAYS1
 # makefile
 MAKEFLAGS = pqrR
 # makefile
-CURDIR := /home/giulia/Documents/IME/TCC/game_v4
+CURDIR := /home/giulia/Documents/IME/TCC/TCC2022-jogoPuzzle
 # environment
 VSCODE_PIPE_LOGGING = true
 # environment
@@ -95,7 +95,7 @@ MAKEFILE_LIST := Makefile
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-VSCODE_PID = 4288
+VSCODE_PID = 9128
 # environment
 XDG_SESSION_TYPE = wayland
 # automatic
@@ -189,14 +189,13 @@ MANAGERPID = 1897
 # environment
 LC_MEASUREMENT = pt_BR.UTF-8
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 4288
+GIO_LAUNCHED_DESKTOP_FILE_PID = 9128
 # environment
 _ = /usr/share/code/code
 # environment
 LC_PAPER = pt_BR.UTF-8
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
- 
 # environment
 LC_CTYPE = pt_BR.UTF-8
 # environment
@@ -242,9 +241,9 @@ LC_IDENTIFICATION = pt_BR.UTF-8
 
 # Directories
 
-# . (device 2052, inode 10883956): 22 files, no impossibilities.
+# . (device 2052, inode 11407079): 25 files, no impossibilities.
 
-# 22 files, no impossibilities in 1 directories.
+# 25 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -254,7 +253,7 @@ LC_IDENTIFICATION = pt_BR.UTF-8
 
 game: Entidades.o drawFunctions.o game.cpp
 #  Implicit rule search has not been done.
-#  Last modified 2022-09-12 22:48:22.291111752
+#  Last modified 2022-09-16 18:45:58.983432235
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 10):
@@ -287,6 +286,7 @@ entidades: Entidades.cpp
 #  File has not been updated.
 #  recipe to execute (from 'Makefile', line 22):
 	$(CXX) Entidades.cpp -c
+ 
 
 # Not a target:
 .DEFAULT:
@@ -331,7 +331,7 @@ drawFunctions.cpp:
 # Not a target:
 game.cpp:
 #  Implicit rule search has been done.
-#  Last modified 2022-09-12 22:48:09.887074081
+#  Last modified 2022-09-16 18:45:52.431545137
 #  File has been updated.
 #  Successfully updated.
 
@@ -382,12 +382,12 @@ Entidades.o:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 32 / storage = 325 B / avg = 10 B
-# current buf: size = 8162 B / used = 325 B / count = 32 / avg = 10 B
+# strcache buffers: 1 (0) / strings = 35 / storage = 348 B / avg = 9 B
+# current buf: size = 8162 B / used = 348 B / count = 35 / avg = 9 B
 
-# strcache performance: lookups = 52 / hit rate = 38%
+# strcache performance: lookups = 55 / hit rate = 36%
 # hash-table stats:
-# Load=32/8192=0%, Rehash=0, Collisions=0/52=0%
-# Finished Make data base on Fri Sep 16 17:18:24 2022
+# Load=35/8192=0%, Rehash=0, Collisions=0/55=0%
+# Finished Make data base on Fri Sep 16 19:12:30 2022
 
  

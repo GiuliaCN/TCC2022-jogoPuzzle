@@ -6,8 +6,6 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-//audio
-
 #include "drawFunctions.h"
 #include "Entidades.h"
 
@@ -33,22 +31,8 @@ float theta_y = -30.0;
 ofstream logfile;
 
 struct GameData{
-  //Level
   torre * Torre;
-  // int  lx; //dim
-  // int  ly;
-  // int  lz;
-  // int Level[MAX_Z][MAX_Y][MAX_X];
   player * Player;
-  //Player position:
-  // int  px;
-  // int  py;
-  // int  pz;
-  // int  p_dirx;
-  // int  p_dirz;
-  // bool p_hanging;
-
-  //Camera position:
   int cx;
   int cy;
   int cz;
@@ -79,13 +63,13 @@ SDL_Surface *load_image( char *filename ) {
 }
 
 
-int pegaValor(string s, string separador = "=")
-{
-    int start = s.find(separador) + separador.size();
-    int end = -1;
-    string val = s.substr(start, end - start);
-    return stoi(val);
-}
+// int pegaValor(string s, string separador = "=")
+// {
+//     int start = s.find(separador) + separador.size();
+//     int end = -1;
+//     string val = s.substr(start, end - start);
+//     return stoi(val);
+// }
 
 void printaBloco(block b){
     //cout << "\n------Print Bloco------\n";
@@ -139,34 +123,6 @@ void LoadMap (struct GameData *GD, string filename){
   else logfile << "Erro em abrir arquivo\n"; 
    
 }
-
-/*
-void LoadLevel01(struct GameData *GD){ //int Level[MAX_Z][MAX_Y][MAX_X]){
-  int x,y,z;
-  for(z = 0; z < MAX_Z; z++)
-    for(y = 0; y < MAX_Y; y++)
-      for(x = 0; x < MAX_X; x++)
-	      GD->Level[z][y][x] = 0;
-
-  y = 0;
-  for(z = 1; z < MAX_Z-1; z++)
-    for(x = 1; x < MAX_X-1; x++)
-      GD->Level[z][y][x] = 1;
-  z = 1;
-  x = (MAX_X-2)/2 + 1;
-  for(y = 0; y < MAX_Y; y++)
-      GD->Level[z][y][x] = 1;
-  GD->Level[3][1][3] = 1;
-  GD->pz = 4;
-  GD->py = 1;
-  GD->px = 5;
-  GD->cz = GD->pz;
-  GD->cy = GD->py;
-  GD->cx = GD->px;
-  GD->p_dirx = 0;
-  GD->p_dirz = 1;
-}
-*/
 
 static void quit_game( int code ){
   /*
@@ -305,9 +261,11 @@ void move_player_sideways (struct GameData *GD,bool left){
 
 static void handle_key( SDL_KeyboardEvent *key, struct GameData *GD, bool down){
   static bool hold_ctrl = false;
+
   logfile << "\nhandle key = " << key->keysym.sym <<"\n";
   logfile << "Player x=" << GD->Player->x << " y="<< GD->Player->andarAtual << " z="<< GD->Player->z << "\n";
   logfile << "Rotacao = [" << GD->Player->rotacao[0] << ", " << GD->Player->rotacao[1] <<"]\n";
+  
   switch( key->keysym.sym ) {
   case SDLK_ESCAPE:
     if(down) quit_game( 0 );
@@ -315,25 +273,43 @@ static void handle_key( SDL_KeyboardEvent *key, struct GameData *GD, bool down){
   case SDLK_SPACE:
     break;
   case SDLK_LEFT:
-    if(down) {
-      //counter_clockwise
-      GD->Player->Rotaciona(0);
-      // if (GD->Player->estaPendurado){
-        
-      // }
-      // else{
-      //   rotate_counter_clockwise(GD);
-      // }
+    if(down) {     
+      if (GD->Player->estaPendurado){
+        move_player_sideways(GD,1);
+      }
+      else{
+        GD->Player->Rotaciona(0);
+      }
     }
     break;
   case SDLK_RIGHT:
-    if(down) GD->Player->Rotaciona(1);
+    if(down) {
+      if (GD->Player->estaPendurado){
+        move_player_sideways(GD,0);
+      }
+      else{
+        GD->Player->Rotaciona(1);
+      }
+    }
     break;
   case SDLK_DOWN:
-    if(down) move_player_back(GD, hold_ctrl);
+    if(down) {
+      if (GD->Player->estaPendurado){
+        GD->Player->estaPendurado = false;
+        if (!GD->Torre->andarAtual->ant->coordenadaOcupada(GD->Player->x,GD->Player->z))
+          GD->Player->estaCaindo=true;
+      }
+      else
+        move_player_back(GD, hold_ctrl);
+    }
     break;
   case SDLK_UP:
-    if(down) move_player_front(GD, hold_ctrl);
+    if(down) {
+      if (GD->Player->estaPendurado)
+          GD->Player->estaPendurado=false;
+
+      move_player_front(GD, hold_ctrl);
+    }
     break;
   case SDLK_z:
     if(down) theta_y -= 1.0;
