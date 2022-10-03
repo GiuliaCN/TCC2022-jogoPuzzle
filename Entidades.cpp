@@ -4,7 +4,7 @@
 
 using namespace std;
 
-// ------- Class player -------
+// ------- PLAYER -------
 
 void player::SetPlayer(string s){
     estaCaindo = false;
@@ -44,13 +44,23 @@ void player::Rotaciona(bool clockwise){
 
 }
 
+void player::Copia(player * p){
+    iRotacao = p->iRotacao;
+    x=p->x;
+    z=p->z;
+    andarAtual = p->andarAtual;
+    rotacao[0]= p->rotacao[0];
+    rotacao[1]= p->rotacao[1];
+    estaCaindo = p->estaCaindo;
+    estaPendurado = p->estaPendurado;
+}
 
-// ------- Fim Class player -------
+// ------- FIM PLAYER -------
 
 
+// ------- ANDAR -------
 
-// ------- Class andar -------
-
+andar::andar(){}
 // cria andar apartir de string que representa matriz, linhas separadas por /
 andar::andar(string s, int n){
     prox = nullptr;
@@ -123,10 +133,53 @@ bool andar::coordenadaOcupada (int x, int z){
     return false;
 }
 
-// ------- Fim Class andar -------
+void andar::Copia(andar * a){
+    id = a->id;
+    prox = nullptr;
+    ant = nullptr;
+
+    for (block * p = a->Lista; p != nullptr; p = p->prox){
+        this->AdicionaBloco(p->x,p->z);
+    }
+}
+
+void andar::deletaBlocoRec(block * b){
+    if (b->prox != nullptr) deletaBlocoRec(b->prox);
+    delete b;
+}
+
+void andar::Reset(){
+    id = 0;
+    ant = nullptr;
+    prox = nullptr;
+    deletaBlocoRec(Lista);
+}
+
+bool andar::temSuporte (block * b){
+    int x, z;
+    x = b->x;
+    z = b->z;
+    if (coordenadaOcupada(x,z) || coordenadaOcupada(x+1,z) || coordenadaOcupada(x-1,z)
+        || coordenadaOcupada(x,z+1) || coordenadaOcupada(x,z-1))
+        return true;
+    return false;
+}
+
+block * andar::RetornaBloco(int x, int z){
+    for (block * prox = Lista; prox != nullptr; prox = prox->prox){
+        if (prox->estaEmCoordenada(x, z)) return prox;
+    }
+    return nullptr;
+}
+
+andar::~andar(){
+    this->Reset();
+}
+
+// ------- FIM ANDAR -------
 
 
-// ------- Class block -------
+// ------- BLOCO -------
 
 block::block(int _x, int _z){
     x =_x;
@@ -144,10 +197,16 @@ block::~block(){
     //printf("\n --- Bloco [x=%d, z=%d] apagado\n",x,z);
 }
 
-// ------- Fim Class block -------
+// ------- FIM BLOCO -------
 
 
-// ------- Class torre -------
+// ------- TORRE -------
+torre::torre (){
+    //settings basicos:
+    primeiroAndar=nullptr;
+    nAndares=0;
+}
+
 andar * torre::retornaAndarN (int n){
     for (andar * p = primeiroAndar; p != nullptr; p = p->prox){
         if (p->id == n) return p;
@@ -160,10 +219,6 @@ void torre::SetTorre(string filename){
     ifstream arquivo;
     string line;
     string conjunto = "";
-
-    //settings basicos:
-    primeiroAndar=nullptr;
-    nAndares=0;
 
     arquivo.open (filename);
     if (!arquivo.is_open()) perror ("Error opening file");
@@ -203,6 +258,24 @@ void torre::desceAndar(){
     andarAtual = andarAtual->ant;
 }
 
+void torre::Copia (torre * t){
+    andar * ant;
+    nAndares = t->nAndares;
+    for (int i=1; i <= nAndares; i++){
+        andar * a = new andar();
+        a->Copia(t->retornaAndarN(i));
+        if (i == 1){
+            primeiroAndar = a;
+            ant = a;
+        }
+        else {
+            ant->prox = a;
+            a->ant = ant;
+        }
+    }
+    andarAtual = this->retornaAndarN(t->andarAtual->id);
+}
+
 // recebe string para criar andar
 void torre::adicionaAndar(string s){
     if (s.size() != 0){
@@ -224,4 +297,80 @@ void torre::adicionaAndar(string s){
     }
 }
 
-// ------- Fim Class torre -------
+void torre::deletaAndarRec(andar * a){
+    if (a->prox != nullptr) deletaAndarRec(a->prox);
+    delete a;
+}
+
+void torre::Reset(){
+    deletaAndarRec(primeiroAndar);
+    primeiroAndar=nullptr;
+    nAndares=0;
+}
+
+void torre::updateAndar(int n){
+    bool houveMudanca = false;
+    block * delB;
+    block * b;
+
+    andar * base = retornaAndarN(n-1);
+    andar * atual = retornaAndarN(n);
+
+    b = atual->Lista;
+
+    while ( b != nullptr){
+        if(!(base->coordenadaOcupada(b->x,b->z))||(base->coordenadaOcupada(b->x+1,b->z))||
+        (base->coordenadaOcupada(b->x-1,b->z))||(base->coordenadaOcupada(b->x,b->z+1))||
+        (base->coordenadaOcupada(b->x,b->z-1))){
+            base->AdicionaBloco(b->x,b->z);
+            delB = b;
+            b=b->prox;
+
+            atual->RemoveBloco(delB->x,delB->z);
+        }
+    }
+
+    if (houveMudanca) updateAndar(n+1);
+}
+
+// ------- FIM TORRE -------
+
+
+// ------- DESFAZ -------
+desfaz::desfaz(){
+    indexAtual = 0;
+    for(int i = 0; i < NUM_DESFAZ; i++){
+        ListaPlayerInstancias[i] = nullptr;
+        ListaTorreInstancias[i] = nullptr;
+    }
+}
+
+void desfaz::CriaInstancia(torre * T, player * P){
+    indexAtual ++;
+    indexAtual = indexAtual%NUM_DESFAZ;
+
+    torre * Tnovo = new torre();
+    player * Pnovo = new player;
+
+    Tnovo->Copia(T);
+    Pnovo->Copia(P);
+
+    ListaTorreInstancias[indexAtual] = Tnovo;
+    ListaPlayerInstancias[indexAtual] = Pnovo;
+}
+
+bool desfaz::DesfazAcao(torre * T, player * P){
+    indexAtual --;
+    if (indexAtual < 0){
+        indexAtual = 0;
+        return false;
+    }
+
+    T->Reset();
+
+    T->Copia(ListaTorreInstancias[indexAtual]);
+    P->Copia(ListaPlayerInstancias[indexAtual]);
+
+    return true;
+}
+// ------- FIM DESFAZ -------

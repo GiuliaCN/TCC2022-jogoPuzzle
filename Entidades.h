@@ -23,9 +23,12 @@ class block
 
 class andar
 {
+    private:
+        void deletaBlocoRec(block * b);
     public:
+        andar ();
         andar(string s, int n);
-        //~andar();
+        ~andar();
 
         // lista de andares
         andar * prox;
@@ -36,23 +39,31 @@ class andar
         bool coordenadaOcupada (int x, int z);
         void AdicionaBloco(int x, int z);
         void RemoveBloco(int x, int z);
-        
+        void Copia (andar * a);
+        void Reset();
+        bool temSuporte (block * b);
+        block * RetornaBloco(int x, int z);
 };
 
 class torre
 {
     private:
+        void deletaAndarRec(andar * a);
         int nAndares;
-        andar * retornaAndarN (int n);
+        
         void adicionaAndar(string s);
     public:
+        andar * retornaAndarN (int n);
+        torre ();
         andar * primeiroAndar;
         void SetTorre (string filename);
         andar * andarAtual;
         void vaiParaAndar (int n);
         void sobeAndar ();
         void desceAndar ();
-        void updateAndar (int n); // falta implementar
+        void updateAndar (int n);
+        void Copia (torre * t);
+        void Reset();
 };
 
 class player
@@ -71,15 +82,18 @@ class player
         void Rotaciona(bool clockwise);
         void Mexe(bool estaComBloco);
         void SetPlayer(string s);
+        void Copia(player * p);
 };
 
 class desfaz
 {
     private:
-        torre ListaTorreInstancias[NUM_DESFAZ];
-        player ListaPlayerInstancias[NUM_DESFAZ];
+        torre * ListaTorreInstancias[NUM_DESFAZ];
+        player * ListaPlayerInstancias[NUM_DESFAZ];
+        int indexAtual;
 
     public:
+        desfaz();
         void CriaInstancia(torre * T, player * P);
         bool DesfazAcao(torre * T, player * P); // false se não conseguir (numero maximo de desfaz)
 

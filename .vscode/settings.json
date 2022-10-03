@@ -5,6 +5,7 @@
         "iosfwd": "cpp",
         "initializer_list": "cpp",
         "*.tcc": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "random": "cpp"
     }
 }

@@ -29,3 +29,11 @@ NOTAS:
 ver outros puzzle
 som - batuques, banda
 som - musica classica sem copyright
+
+BACKLOG
+- quando inicia, o player não consegue andar para atras e se tenta empurrar o bloco, 
+cria um novo, o que está errado
+
+- musica
+- Undo
+- fall blocks

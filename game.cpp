@@ -18,6 +18,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <map>
 
 using namespace std;
 
@@ -27,8 +28,11 @@ using namespace std;
 
 #define PI 3.142857
 
+// globais
 float theta_y = -30.0;
 ofstream logfile;
+map<int, string> teclado;
+bool bloqueiaMov = false;
 
 struct GameData{
   torre * Torre;
@@ -70,6 +74,20 @@ SDL_Surface *load_image( char *filename ) {
 //     string val = s.substr(start, end - start);
 //     return stoi(val);
 // }
+
+void ConfiguraMapTeclado(){
+  teclado[1073741906] = "UP";
+  teclado[1073741904] = "LEFT";
+  teclado[1073741905] = "DOWN";
+  teclado[1073741903] = "RIGHT";
+  teclado[1073742048] = "CTRL";
+  teclado[27] = "ESC";
+  
+}
+
+string StringBloco (block * b){
+  return "Bloco x=" + to_string(b->x) + " z="+ to_string(b->z);
+}
 
 void printaBloco(block b){
     //cout << "\n------Print Bloco------\n";
@@ -137,8 +155,61 @@ static void quit_game( int code ){
 }
 
 
+void UpdateAndar(struct GameData *GD, int n){
+  logfile << "\nEntrou Update do andar_id=" << n << "\n";
+  bool houveMudanca = false;
+  block * delB;
+  block * b;
+
+  andar * base = GD->Torre->retornaAndarN(n-1);
+  andar * atual = GD->Torre->retornaAndarN(n);
+
+  b = atual->Lista;
+
+  while ( b != nullptr){
+    logfile << "\n checa suporte do bloco " << StringBloco(b) << "\n";
+    if(! base->temSuporte(b) )
+    {
+      base->AdicionaBloco(b->x,b->z);
+      delB = b;
+      b=b->prox;
+
+      atual->RemoveBloco(delB->x,delB->z);
+    }
+    else
+      b=b->prox;
+  }
+
+  if (houveMudanca) UpdateAndar(GD,n+1);
+}
+
+// a = andar com o bloco b
+void BlockFall (block * b, andar * a){
+  if (a != nullptr && a->ant != nullptr){
+    logfile << "\nBlockFall do " << StringBloco(b) << "\n";
+    logfile << "\nandar_id = " << a->id << "\n";
+    if (! a->ant->temSuporte(b)){
+      a->ant->AdicionaBloco(b->x, b->z);
+      a->RemoveBloco(b->x, b->z);
+      BlockFall(b,a->ant);
+    }
+  }
+}
+
+void UpdateBloco(struct GameData *GD, block * b){
+  logfile << "\nUpdateBloco do " << StringBloco(b) << "\n";
+  andar * atual = GD->Torre->andarAtual;
+  andar * base = GD->Torre->andarAtual->ant;
+  if (! base->temSuporte(b)){
+    BlockFall(b, atual);
+  }
+}
+
+
+
 void move_player_front(struct GameData *GD, bool push){
-  
+  logfile << "\nEntrou player front\n";
+
   int nx,nz;
   nz = GD->Player->z + GD->Player->rotacao[1];
   nx = GD->Player->x + GD->Player->rotacao[0];
@@ -147,29 +218,36 @@ void move_player_front(struct GameData *GD, bool push){
 
   // com bloco na frente
   if (GD->Torre->andarAtual->coordenadaOcupada(nx,nz)){
+    logfile << "\nBloco na frente do player\n";
     // se esta empurrando
     if (push){
       logfile << "empurra bloco\n";
       GD->Torre->andarAtual->RemoveBloco(nx,nz);
       GD->Torre->andarAtual->AdicionaBloco(nx+GD->Player->rotacao[0],nz+GD->Player->rotacao[1]);
+      UpdateBloco(GD,GD->Torre->andarAtual->
+          RetornaBloco(nx+GD->Player->rotacao[0],nz+GD->Player->rotacao[1]));
+      UpdateAndar(GD,GD->Torre->andarAtual->id + 1);
     }
     else{
-      // sobe se nao esta ocupado
-      if (! GD->Torre->andarAtual->prox->coordenadaOcupada(nx,nz)){
-        // falta tratar ultimo andar
-        GD->Torre->sobeAndar();
-        GD->Player->andarAtual=GD->Torre->andarAtual->id;
-        GD->Player->x = nx;
-        GD->Player->z = nz;
-      }
+      // // sobe se nao esta ocupado
+      // if (! GD->Torre->andarAtual->prox->coordenadaOcupada(nx,nz)){
+      //   // falta tratar ultimo andar
+      logfile << "\nSobe andar\n";
+      GD->Torre->sobeAndar();
+      GD->Player->andarAtual=GD->Torre->andarAtual->id;
+      GD->Player->x = nx;
+      GD->Player->z = nz;
     }
   }
   // sem bloco na frente
   else{
+    logfile << "\nSem bloco na frente do player\n";
+    logfile << "\nplayer anda\n";
     GD->Player->x = nx;
     GD->Player->z = nz;
     // se nao tem chao
     if (! GD->Torre->andarAtual->ant->coordenadaOcupada(nx,nz)){
+      logfile << "\nNao tem chao\n";
       GD->Player->estaCaindo=true;
       GD->Torre->desceAndar();
       if (GD->Torre->andarAtual != nullptr)
@@ -177,6 +255,8 @@ void move_player_front(struct GameData *GD, bool push){
       else
         logfile << "\n>>>GAMEOVER<<<\n";
     }
+    else
+      logfile << "\ntem chao\n";
   }
 }
 
@@ -186,21 +266,24 @@ void player_fall (struct GameData *GD){
   if (GD->Torre->andarAtual == nullptr){
     // game over
     logfile << "\n>>>GAMEOVER<<<\n";
+    GD->Player->estaCaindo=false;
   }
   else if (GD->Torre->andarAtual->ant == nullptr){
     // game over
     logfile << "\n>>>GAMEOVER<<<\n";
+    GD->Player->estaCaindo=false;
   }
   else {
     GD->Player->andarAtual = GD->Torre->andarAtual->id;
     if (GD->Torre->andarAtual->ant->coordenadaOcupada(GD->Player->x,GD->Player->z))
       GD->Player->estaCaindo=false;
+    GD->Torre->desceAndar();
   }
-  GD->Torre->desceAndar();
+  
 }
 
 void move_player_back(struct GameData *GD, bool pull){
-
+  logfile << "\nEntrou player back\n";
   int nx,nz;
   nz = GD->Player->z + GD->Player->rotacao[1];
   nx = GD->Player->x + GD->Player->rotacao[0];
@@ -209,26 +292,32 @@ void move_player_back(struct GameData *GD, bool pull){
   if (! GD->Torre->andarAtual->coordenadaOcupada(GD->Player->x - GD->Player->rotacao[0],GD->Player->z - GD->Player->rotacao[1])) {
     
     if(GD->Torre->andarAtual->coordenadaOcupada(nx,nz) && pull){
-      logfile << "puxa bloco\n";
+      logfile << "\npuxando bloco\n";
       GD->Torre->andarAtual->RemoveBloco(nx,nz);
       GD->Torre->andarAtual->AdicionaBloco(GD->Player->x,GD->Player->z);
+      UpdateAndar(GD,GD->Torre->andarAtual->id + 1);
     }
 
     //anda para tras
+    logfile << "\nanda para tras\n";
     GD->Player->x = GD->Player->x - GD->Player->rotacao[0];
     GD->Player->z = GD->Player->z - GD->Player->rotacao[1];
 
     // se nao tem chao, fica pendurado
     if (! GD->Torre->andarAtual->ant->coordenadaOcupada(GD->Player->x, GD->Player->z)){
+      logfile << "\nse pendura\n";
       GD->Torre->desceAndar();
       GD->Player->andarAtual = GD->Torre->andarAtual->id;
       GD->Player->estaPendurado=true;
     }
   }
+  else
+    logfile << "\nBloco atras do player\n";
   
 }
 
 void move_player_sideways (struct GameData *GD,bool left){
+  logfile << "\nEntrou player sideways\n";
   int cx, cz;
   int dir = GD->Player->iRotacao;
   if (left){
@@ -259,12 +348,13 @@ void move_player_sideways (struct GameData *GD,bool left){
 
 }
 
+
 static void handle_key( SDL_KeyboardEvent *key, struct GameData *GD, bool down){
   static bool hold_ctrl = false;
 
-  logfile << "\nhandle key = " << key->keysym.sym <<"\n";
-  logfile << "Player x=" << GD->Player->x << " y="<< GD->Player->andarAtual << " z="<< GD->Player->z << "\n";
-  logfile << "Rotacao = [" << GD->Player->rotacao[0] << ", " << GD->Player->rotacao[1] <<"]\n";
+  // logfile << "\nhandle key = " << teclado[key->keysym.sym] << "\n";
+  // logfile << "Player x=" << GD->Player->x << " y="<< GD->Player->andarAtual << " z="<< GD->Player->z << "\n";
+  // logfile << "Rotacao = [" << GD->Player->rotacao[0] << ", " << GD->Player->rotacao[1] <<"]\n";
   
   switch( key->keysym.sym ) {
   case SDLK_ESCAPE:
@@ -474,6 +564,8 @@ int main( int argc, char* argv[] ){
 
   logfile.open ("logfile.txt");
   logfile << "Log\n";
+
+  ConfiguraMapTeclado();
   
   /* Dimensions of our window. */
   int width =  1366; //1067; //512; //640;

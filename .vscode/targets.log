@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Fri Sep 16 19:12:30 2022
+# Make data base, printed on Fri Sep 23 20:53:32 2022
 
 # Variables
 
@@ -21,7 +21,7 @@ SSH_AGENT_LAUNCHER = gnome-keyring
 # environment
 GJS_DEBUG_OUTPUT = stderr
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-4c456522-1382-4118-9959-0bd3f5a51a89.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-6a25e3e6-f299-4777-ac19-f316f8fcb375.sock
 # environment
 LC_NAME = pt_BR.UTF-8
 # environment
@@ -53,11 +53,12 @@ VSCODE_LOG_STACK = false
 # automatic
 %F = $(notdir $%)
 # environment
+ 
 VSCODE_CODE_CACHE_PATH = /home/giulia/.config/Code/CachedData/c3511e6c69bb39013c4a4b7b9566ec1ca73fc4d5
 # environment
 LANG = C
 # environment
-XAUTHORITY = /run/user/1000/.mutter-Xwaylandauth.9JAYS1
+XAUTHORITY = /run/user/1000/.mutter-Xwaylandauth.MYXKS1
 # default
 .LOADED := 
 # default
@@ -95,13 +96,13 @@ MAKEFILE_LIST := Makefile
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-VSCODE_PID = 9128
+VSCODE_PID = 2411
 # environment
 XDG_SESSION_TYPE = wayland
 # automatic
 ?D = $(patsubst %/,%,$(dir $?))
 # environment
-SESSION_MANAGER = local/Pandora:@/tmp/.ICE-unix/2027,unix/Pandora:/tmp/.ICE-unix/2027
+SESSION_MANAGER = local/Pandora:@/tmp/.ICE-unix/1792,unix/Pandora:/tmp/.ICE-unix/1792
 # automatic
 *F = $(notdir $*)
 # environment
@@ -143,7 +144,7 @@ LC_MONETARY = pt_BR.UTF-8
 # environment
 LC_TIME = pt_BR.UTF-8
 # environment
-INVOCATION_ID = 749ef0ec66d749b5b5b1dd0b5e77a51e
+INVOCATION_ID = 96b7a30b8e0c4383b1d7c1d3be2414a3
 # environment
 VSCODE_LOG_NATIVE = false
 # environment
@@ -175,7 +176,7 @@ GIO_LAUNCHED_DESKTOP_FILE = /usr/share/applications/code.desktop
 # makefile
 .DEFAULT_GOAL := all
 # environment
-SYSTEMD_EXEC_PID = 2049
+SYSTEMD_EXEC_PID = 1815
 # environment
 DISPLAY = :0
 # environment
@@ -185,11 +186,11 @@ GTK_MODULES = gail:atk-bridge
 # default
 MAKE_VERSION := 4.3
 # environment
-MANAGERPID = 1897
+MANAGERPID = 1664
 # environment
 LC_MEASUREMENT = pt_BR.UTF-8
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 9128
+GIO_LAUNCHED_DESKTOP_FILE_PID = 2411
 # environment
 _ = /usr/share/code/code
 # environment
@@ -199,7 +200,7 @@ XDG_RUNTIME_DIR = /run/user/1000
 # environment
 LC_CTYPE = pt_BR.UTF-8
 # environment
-JOURNAL_STREAM = 8:38090
+JOURNAL_STREAM = 8:29575
 # environment
 XDG_SESSION_CLASS = user
 # environment
@@ -233,7 +234,7 @@ GDMSESSION = ubuntu
 # environment
 LC_IDENTIFICATION = pt_BR.UTF-8
 # variable set hash-table stats:
-# Load=111/1024=11%, Rehash=0, Collisions=4/144=3%
+# Load=111/1024=11%, Rehash=0, Collisions=4/145=3%
 
 # Pattern-specific Variable Values
 
@@ -241,9 +242,9 @@ LC_IDENTIFICATION = pt_BR.UTF-8
 
 # Directories
 
-# . (device 2052, inode 11407079): 25 files, no impossibilities.
+# . (device 2052, inode 11407079): 22 files, no impossibilities.
 
-# 25 files, no impossibilities in 1 directories.
+# 22 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -253,16 +254,35 @@ LC_IDENTIFICATION = pt_BR.UTF-8
 
 game: Entidades.o drawFunctions.o game.cpp
 #  Implicit rule search has not been done.
-#  Last modified 2022-09-16 18:45:58.983432235
+#  Implicit/static pattern stem: ''
+#  Last modified 2022-09-16 19:27:44.661964878
 #  File has been updated.
-#  Successfully updated.
+#  Needs to be updated (-q is set).
+# automatic
+# @ := game
+# automatic
+# * := 
+# automatic
+# < := Entidades.o
+# automatic
+# + := Entidades.o drawFunctions.o game.cpp
+# automatic
+# % := 
+# automatic
+# ^ := Entidades.o drawFunctions.o game.cpp
+# automatic
+# ? := Entidades.o game.cpp
+# automatic
+# | := 
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=1/12=8%
 #  recipe to execute (from 'Makefile', line 10):
 	$(CXX) Entidades.o drawFunctions.o -O3 game.cpp -lm -lSDL2 -lSDL2_image -lSDL2_gfx -lSDL2_mixer -lGL -lGLU -o game
 
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-09-12 20:19:36.005078202
+#  Last modified 2022-09-23 20:52:53.675344055
 #  File has been updated.
 #  Successfully updated.
 
@@ -286,7 +306,6 @@ entidades: Entidades.cpp
 #  File has not been updated.
 #  recipe to execute (from 'Makefile', line 22):
 	$(CXX) Entidades.cpp -c
- 
 
 # Not a target:
 .DEFAULT:
@@ -297,28 +316,11 @@ entidades: Entidades.cpp
 all: game
 #  Command line target.
 #  Implicit rule search has not been done.
-#  Implicit/static pattern stem: ''
 #  File does not exist.
 #  File has been updated.
 #  Needs to be updated (-q is set).
-# automatic
-# @ := all
-# automatic
-# * := 
-# automatic
-# < := game
-# automatic
-# + := game
-# automatic
-# % := 
-# automatic
-# ^ := game
-# automatic
-# ? := game
-# automatic
-# | := 
 # variable set hash-table stats:
-# Load=8/32=25%, Rehash=0, Collisions=1/11=9%
+# Load=0/32=0%, Rehash=0, Collisions=0/4=0%
 #  recipe to execute (from 'Makefile', line 2):
 	@echo "DONE"
 
@@ -331,7 +333,7 @@ drawFunctions.cpp:
 # Not a target:
 game.cpp:
 #  Implicit rule search has been done.
-#  Last modified 2022-09-16 18:45:52.431545137
+#  Last modified 2022-09-23 20:01:14.880905759
 #  File has been updated.
 #  Successfully updated.
 
@@ -370,7 +372,7 @@ testeE: testes/testeEntidades.cpp Entidades.cpp
 # Not a target:
 Entidades.o:
 #  Implicit rule search has been done.
-#  Last modified 2022-09-12 22:41:32.389773012
+#  Last modified 2022-09-23 20:10:14.585990921
 #  File has been updated.
 #  Successfully updated.
 
@@ -382,12 +384,12 @@ Entidades.o:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 35 / storage = 348 B / avg = 9 B
-# current buf: size = 8162 B / used = 348 B / count = 35 / avg = 9 B
+# strcache buffers: 1 (0) / strings = 32 / storage = 320 B / avg = 10 B
+# current buf: size = 8162 B / used = 320 B / count = 32 / avg = 10 B
 
-# strcache performance: lookups = 55 / hit rate = 36%
+# strcache performance: lookups = 52 / hit rate = 38%
 # hash-table stats:
-# Load=35/8192=0%, Rehash=0, Collisions=0/55=0%
-# Finished Make data base on Fri Sep 16 19:12:30 2022
+# Load=32/8192=0%, Rehash=0, Collisions=0/52=0%
+# Finished Make data base on Fri Sep 23 20:53:32 2022
 
  

@@ -1,237 +1,177 @@
 Log
 
-handle key = 1073741903
-Player x=3 y=2 z=3
-Rotacao = [0, 1]
+Entrou player front
 
-handle key = 1073741903
-Player x=3 y=2 z=3
-Rotacao = [-1, 0]
+Bloco na frente do player
 
-handle key = 1073741903
-Player x=3 y=2 z=3
-Rotacao = [-1, 0]
+Sobe andar
 
-handle key = 1073741903
-Player x=3 y=2 z=3
-Rotacao = [0, -1]
+Entrou player front
 
-handle key = 1073741903
-Player x=3 y=2 z=3
-Rotacao = [0, -1]
+Bloco na frente do player
 
-handle key = 1073741903
-Player x=3 y=2 z=3
-Rotacao = [1, 0]
+Sobe andar
 
-handle key = 1073741906
-Player x=3 y=2 z=3
-Rotacao = [1, 0]
+Entrou player front
 
-handle key = 1073741906
-Player x=3 y=2 z=3
-Rotacao = [1, 0]
+Sem bloco na frente do player
 
-handle key = 1073741904
-Player x=3 y=2 z=3
-Rotacao = [1, 0]
+player anda
 
-handle key = 1073741904
-Player x=3 y=2 z=3
-Rotacao = [0, -1]
+tem chao
 
-handle key = 1073741906
-Player x=3 y=2 z=3
-Rotacao = [0, -1]
+Entrou player front
 
-handle key = 1073741906
-Player x=3 y=2 z=2
-Rotacao = [0, -1]
+Bloco na frente do player
+empurra bloco
 
-handle key = 1073741906
-Player x=3 y=2 z=2
-Rotacao = [0, -1]
+UpdateBloco do Bloco x=2 z=3
 
-handle key = 1073741906
-Player x=3 y=3 z=1
-Rotacao = [0, -1]
+BlockFall do Bloco x=2 z=3
 
-handle key = 1073741904
-Player x=3 y=3 z=1
-Rotacao = [0, -1]
+andar_id = 3
 
-handle key = 1073741904
-Player x=3 y=3 z=1
-Rotacao = [-1, 0]
+BlockFall do Bloco x=1536417956 z=21926
 
-handle key = 1073741904
-Player x=3 y=3 z=1
-Rotacao = [-1, 0]
+andar_id = 2
 
-handle key = 1073741904
-Player x=3 y=3 z=1
-Rotacao = [0, 1]
+Entrou Update do andar_id=4
 
-handle key = 1073741905
-Player x=3 y=3 z=1
-Rotacao = [0, 1]
+Entrou player front
 
-handle key = 1073741905
-Player x=3 y=2 z=0
-Rotacao = [0, 1]
+Sem bloco na frente do player
 
-handle key = 1073741903
-Player x=3 y=2 z=0
-Rotacao = [0, 1]
+player anda
 
-handle key = 1073741903
-Player x=2 y=2 z=0
-Rotacao = [0, 1]
+Nao tem chao
+caindo
 
-handle key = 1073741903
-Player x=2 y=2 z=0
-Rotacao = [0, 1]
+Entrou player front
 
-handle key = 1073741903
-Player x=1 y=2 z=0
-Rotacao = [0, 1]
+Bloco na frente do player
 
-handle key = 1073741903
-Player x=1 y=2 z=0
-Rotacao = [0, 1]
+Sobe andar
 
-handle key = 1073741903
-Player x=0 y=2 z=1
-Rotacao = [1, 0]
+Entrou player front
 
-handle key = 1073741903
-Player x=0 y=2 z=1
-Rotacao = [1, 0]
+Sem bloco na frente do player
 
-handle key = 1073741903
-Player x=1 y=2 z=2
-Rotacao = [0, -1]
+player anda
 
-handle key = 1073741903
-Player x=1 y=2 z=2
-Rotacao = [0, -1]
+tem chao
 
-handle key = 1073741903
-Player x=2 y=2 z=2
-Rotacao = [0, -1]
+Entrou player back
 
-handle key = 1073741903
-Player x=2 y=2 z=2
-Rotacao = [0, -1]
+puxando bloco
 
-handle key = 1073741903
-Player x=3 y=2 z=2
-Rotacao = [0, -1]
+Entrou Update do andar_id=3
 
-handle key = 1073741903
-Player x=3 y=2 z=2
-Rotacao = [0, -1]
+ checa suporte do bloco Bloco x=1 z=1
 
-handle key = 1073741903
-Player x=4 y=2 z=1
-Rotacao = [-1, 0]
+anda para tras
 
-handle key = 1073741904
-Player x=4 y=2 z=1
-Rotacao = [-1, 0]
+Entrou player front
 
-handle key = 1073741904
-Player x=3 y=2 z=2
-Rotacao = [0, -1]
+Bloco na frente do player
+empurra bloco
 
-handle key = 1073741904
-Player x=3 y=2 z=2
-Rotacao = [0, -1]
+UpdateBloco do Bloco x=2 z=3
 
-handle key = 1073741904
-Player x=2 y=2 z=2
-Rotacao = [0, -1]
+Entrou Update do andar_id=3
 
-handle key = 1073741904
-Player x=2 y=2 z=2
-Rotacao = [0, -1]
+ checa suporte do bloco Bloco x=1 z=1
 
-handle key = 1073741904
-Player x=1 y=2 z=2
-Rotacao = [0, -1]
+Entrou player front
 
-handle key = 1073741903
-Player x=1 y=2 z=2
-Rotacao = [0, -1]
+Sem bloco na frente do player
 
-handle key = 1073741903
-Player x=2 y=2 z=2
-Rotacao = [0, -1]
+player anda
 
-handle key = 1073741903
-Player x=2 y=2 z=2
-Rotacao = [0, -1]
+tem chao
 
-handle key = 1073741903
-Player x=3 y=2 z=2
-Rotacao = [0, -1]
+Entrou player front
 
-handle key = 1073741905
-Player x=3 y=2 z=2
-Rotacao = [0, -1]
+Bloco na frente do player
 
-handle key = 1073741905
-Player x=3 y=2 z=2
-Rotacao = [0, -1]
+Sobe andar
 
-handle key = 1073741905
-Player x=3 y=2 z=2
-Rotacao = [0, -1]
+Entrou player front
 
-handle key = 1073741905
-Player x=3 y=2 z=3
-Rotacao = [0, -1]
+Sem bloco na frente do player
 
-handle key = 1073741905
-Player x=3 y=2 z=3
-Rotacao = [0, -1]
+player anda
 
-handle key = 1073741905
-Player x=3 y=2 z=4
-Rotacao = [0, -1]
+Nao tem chao
+caindo
 
-handle key = 1073741904
-Player x=3 y=2 z=4
-Rotacao = [0, -1]
+Entrou player front
 
-handle key = 1073741904
-Player x=3 y=2 z=4
-Rotacao = [-1, 0]
+Bloco na frente do player
 
-handle key = 1073741904
-Player x=3 y=2 z=4
-Rotacao = [-1, 0]
+Sobe andar
 
-handle key = 1073741904
-Player x=3 y=2 z=4
-Rotacao = [0, 1]
+Entrou player front
 
-handle key = 1073741904
-Player x=3 y=2 z=4
-Rotacao = [0, 1]
+Sem bloco na frente do player
 
-handle key = 1073741904
-Player x=3 y=2 z=4
-Rotacao = [1, 0]
+player anda
 
-handle key = 1073741906
-Player x=3 y=2 z=4
-Rotacao = [1, 0]
+tem chao
 
-handle key = 1073741906
-Player x=4 y=2 z=4
-Rotacao = [1, 0]
+Entrou player front
 
-handle key = 27
-Player x=4 y=2 z=4
-Rotacao = [1, 0]
+Bloco na frente do player
+
+Sobe andar
+
+Entrou player front
+
+Sem bloco na frente do player
+
+player anda
+
+Nao tem chao
+caindo
+
+Entrou player front
+
+Bloco na frente do player
+
+Sobe andar
+
+Entrou player front
+
+Sem bloco na frente do player
+
+player anda
+
+tem chao
+
+Entrou player front
+
+Bloco na frente do player
+
+Sobe andar
+
+Entrou player front
+
+Sem bloco na frente do player
+
+player anda
+
+Nao tem chao
+caindo
+
+Entrou player front
+
+Bloco na frente do player
+
+Sobe andar
+
+Entrou player front
+
+Sem bloco na frente do player
+
+player anda
+
+tem chao
