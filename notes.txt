@@ -37,3 +37,17 @@ cria um novo, o que está errado
 - musica
 - Undo
 - fall blocks
+
+
+bloco
+- bool em movimento - no plano, vertical (queda)
+- double pos
+- vetores velocidade do bloco - constante, importa eh a orientacao(sinal)
+
+- animacao - funcao display
+
+- epson erro - se bloco deve parar
+- lista de blocos sofrendo update
+
+- mapa de que ve efeito de cascata
+- camera movimenta

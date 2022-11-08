@@ -7,18 +7,200 @@
 using namespace std;
 
 #define NUM_DESFAZ 9
+#define eps 0.1
 
-class block
+#define velQueda 0.1
+#define velPlayer 0.1
+#define velBlock 0.1
+
+/*
+ * ColisaoCentral = bloco diretamente abaixo
+ * ColisaoDeApoio = bloco diretamente abaixo e em cruz
+ * ColisaoLateral = entidades sao adiacentes
+ * ColisaoAgressiva = entidades no mesmo lugar
+ * 
+*/
+enum tipoColisao { SemColisao, ColisaoCentral, ColisaoDeApoio, ColisaoLateral, ColisaoAgressiva };
+enum estadosPlayer { Morto, Pendurado, Normal};
+enum estadosEntidade { Parado, Caindo, Movimento};
+
+class posicao {
+    public:
+        posicao();
+        posicao(posicao * p);
+        posicao(double _x, double _y, double _z){
+            x = _x;
+            y = _y;
+            z = _z;
+        };
+        double x;
+        double y;
+        double z;
+
+        posicao operator+ (posicao const &obj){
+            posicao p;
+            p.x = x + obj.x;
+            p.y = y + obj.y;
+            p.z = z + obj.z;
+            return p;
+        }
+
+        posicao operator- (posicao const &obj){
+            posicao p;
+            p.x = x - obj.x;
+            p.y = y - obj.y;
+            p.z = z - obj.z;
+            return p;
+        };
+        posicao operator= (posicao const &obj){ return obj; };
+
+        bool igualXZ (posicao p);
+        posicao Aproximado();
+        string PosicaoToString();
+};
+
+class velocidade {
+    public:
+        velocidade();
+        velocidade(velocidade * v);
+        velocidade(int _vx, int _vy, int _vz){
+            vx = _vx;
+            vy = _vy;
+            vz = _vz;
+        }
+        int vx;
+        int vy;
+        int vz;
+
+        velocidade& operator+ (velocidade const &obj){
+            vx = vx + obj.vx;
+            vy = vy + obj.vy;
+            vz = vz + obj.vz;
+            return *this;
+        }
+        velocidade operator- (velocidade const &obj){
+            velocidade res;
+            res.vx = vx - obj.vx;
+            res.vy = vy - obj.vy;
+            res.vz = vz - obj.vz;
+            return res;
+        };
+        velocidade operator= (posicao const &obj);
+        string VelocidadeToString();
+};
+
+bool operator== (posicao const &obj, posicao const &obj1);
+bool operator<= (posicao const &obj, posicao const &obj1);
+
+
+// relacionar velocidade, magnitude e posicao
+posicao operator* (velocidade const &obj, double const &obj1);
+
+inline posicao operator+ (posicao const &obj1, velocidade const &obj){
+    posicao p;
+    p.x = obj1.x + obj.vx;
+    p.y = obj1.y + obj.vy;
+    p.z = obj1.z + obj.vz;
+    return p;
+};
+
+class entidade
+{
+    public:
+        posicao * pos;
+        posicao * posLim;
+        velocidade * vel;
+        double vMag;
+        velocidade rotacoes[4] = {velocidade(0,0,1),velocidade(-1,0,0),velocidade(0,0,-1),velocidade(1,0,0)};
+
+        entidade();
+        entidade(posicao p, velocidade v, double _vMag){ pos = new posicao(p); vel = new velocidade(v); vMag = _vMag; }
+        ~entidade();
+
+        estadosEntidade estado;
+
+        //virtual void mexe() = 0;
+        void atualizaPos();
+        bool emMovimento();
+        bool emQueda() { return vel->vy != 0; }
+        tipoColisao colisao(entidade * e);
+        void entraEmMovimento (posicao pLim, velocidade v, double vM);
+        void para();
+        void cai();
+        void setVel(velocidade v);
+        void setPos(posicao p);
+        void setPosLim(posicao p);
+        string EstadoToString();
+
+};
+
+class camera: public entidade
+{
+
+};
+
+class player: public entidade
+{
+    private:
+
+    public:
+        int iRotacao;
+        player();
+        ~player();
+
+        velocidade * rotacao;
+        estadosPlayer estado2;
+
+        void Rotaciona(bool clockwise);
+        void mexe(posicao _posLim);
+        void SetPlayer(string s);
+        void setRotacao(velocidade r);
+        string PlayerToString();
+        string EstadoPlayerToString();
+        
+};
+
+class block: public entidade
 {
     // private:
     //     int x,y,z;
     public:
-        block (int _x, int _z);
+        block();
+        block(posicao p);
         ~block();
-        int x;
-        int z;
+
         block * prox;
-        bool estaEmCoordenada(int _x, int _z);
+        block * ant;
+
+        void mexe(posicao _posLim, velocidade _vel);
+        bool estaEmCoordenada(posicao p);
+};
+
+// lista ligada de blocos
+class LLBlocos
+{
+    private:
+        void deletaBlocoRec(block * b);
+    public:
+        LLBlocos(){ lista = nullptr; };
+        ~LLBlocos();
+
+        // primeiro da lista
+        block * lista;
+
+        // LLBlocos& operator+(LLBlocos const &obj)
+
+        block * RetornaBloco(posicao p);
+        void EjetaBloco(block * b);
+        void AdicionaBloco(posicao p);
+        void AdicionaBloco(block * b);
+        void RemoveBloco(posicao p);
+        void RemoveBloco(block * b);
+
+        bool contem (posicao p){ return RetornaBloco(p) == nullptr? false : true; }
+        bool contem (block * b){ return contem( posicao(b->pos)); }
+        bool estaVazia() { return lista == nullptr; }
+
 };
 
 class andar
@@ -34,69 +216,60 @@ class andar
         andar * prox;
         andar * ant;
 
-        block * Lista;
+        LLBlocos * Lista;
         int id;
-        bool coordenadaOcupada (int x, int z);
-        void AdicionaBloco(int x, int z);
-        void RemoveBloco(int x, int z);
-        void Copia (andar * a);
-        void Reset();
-        bool temSuporte (block * b);
-        block * RetornaBloco(int x, int z);
+
+        bool coordenadaOcupada (posicao p);
+        void AdicionaBloco(posicao p);
+        void AdicionaBloco(block * b);
+        void RemoveBloco(posicao p);
+        bool temSuporte (entidade * e);
+        block * RetornaBloco(posicao p);
+        void EjetaBloco(block * b);
+        string AndarToString();
+        tipoColisao ColisaoAndar(entidade * e);
 };
 
 class torre
 {
     private:
         void deletaAndarRec(andar * a);
-        int nAndares;
-        
+        int nAndares;       
         void adicionaAndar(string s);
     public:
-        andar * retornaAndarN (int n);
-        torre ();
+        torre();
+        ~torre();
+
         andar * primeiroAndar;
-        void SetTorre (string filename);
         andar * andarAtual;
+
+        // bool posicaoLivre (posicao p);
+        block * retornaBloco (posicao p);
+        void EjetaBloco (block * b);
+        andar * retornaAndarN (int n);
+        void SetTorre (string filename);
         void vaiParaAndar (int n);
         void sobeAndar ();
         void desceAndar ();
-        void updateAndar (int n);
-        void Copia (torre * t);
-        void Reset();
+        LLBlocos * updateAndar (andar * a);
+        //void Copia (torre * t);
+        //void Reset();
+        void adicionaBloco (block * b);
+        LLBlocos * EjetaBlocosSemSuporte(andar * a);
+        tipoColisao ChecaColisao(entidade * e);
+        string TorreToString();
 };
 
-class player
-{
-    private:
-    public:
-        int rotacoes[4][2] = {{0,1},{-1,0},{0,-1},{1,0}};
-        int iRotacao;
-        int x;
-        int z;
-        int andarAtual;
-        int rotacao[2];
-        bool estaPendurado;
-        bool estaCaindo;
-        //enum estado; //juntar booleanas, podeControlar, caindo, animações, morto
-        void Rotaciona(bool clockwise);
-        void Mexe(bool estaComBloco);
-        void SetPlayer(string s);
-        void Copia(player * p);
-};
-
-class desfaz
-{
-    private:
-        torre * ListaTorreInstancias[NUM_DESFAZ];
-        player * ListaPlayerInstancias[NUM_DESFAZ];
-        int indexAtual;
-
-    public:
-        desfaz();
-        void CriaInstancia(torre * T, player * P);
-        bool DesfazAcao(torre * T, player * P); // false se não conseguir (numero maximo de desfaz)
-
-};
+// class desfaz
+// {
+//     private:
+//         torre * ListaTorreInstancias[NUM_DESFAZ];
+//         player * ListaPlayerInstancias[NUM_DESFAZ];
+//         int indexAtual;
+//     public:
+//         desfaz();
+//         void CriaInstancia(torre * T, player * P);
+//         bool DesfazAcao(torre * T, player * P); // false se não conseguir (numero maximo de desfaz)
+// };
 
 #endif /* ENTIDADES_H */
