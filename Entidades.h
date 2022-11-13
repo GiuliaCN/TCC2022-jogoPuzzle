@@ -10,18 +10,24 @@ using namespace std;
 #define eps 0.1
 
 #define velQueda 0.1
-#define velPlayer 0.1
+#define velEnt 0.1
 #define velBlock 0.1
 
 /*
- * ColisaoCentral = bloco diretamente abaixo
- * ColisaoDeApoio = bloco diretamente abaixo e em cruz
- * ColisaoLateral = entidades sao adiacentes
+ * ColisaoDeApoio = bloco diretamente abaixo e em cruz ()
+ * ColisaoLateral = bloco em frente do player
  * ColisaoAgressiva = entidades no mesmo lugar
- * 
 */
-enum tipoColisao { SemColisao, ColisaoCentral, ColisaoDeApoio, ColisaoLateral, ColisaoAgressiva };
+enum tipoColisao { SemColisao, ColisaoDeApoio, ColisaoLateral, ColisaoAgressiva };
+
 enum estadosPlayer { Morto, Pendurado, Normal};
+
+enum tipoBloco { Movel, Fixo, FinalFase};
+/*
+ * Parado = bloco diretamente abaixo
+ * Caindo = só para com colisao
+ * Movimento = para caso colisao ou atingindo posicao limite
+*/
 enum estadosEntidade { Parado, Caindo, Movimento};
 
 class posicao {
@@ -96,11 +102,21 @@ bool operator<= (posicao const &obj, posicao const &obj1);
 // relacionar velocidade, magnitude e posicao
 posicao operator* (velocidade const &obj, double const &obj1);
 
+velocidade operator* (velocidade const &obj, int const &obj1);
+
 inline posicao operator+ (posicao const &obj1, velocidade const &obj){
     posicao p;
     p.x = obj1.x + obj.vx;
     p.y = obj1.y + obj.vy;
     p.z = obj1.z + obj.vz;
+    return p;
+};
+
+inline posicao operator- (posicao const &obj1, velocidade const &obj){
+    posicao p;
+    p.x = obj1.x - obj.vx;
+    p.y = obj1.y - obj.vy;
+    p.z = obj1.z - obj.vz;
     return p;
 };
 
@@ -121,6 +137,7 @@ class entidade
 
         //virtual void mexe() = 0;
         void atualizaPos();
+        void mexe(posicao _posLim, velocidade _vel);
         bool emMovimento();
         bool emQueda() { return vel->vy != 0; }
         tipoColisao colisao(entidade * e);
@@ -152,7 +169,7 @@ class player: public entidade
         estadosPlayer estado2;
 
         void Rotaciona(bool clockwise);
-        void mexe(posicao _posLim);
+        //void mexe(posicao _posLim, velocidade _vel);
         void SetPlayer(string s);
         void setRotacao(velocidade r);
         string PlayerToString();
@@ -166,13 +183,15 @@ class block: public entidade
     //     int x,y,z;
     public:
         block();
-        block(posicao p);
+        block(posicao p, int t);
         ~block();
 
         block * prox;
         block * ant;
+        tipoBloco tipo;
 
-        void mexe(posicao _posLim, velocidade _vel);
+        string BlocoToString();
+        //void mexe(posicao _posLim, velocidade _vel);
         bool estaEmCoordenada(posicao p);
 };
 
@@ -192,14 +211,16 @@ class LLBlocos
 
         block * RetornaBloco(posicao p);
         void EjetaBloco(block * b);
-        void AdicionaBloco(posicao p);
+        void AdicionaBloco(posicao p, int t);
         void AdicionaBloco(block * b);
         void RemoveBloco(posicao p);
         void RemoveBloco(block * b);
+        void UneListas(LLBlocos * LLB);
 
         bool contem (posicao p){ return RetornaBloco(p) == nullptr? false : true; }
         bool contem (block * b){ return contem( posicao(b->pos)); }
         bool estaVazia() { return lista == nullptr; }
+        string ListaToString();
 
 };
 
@@ -220,10 +241,10 @@ class andar
         int id;
 
         bool coordenadaOcupada (posicao p);
-        void AdicionaBloco(posicao p);
+        void AdicionaBloco(posicao p, int t);
         void AdicionaBloco(block * b);
         void RemoveBloco(posicao p);
-        bool temSuporte (entidade * e);
+        bool temSuporte (block * b);
         block * RetornaBloco(posicao p);
         void EjetaBloco(block * b);
         string AndarToString();
@@ -246,6 +267,7 @@ class torre
         // bool posicaoLivre (posicao p);
         block * retornaBloco (posicao p);
         void EjetaBloco (block * b);
+        void DeletaBloco (posicao p);
         andar * retornaAndarN (int n);
         void SetTorre (string filename);
         void vaiParaAndar (int n);
@@ -256,8 +278,12 @@ class torre
         //void Reset();
         void adicionaBloco (block * b);
         LLBlocos * EjetaBlocosSemSuporte(andar * a);
-        tipoColisao ChecaColisao(entidade * e);
+        tipoColisao ChecaColisao(block * b);
+        tipoColisao ChecaColisaoPlayer(player * pl);
+
         string TorreToString();
+
+        bool coordenadaOcupada (posicao p);
 };
 
 // class desfaz

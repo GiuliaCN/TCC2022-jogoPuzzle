@@ -36,6 +36,14 @@ posicao operator* (velocidade const &obj, double const &obj1){
     return res;
 };
 
+velocidade operator* (velocidade const &obj, int const &obj1){
+    velocidade res;
+    res.vx = obj.vx * obj1;
+    res.vy = obj.vy * obj1;
+    res.vz = obj.vz * obj1;
+    return res;
+}
+
 bool posicao::igualXZ (posicao p){
     p.y = y;
     return *this == p;
@@ -111,8 +119,11 @@ bool entidade::emMovimento(){
 
 // modifica pos com vel e vMag, checa se chega em destino
 void entidade::atualizaPos(){
-    setPos(posicao(pos) + velocidade(vel)*vMag);    
-    if (posicao(pos) <= posicao(posLim)) cai();
+    setPos(posicao(posicao(pos) + velocidade(vel)*vMag));    
+    if (posicao(pos) == posicao(posLim)) {
+        setPos(posLim);
+        cai();
+    }
 }
 
 void entidade::para() { 
@@ -156,9 +167,6 @@ tipoColisao entidade::colisao(entidade * e){
     // colisaoAgressiva - mesma posicao aproximada (bloco cae em player)
     if (posAprox == posAproxE) return ColisaoAgressiva;
 
-    // colisaoCentral - bloco logo abaixo
-    if (posAprox - posicao(0,1,0) == posAproxE) return ColisaoCentral;
-
     // colisaoLateral - mesmo y
     for (int i = 0; i < 4; i++)
         if (posAprox + rotacoes[i] == posAproxE) return ColisaoLateral;
@@ -172,6 +180,13 @@ tipoColisao entidade::colisao(entidade * e){
     }
 
     return SemColisao;
+}
+
+void entidade::mexe(posicao _posLim, velocidade _vel){
+    estado = Movimento;
+    setVel(_vel);
+    vMag = velEnt;
+    setPosLim(_posLim);
 }
 
 
@@ -247,6 +262,8 @@ void player::SetPlayer(string s){
 
     setPos(p);
 
+    setVel(velocidade(0,0,0));
+
     setRotacao(rotacoes[iRotacao]);
 }
 
@@ -270,37 +287,50 @@ void player::Rotaciona(bool clockwise){
 //     estaPendurado = p->estaPendurado;
 // }
 
-void player::mexe(posicao _posLim){
-    estado = Movimento;
-    setVel(velocidade(rotacao));
-    vMag = velPlayer;
-    posLim->x = _posLim.x;
-    posLim->y = _posLim.y;
-    posLim->z = _posLim.z;
-}
+// void player::mexe(posicao _posLim, velocidade _vel){
+//     estado = Movimento;
+//     //setVel(velocidade(rotacao));
+//     setVel(velocidade(rotacao) + velocidade(vel));
+//     vMag = velPlayer;
+//     posLim->x = _posLim.x;
+//     posLim->y = _posLim.y;
+//     posLim->z = _posLim.z;
+// }
 
 // ------------------------------------------ BLOCO -----------------------------------
 block::block(){}
 
-block::block(posicao p) {
+block::block(posicao p, int t) {
     pos= new posicao(p);
     vel = new velocidade();
     posLim = new posicao();
     prox = nullptr; 
     ant = nullptr; 
     estado = Parado;
+    tipo = static_cast<tipoBloco>(t-1);
 }
 
-void block::mexe(posicao _posLim, velocidade _vel){
-    estado = Movimento;
-    setVel(_vel);
-    vMag = velBlock;
-    setPosLim(_posLim);
-}
+// void block::mexe(posicao _posLim, velocidade _vel){
+//     estado = Movimento;
+//     setVel(_vel);
+//     vMag = velBlock;
+//     setPosLim(_posLim);
+// }
 
 bool block::estaEmCoordenada(posicao p){
     return *pos == p;
     // return pos.igualXZ(p);
+}
+
+string block::BlocoToString(){
+    string s = "";
+    s += "Bloco (";
+    //(estado ="+ to_string(estado + ", estado2 =" + estado2;
+    s += "Pos = " + pos->PosicaoToString();
+    s += ", Vel = " + vel->VelocidadeToString();
+    s += ", Estado = " + EstadoToString();
+    s += ")";
+    return s;
 }
 
 block::~block(){
@@ -313,18 +343,44 @@ LLBlocos::~LLBlocos(){
     deletaBlocoRec(lista);
 }
 
+string LLBlocos::ListaToString(){
+    string s = "";
+    int count = 0;
+    for (block * b = lista; b!= nullptr; b=b->prox) count++;
+    s+="Numero de blocos =" + to_string(count) + " ;";
+
+    int i = 0;
+    for (block * b = lista; b != nullptr; b = b->prox ){
+        i++;
+        s+=to_string(i) + "o Bloco = " + b->pos->PosicaoToString() + ";";    
+    }
+    //s+="1o Bloco = " + Lista->lista->pos.PosicaoToString();    
+    return s;
+}
+
 void LLBlocos::AdicionaBloco(block * b){
+    // if (lista == nullptr) {
+    //     lista = b;
+    //     b->ant = nullptr;
+    //     b->prox = nullptr;
+    //     }
+
+    // else{
+    //     b->ant = nullptr;
+    //     lista->ant = b;
+    //     b->prox = lista;
+    //     lista = b;
+    // }
     if (lista == nullptr) lista = b;
-    else{
-        b->ant = nullptr;
-        lista->ant = b;
-        b->prox = lista;
+    else {
+        b ->prox = lista;
+        lista ->ant = b;
         lista = b;
     }
 }
 
-void LLBlocos::AdicionaBloco(posicao p){
-    block * Bloco = new block(p);
+void LLBlocos::AdicionaBloco(posicao p, int t){
+    block * Bloco = new block(p, t);
     AdicionaBloco(Bloco);
 }
 
@@ -372,28 +428,33 @@ void LLBlocos::EjetaBloco(block * b){
         if (b->prox != nullptr) b->prox->ant = b->ant;
     }
     else { 
-        // checa se é o primeiro da lista
-        if (lista->pos == b->pos) lista = b->prox;
+        // é o primeiro da lista
+        //if (lista->pos == b->pos) 
+        lista = b->prox;
+        if (lista != nullptr) lista->ant = nullptr;
     }
+    b->prox = nullptr;
+    b->ant = nullptr;
 }
 
-// LLBlocos& LLBlocos::operator+ (LLBlocos const &obj){
-//     if (obj.lista != nullptr){
-//         block * b;
-//         for (b = obj.lista; b->prox != nullptr; b=b->prox){}
-//         b->prox = lista;
-//         lista = b;
-//     }
-//     return *this;
-// }
-
+void LLBlocos::UneListas(LLBlocos * LLB){
+    block * b = LLB -> lista;
+    block * aux;
+    while (b!= nullptr){
+        aux = b;
+        b = b->prox;
+        LLB->EjetaBloco(aux);        
+        AdicionaBloco(aux);
+    }
+    delete LLB;
+}
 
 // ------------------------------------------ ANDAR ------------------------------------------
 
 andar::andar(){}
 
 bool andar::coordenadaOcupada (posicao p){ return Lista->contem(p); }
-void andar::AdicionaBloco(posicao p) { Lista->AdicionaBloco(p); }
+void andar::AdicionaBloco(posicao p, int t) { Lista->AdicionaBloco(p,t); }
 void andar::AdicionaBloco(block * b) { Lista->AdicionaBloco(b); }
 void andar::RemoveBloco(posicao p){ Lista->RemoveBloco(p); }
 block * andar::RetornaBloco(posicao p) { return Lista->RetornaBloco(p); }
@@ -435,9 +496,10 @@ andar::andar(string s, int n){
             p.z = 0;
         }
         else {
-            if (c == '1'){
+            int t = c - '0';
+            if (t > 0){
                 //cout << "criar bloco em "<< p.PosicaoToString() <<endl;
-                AdicionaBloco(p);
+                AdicionaBloco(p,t);
             }
             p.z+=1;
         } 
@@ -460,11 +522,11 @@ andar::andar(string s, int n){
 //     deletaBlocoRec(Lista);
 // }
 
-bool andar::temSuporte (entidade * e){
-    posicao p = posicao(e->pos);
-    if (coordenadaOcupada(p)) return true;
+bool andar::temSuporte (block * b){
+    posicao p = posicao(b->pos);
+    if (coordenadaOcupada(p + posicao(0,-1,0))) return true;
     for (int i = 0; i < 4; i++)
-        if (coordenadaOcupada(p + e->rotacoes[i])) return true;
+        if (coordenadaOcupada(p + b->rotacoes[i] + posicao(0,-1,0))) return true;
     return false;
 }
 
@@ -497,16 +559,21 @@ string torre::TorreToString(){
 // adiciona bloco no andar id = b->pos.y
 // se bloco em mov, para o bloco, se nao tem andar em y, destroi bloco
 void torre::adicionaBloco (block * b){
-    if (b->emMovimento()) b->para();
+    // if (b->emMovimento()) b->para();
 
-    posicao aprox = b->pos->Aproximado();
-    b->setPos(aprox);
+    // posicao aprox = b->pos->Aproximado();
+    // b->setPos(aprox);
+    b->para();
+    andar * a = retornaAndarN((int) b->pos->y);
+    // if (a == nullptr) delete b;
+    // else
+    if (a != nullptr) a->AdicionaBloco(b);
 
-    if (b->pos->y < 1 || b->pos->y > nAndares) delete b;
-    else {
-        andar * a = retornaAndarN((int) aprox.y);
-        a->AdicionaBloco(b);
-    }
+    // if (b->pos->y < 1 || b->pos->y > nAndares) delete b;
+    // else {
+    //     andar * a = retornaAndarN((int) b->pos->y);
+    //     a->AdicionaBloco(b);
+    // }
 }
 
 andar * torre::retornaAndarN (int n){
@@ -577,10 +644,9 @@ void torre::desceAndar(){
 // }
 
 block * torre::retornaBloco (posicao p){
-    posicao posAprox = p.Aproximado();
-    andar * a = retornaAndarN((int) posAprox.y);
+    andar * a = retornaAndarN((int) p.y);
     if (a == nullptr) return nullptr;
-    return a->RetornaBloco(posAprox);
+    return a->RetornaBloco(p);
 }
 
 void torre::EjetaBloco(block * b){
@@ -589,6 +655,11 @@ void torre::EjetaBloco(block * b){
     a->EjetaBloco(b);
 }
 
+void torre::DeletaBloco(posicao p){
+    posicao posAprox = p.Aproximado();
+    andar * a = retornaAndarN((int) posAprox.y);
+    a->RemoveBloco(p);
+}
 // recebe string para criar andar
 void torre::adicionaAndar(string s){
     if (s.size() != 0){
@@ -638,34 +709,66 @@ LLBlocos * torre::EjetaBlocosSemSuporte(andar * a){
 }
 
 LLBlocos * torre::updateAndar(andar * a){
-    LLBlocos * BlocosParaUpdate = new LLBlocos;
-    for (LLBlocos * llb = EjetaBlocosSemSuporte(a); 
-            llb->lista != nullptr;
-                llb = EjetaBlocosSemSuporte(a->prox)){
-        // une listas ligadas
-        // BlocosParaUpdate = BlocosParaUpdate + llb;
-        if (llb->lista != nullptr){
-            block * b;
-            for (b = llb->lista; b->prox != nullptr; b=b->prox){}
-            b->prox = BlocosParaUpdate->lista;
-            BlocosParaUpdate->lista->ant = b;
-        }
+    if (a != nullptr) {
+        LLBlocos * BlocosParaUpdate = new LLBlocos;
+        for (LLBlocos * llb = EjetaBlocosSemSuporte(a); 
+                llb->lista != nullptr;
+                    llb = EjetaBlocosSemSuporte(a->prox))
+            {
+                // une listas ligadas
+                BlocosParaUpdate->UneListas(llb);
+                // BlocosParaUpdate = BlocosParaUpdate + llb;
+                // if (llb->lista != nullptr){
+                //     block * b;
+                //     for (b = llb->lista; b->prox != nullptr; b=b->prox){}
+                //     b->prox = BlocosParaUpdate->lista;
+                //     BlocosParaUpdate->lista->ant = b;
+                // }
+            }
+        return BlocosParaUpdate;
     }
-    return BlocosParaUpdate;
+    return nullptr;
+}
+
+tipoColisao torre::ChecaColisaoPlayer(player * pl){
+    posicao pAprox = pl->pos->Aproximado();
+    if (pAprox == posicao(pl->pos)) // se esta proximo o bastante para poder interagir
+    {
+        // bloco esmagou
+        if (retornaBloco(pAprox)!=nullptr) return ColisaoAgressiva;
+
+        // tem bloco embaixo
+        if (retornaBloco(pAprox + posicao(0,-1,0))!=nullptr) return ColisaoDeApoio;
+
+        // tem bloco na frente
+        if (retornaBloco(pAprox + pl->rotacao)!=nullptr) return ColisaoLateral;
+
+    }
+    return SemColisao;
 }
 
 // checa colisao com algum bloco da torre - apenas base
-tipoColisao torre::ChecaColisao(entidade * e){
-    posicao pAprox = e->pos->Aproximado();
+tipoColisao torre::ChecaColisao(block * b){
+    posicao pAprox = b->pos->Aproximado();
     // proximo o bastante para poder interagir
-    if (pAprox == posicao(e->pos)){
+    if (pAprox == posicao(b->pos)){
         andar * a = retornaAndarN((int) pAprox.y - 1);
 
         if (a == nullptr) return ColisaoAgressiva; // bloco ja saiu da torre, deve ser destruido?
 
-        if (a->temSuporte(e)) return ColisaoDeApoio;
+        if (a->temSuporte(b)) return ColisaoDeApoio;
     }
     return SemColisao;    
+}
+
+bool torre::coordenadaOcupada (posicao p){
+
+    andar * a = retornaAndarN((int) p.y);
+
+    if (a == nullptr) return false;
+
+    return (a->coordenadaOcupada(p));
+
 }
 
 // ------------------------------------------ DESFAZ ------------------------------------------

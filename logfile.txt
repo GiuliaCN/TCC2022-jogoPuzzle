@@ -1,118 +1,98 @@
 Log
 
-handle key = UP
-Player (Rotacao =(0, 0, 1), Pos = (3.000000, 2.000000, 3.000000), Vel = (882987735, 22006, 0), Estado = Parado, Estado2 = Normal)
-Pode Mover
 Entrou player front
 
 Sem bloco na frente do player
 player anda
 
-handle key = UP
-Player (Rotacao =(0, 0, 1), Pos = (3.000000, 2.000000, 3.400000), Vel = (0, 0, 1), Estado = Movimento, Estado2 = Normal)
+Entrou player back
 
-handle key = UP
-Player (Rotacao =(0, 0, 1), Pos = (3.000000, 2.000000, 4.000000), Vel = (0, 0, 0), Estado = Parado, Estado2 = Normal)
-Pode Mover
+Sem bloco atras do player
+
+Bloco (Pos = (3.000000, 2.000000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+ Colisao de apoio 
+
+ lista: Numero de blocos =0 ;
+
+ andar: Andar id =2 ;Numero de blocos =4 ;1o Bloco = (3.000000, 2.000000, 2.000000);2o Bloco = (5.000000, 2.000000, 3.000000);3o Bloco = (4.000000, 2.000000, 1.000000);4o Bloco = (2.000000, 2.000000, 1.000000);
+
+ ------------
+
+Entrou Update do andar_id=3
+
+ Dando Update em andar
+ 
+ Andar Atual antes: Andar id =3 ;Numero de blocos =3 ;1o Bloco = (3.000000, 3.000000, 2.000000);2o Bloco = (3.000000, 3.000000, 1.000000);3o Bloco = (2.000000, 3.000000, 1.000000);
+
+ checa suporte de Bloco (Pos = (3.000000, 3.000000, 2.000000), Vel = (566185184, 32760, 566185184), Estado = Parado)
+
+ checa suporte de Bloco (Pos = (3.000000, 3.000000, 1.000000), Vel = (566185232, 32760, -841950688), Estado = Parado)
+
+ checa suporte de Bloco (Pos = (2.000000, 3.000000, 1.000000), Vel = (566185184, 32760, 566185184), Estado = Parado)
+
+ Andar atual depois: Andar id =3 ;Numero de blocos =3 ;1o Bloco = (3.000000, 3.000000, 2.000000);2o Bloco = (3.000000, 3.000000, 1.000000);3o Bloco = (2.000000, 3.000000, 1.000000);
+
+Entrou player back
+
+Sem bloco atras do player
+
+Bloco (Pos = (3.000000, 2.000000, 3.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+ Colisao de apoio 
+
+ lista: Numero de blocos =0 ;
+
+ andar: Andar id =2 ;Numero de blocos =4 ;1o Bloco = (3.000000, 2.000000, 3.000000);2o Bloco = (5.000000, 2.000000, 3.000000);3o Bloco = (4.000000, 2.000000, 1.000000);4o Bloco = (2.000000, 2.000000, 1.000000);
+
+ ------------
+
+Entrou Update do andar_id=3
+
+ Dando Update em andar
+ 
+ Andar Atual antes: Andar id =3 ;Numero de blocos =3 ;1o Bloco = (3.000000, 3.000000, 2.000000);2o Bloco = (3.000000, 3.000000, 1.000000);3o Bloco = (2.000000, 3.000000, 1.000000);
+
+ checa suporte de Bloco (Pos = (3.000000, 3.000000, 2.000000), Vel = (566185184, 32760, 566185184), Estado = Parado)
+
+ checa suporte de Bloco (Pos = (3.000000, 3.000000, 1.000000), Vel = (566185232, 32760, -841950688), Estado = Parado)
+
+ checa suporte de Bloco (Pos = (2.000000, 3.000000, 1.000000), Vel = (566185184, 32760, 566185184), Estado = Parado)
+
+ Andar atual depois: Andar id =3 ;Numero de blocos =3 ;1o Bloco = (3.000000, 3.000000, 2.000000);2o Bloco = (3.000000, 3.000000, 1.000000);3o Bloco = (2.000000, 3.000000, 1.000000);
+
 Entrou player front
 
 Sem bloco na frente do player
 player anda
 
-handle key = UP
-Player (Rotacao =(0, 0, 1), Pos = (3.000000, 2.000000, 4.400000), Vel = (0, 0, 1), Estado = Movimento, Estado2 = Normal)
-
-handle key = RIGHT
-Player (Rotacao =(0, 0, 1), Pos = (3.000000, 2.000000, 5.000000), Vel = (0, 0, 0), Estado = Parado, Estado2 = Normal)
-Pode Mover
-handle key = RIGHT
-Player (Rotacao =(-1, 0, 0), Pos = (3.000000, 2.000000, 5.000000), Vel = (0, 0, 0), Estado = Parado, Estado2 = Normal)
-Pode Mover
-handle key = RIGHT
-Player (Rotacao =(-1, 0, 0), Pos = (3.000000, 2.000000, 5.000000), Vel = (0, 0, 0), Estado = Parado, Estado2 = Normal)
-Pode Mover
-handle key = RIGHT
-Player (Rotacao =(0, 0, -1), Pos = (3.000000, 2.000000, 5.000000), Vel = (0, 0, 0), Estado = Parado, Estado2 = Normal)
-Pode Mover
-handle key = UP
-Player (Rotacao =(0, 0, -1), Pos = (3.000000, 2.000000, 5.000000), Vel = (0, 0, 0), Estado = Parado, Estado2 = Normal)
-Pode Mover
 Entrou player front
 
 Sem bloco na frente do player
 player anda
 
-handle key = UP
-Player (Rotacao =(0, 0, -1), Pos = (3.000000, 2.000000, 4.600000), Vel = (0, 0, -1), Estado = Movimento, Estado2 = Normal)
-
-handle key = UP
-Player (Rotacao =(0, 0, -1), Pos = (3.000000, 2.000000, 4.000000), Vel = (0, 0, 0), Estado = Parado, Estado2 = Normal)
-Pode Mover
 Entrou player front
 
 Sem bloco na frente do player
 player anda
 
-handle key = UP
-Player (Rotacao =(0, 0, -1), Pos = (3.000000, 2.000000, 3.500000), Vel = (0, 0, -1), Estado = Movimento, Estado2 = Normal)
-
-handle key = LEFT
-Player (Rotacao =(0, 0, -1), Pos = (3.000000, 2.000000, 3.000000), Vel = (0, 0, 0), Estado = Parado, Estado2 = Normal)
-Pode Mover
-handle key = LEFT
-Player (Rotacao =(-1, 0, 0), Pos = (3.000000, 2.000000, 3.000000), Vel = (0, 0, 0), Estado = Parado, Estado2 = Normal)
-Pode Mover
-handle key = UP
-Player (Rotacao =(-1, 0, 0), Pos = (3.000000, 2.000000, 3.000000), Vel = (0, 0, 0), Estado = Parado, Estado2 = Normal)
-Pode Mover
 Entrou player front
 
 Sem bloco na frente do player
 player anda
 
-handle key = UP
-Player (Rotacao =(-1, 0, 0), Pos = (2.700000, 2.000000, 3.000000), Vel = (-1, 0, 0), Estado = Movimento, Estado2 = Normal)
-
-handle key = RIGHT
-Player (Rotacao =(-1, 0, 0), Pos = (2.000000, 2.000000, 3.000000), Vel = (0, 0, 0), Estado = Parado, Estado2 = Normal)
-Pode Mover
-handle key = RIGHT
-Player (Rotacao =(0, 0, -1), Pos = (2.000000, 2.000000, 3.000000), Vel = (0, 0, 0), Estado = Parado, Estado2 = Normal)
-Pode Mover
-handle key = RIGHT
-Player (Rotacao =(0, 0, -1), Pos = (2.000000, 2.000000, 3.000000), Vel = (0, 0, 0), Estado = Parado, Estado2 = Normal)
-Pode Mover
-handle key = RIGHT
-Player (Rotacao =(1, 0, 0), Pos = (2.000000, 2.000000, 3.000000), Vel = (0, 0, 0), Estado = Parado, Estado2 = Normal)
-Pode Mover
-handle key = UP
-Player (Rotacao =(1, 0, 0), Pos = (2.000000, 2.000000, 3.000000), Vel = (0, 0, 0), Estado = Parado, Estado2 = Normal)
-Pode Mover
 Entrou player front
 
-Sem bloco na frente do player
-player anda
+ ComBlocoNaFrente 
 
-handle key = UP
-Player (Rotacao =(1, 0, 0), Pos = (2.200000, 2.000000, 3.000000), Vel = (1, 0, 0), Estado = Movimento, Estado2 = Normal)
+ ChecaSePodeSubir 
 
-handle key = UP
-Player (Rotacao =(1, 0, 0), Pos = (3.000000, 2.000000, 3.000000), Vel = (0, 0, 0), Estado = Parado, Estado2 = Normal)
-Pode Mover
 Entrou player front
 
-Sem bloco na frente do player
-player anda
+ ComBlocoNaFrente 
 
-handle key = UP
-Player (Rotacao =(1, 0, 0), Pos = (3.400000, 2.000000, 3.000000), Vel = (1, 0, 0), Estado = Movimento, Estado2 = Normal)
+ ChecaSePodeSubir 
 
-handle key = CTRL
-Player (Rotacao =(1, 0, 0), Pos = (4.000000, 2.000000, 3.000000), Vel = (0, 0, 0), Estado = Parado, Estado2 = Normal)
-Pode Mover
-handle key = UP
-Player (Rotacao =(1, 0, 0), Pos = (4.000000, 2.000000, 3.000000), Vel = (0, 0, 0), Estado = Parado, Estado2 = Normal)
-Pode Mover
 Entrou player front
 
  ComBlocoNaFrente 
@@ -121,12 +101,70 @@ Entrou player front
 
  Empurra 
 
-handle key = UP
-Player (Rotacao =(1, 0, 0), Pos = (4.000000, 2.000000, 3.000000), Vel = (0, 0, 0), Estado = Parado, Estado2 = Normal)
-Pode Mover
-handle key = CTRL
-Player (Rotacao =(1, 0, 0), Pos = (4.000000, 2.000000, 3.000000), Vel = (0, 0, 0), Estado = Parado, Estado2 = Normal)
-Pode Mover
-handle key = ESC
-Player (Rotacao =(1, 0, 0), Pos = (4.000000, 2.000000, 3.000000), Vel = (0, 0, 0), Estado = Parado, Estado2 = Normal)
-Pode Mover
+Bloco (Pos = (3.000000, 2.000000, 4.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+ Colisao de apoio 
+
+ lista: Numero de blocos =0 ;
+
+ andar: Andar id =2 ;Numero de blocos =4 ;1o Bloco = (3.000000, 2.000000, 4.000000);2o Bloco = (5.000000, 2.000000, 3.000000);3o Bloco = (4.000000, 2.000000, 1.000000);4o Bloco = (2.000000, 2.000000, 1.000000);
+
+ ------------
+
+Entrou Update do andar_id=3
+
+ Dando Update em andar
+ 
+ Andar Atual antes: Andar id =3 ;Numero de blocos =3 ;1o Bloco = (3.000000, 3.000000, 2.000000);2o Bloco = (3.000000, 3.000000, 1.000000);3o Bloco = (2.000000, 3.000000, 1.000000);
+
+ checa suporte de Bloco (Pos = (3.000000, 3.000000, 2.000000), Vel = (566185184, 32760, 566185184), Estado = Parado)
+
+ cai bloco 
+ 
+ checa suporte de Bloco (Pos = (3.000000, 3.000000, 1.000000), Vel = (566185232, 32760, -841950688), Estado = Parado)
+
+ checa suporte de Bloco (Pos = (2.000000, 3.000000, 1.000000), Vel = (566185184, 32760, 566185184), Estado = Parado)
+
+ Andar atual depois: Andar id =3 ;Numero de blocos =2 ;1o Bloco = (3.000000, 3.000000, 1.000000);2o Bloco = (2.000000, 3.000000, 1.000000);
+
+ houve mudanca 
+ 
+Entrou Update do andar_id=4
+
+ Dando Update em andar
+ 
+ Andar Atual antes: Andar id =4 ;Numero de blocos =2 ;1o Bloco = (3.000000, 4.000000, 2.000000);2o Bloco = (2.000000, 4.000000, 1.000000);
+
+ checa suporte de Bloco (Pos = (3.000000, 4.000000, 2.000000), Vel = (566185232, 32760, -841956400), Estado = Parado)
+
+ checa suporte de Bloco (Pos = (2.000000, 4.000000, 1.000000), Vel = (566185184, 32760, 566185184), Estado = Parado)
+
+ Andar atual depois: Andar id =4 ;Numero de blocos =2 ;1o Bloco = (3.000000, 4.000000, 2.000000);2o Bloco = (2.000000, 4.000000, 1.000000);
+
+Bloco (Pos = (3.000000, 3.000000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (3.000000, 2.900000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (3.000000, 2.800000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (3.000000, 2.700000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (3.000000, 2.600000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (3.000000, 2.500000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (3.000000, 2.400000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (3.000000, 2.300000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (3.000000, 2.200000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (3.000000, 2.100000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+ Colisao de apoio 
+
+ lista: Numero de blocos =0 ;
+
+ andar: Andar id =2 ;Numero de blocos =5 ;1o Bloco = (3.000000, 2.000000, 2.000000);2o Bloco = (3.000000, 2.000000, 4.000000);3o Bloco = (5.000000, 2.000000, 3.000000);4o Bloco = (4.000000, 2.000000, 1.000000);5o Bloco = (2.000000, 2.000000, 1.000000);
+
+ ------------
