@@ -4,3 +4,5 @@ decisoes -
 >>> PESQUISA, DADOS
  - mercado de jogos no brasil
     - desenvolvimento x consumo
+
+>>> etapa discreta, etapa float

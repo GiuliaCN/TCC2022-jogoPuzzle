@@ -1,1 +1,5 @@
 - direcoes nao respondem corretamente as vezes (checa errado blocos em relacao ao player)
+
+- game over - seg fault
+
+- ajuste camera

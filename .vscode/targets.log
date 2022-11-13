@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Fri Sep 23 20:53:32 2022
+# Make data base, printed on Thu Oct 20 18:00:05 2022
 
 # Variables
 
@@ -20,8 +20,6 @@ GNOME_SHELL_SESSION_MODE = ubuntu
 SSH_AGENT_LAUNCHER = gnome-keyring
 # environment
 GJS_DEBUG_OUTPUT = stderr
-# environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-6a25e3e6-f299-4777-ac19-f316f8fcb375.sock
 # environment
 LC_NAME = pt_BR.UTF-8
 # environment
@@ -48,17 +46,14 @@ PWD = /home/giulia/Documents/IME/TCC/TCC2022-jogoPuzzle
 XDG_DATA_DIRS = /usr/share/ubuntu:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop
 # automatic
 ^D = $(patsubst %/,%,$(dir $^))
-# environment
-VSCODE_LOG_STACK = false
 # automatic
 %F = $(notdir $%)
 # environment
- 
-VSCODE_CODE_CACHE_PATH = /home/giulia/.config/Code/CachedData/c3511e6c69bb39013c4a4b7b9566ec1ca73fc4d5
+VSCODE_CODE_CACHE_PATH = /home/giulia/.config/Code/CachedData/74b1f979648cc44d385a2286793c226e611f59e7
 # environment
 LANG = C
 # environment
-XAUTHORITY = /run/user/1000/.mutter-Xwaylandauth.MYXKS1
+XAUTHORITY = /run/user/1000/.mutter-Xwaylandauth.IVQVU1
 # default
 .LOADED := 
 # default
@@ -67,8 +62,6 @@ XAUTHORITY = /run/user/1000/.mutter-Xwaylandauth.MYXKS1
 MAKEFLAGS = pqrR
 # makefile
 CURDIR := /home/giulia/Documents/IME/TCC/TCC2022-jogoPuzzle
-# environment
-VSCODE_PIPE_LOGGING = true
 # environment
 APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
 # environment
@@ -94,15 +87,13 @@ MAKEFILE_LIST := Makefile
 # automatic
 @F = $(notdir $@)
 # environment
-VSCODE_VERBOSE_LOGGING = true
-# environment
-VSCODE_PID = 2411
+VSCODE_PID = 16934
 # environment
 XDG_SESSION_TYPE = wayland
 # automatic
 ?D = $(patsubst %/,%,$(dir $?))
 # environment
-SESSION_MANAGER = local/Pandora:@/tmp/.ICE-unix/1792,unix/Pandora:/tmp/.ICE-unix/1792
+SESSION_MANAGER = local/Pandora:@/tmp/.ICE-unix/1841,unix/Pandora:/tmp/.ICE-unix/1841
 # automatic
 *F = $(notdir $*)
 # environment
@@ -144,9 +135,7 @@ LC_MONETARY = pt_BR.UTF-8
 # environment
 LC_TIME = pt_BR.UTF-8
 # environment
-INVOCATION_ID = 96b7a30b8e0c4383b1d7c1d3be2414a3
-# environment
-VSCODE_LOG_NATIVE = false
+INVOCATION_ID = d69121bc4fec4cae8b59d511cb100dc1
 # environment
 USERNAME = giulia
 # environment
@@ -176,7 +165,7 @@ GIO_LAUNCHED_DESKTOP_FILE = /usr/share/applications/code.desktop
 # makefile
 .DEFAULT_GOAL := all
 # environment
-SYSTEMD_EXEC_PID = 1815
+SYSTEMD_EXEC_PID = 1860
 # environment
 DISPLAY = :0
 # environment
@@ -186,11 +175,11 @@ GTK_MODULES = gail:atk-bridge
 # default
 MAKE_VERSION := 4.3
 # environment
-MANAGERPID = 1664
+MANAGERPID = 1712
 # environment
 LC_MEASUREMENT = pt_BR.UTF-8
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 2411
+GIO_LAUNCHED_DESKTOP_FILE_PID = 16934
 # environment
 _ = /usr/share/code/code
 # environment
@@ -200,7 +189,7 @@ XDG_RUNTIME_DIR = /run/user/1000
 # environment
 LC_CTYPE = pt_BR.UTF-8
 # environment
-JOURNAL_STREAM = 8:29575
+JOURNAL_STREAM = 8:30638
 # environment
 XDG_SESSION_CLASS = user
 # environment
@@ -212,7 +201,7 @@ QT_IM_MODULE = ibus
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # environment
-VSCODE_IPC_HOOK = /run/user/1000/vscode-d68942e1-1.67.2-main.sock
+VSCODE_IPC_HOOK = /run/user/1000/vscode-d68942e1-1.71.2-main.sock
 # environment
 IM_CONFIG_PHASE = 1
 # default
@@ -234,7 +223,8 @@ GDMSESSION = ubuntu
 # environment
 LC_IDENTIFICATION = pt_BR.UTF-8
 # variable set hash-table stats:
-# Load=111/1024=11%, Rehash=0, Collisions=4/145=3%
+# Load=106/1024=10%, Rehash=0, Collisions=3/139=2%
+ 
 
 # Pattern-specific Variable Values
 
@@ -242,9 +232,9 @@ LC_IDENTIFICATION = pt_BR.UTF-8
 
 # Directories
 
-# . (device 2052, inode 11407079): 22 files, no impossibilities.
+# . (device 2052, inode 11407079): 23 files, no impossibilities.
 
-# 22 files, no impossibilities in 1 directories.
+# 23 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -254,35 +244,16 @@ LC_IDENTIFICATION = pt_BR.UTF-8
 
 game: Entidades.o drawFunctions.o game.cpp
 #  Implicit rule search has not been done.
-#  Implicit/static pattern stem: ''
-#  Last modified 2022-09-16 19:27:44.661964878
+#  Last modified 2022-10-20 17:46:37.845948468
 #  File has been updated.
-#  Needs to be updated (-q is set).
-# automatic
-# @ := game
-# automatic
-# * := 
-# automatic
-# < := Entidades.o
-# automatic
-# + := Entidades.o drawFunctions.o game.cpp
-# automatic
-# % := 
-# automatic
-# ^ := Entidades.o drawFunctions.o game.cpp
-# automatic
-# ? := Entidades.o game.cpp
-# automatic
-# | := 
-# variable set hash-table stats:
-# Load=8/32=25%, Rehash=0, Collisions=1/12=8%
+#  Successfully updated.
 #  recipe to execute (from 'Makefile', line 10):
 	$(CXX) Entidades.o drawFunctions.o -O3 game.cpp -lm -lSDL2 -lSDL2_image -lSDL2_gfx -lSDL2_mixer -lGL -lGLU -o game
 
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-09-23 20:52:53.675344055
+#  Last modified 2022-10-20 17:59:39.895963115
 #  File has been updated.
 #  Successfully updated.
 
@@ -316,11 +287,28 @@ entidades: Entidades.cpp
 all: game
 #  Command line target.
 #  Implicit rule search has not been done.
+#  Implicit/static pattern stem: ''
 #  File does not exist.
 #  File has been updated.
 #  Needs to be updated (-q is set).
+# automatic
+# @ := all
+# automatic
+# * := 
+# automatic
+# < := game
+# automatic
+# + := game
+# automatic
+# % := 
+# automatic
+# ^ := game
+# automatic
+# ? := game
+# automatic
+# | := 
 # variable set hash-table stats:
-# Load=0/32=0%, Rehash=0, Collisions=0/4=0%
+# Load=8/32=25%, Rehash=0, Collisions=1/11=9%
 #  recipe to execute (from 'Makefile', line 2):
 	@echo "DONE"
 
@@ -333,7 +321,7 @@ drawFunctions.cpp:
 # Not a target:
 game.cpp:
 #  Implicit rule search has been done.
-#  Last modified 2022-09-23 20:01:14.880905759
+#  Last modified 2022-10-20 17:26:08.426157867
 #  File has been updated.
 #  Successfully updated.
 
@@ -350,18 +338,18 @@ testes/testeEntidades.cpp:
 #  Modification time never checked.
 #  File has not been updated.
 
-# Not a target:
-Entidades.cpp:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-
-testeE: testes/testeEntidades.cpp Entidades.cpp
+testes: testes/testeEntidades.cpp Entidades.cpp
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
 #  recipe to execute (from 'Makefile', line 19):
 	$(CXX) testes/testeEntidades.cpp Entidades.cpp
+
+# Not a target:
+Entidades.cpp:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 # Not a target:
 .SUFFIXES:
@@ -372,7 +360,7 @@ testeE: testes/testeEntidades.cpp Entidades.cpp
 # Not a target:
 Entidades.o:
 #  Implicit rule search has been done.
-#  Last modified 2022-09-23 20:10:14.585990921
+#  Last modified 2022-10-20 17:46:33.533987435
 #  File has been updated.
 #  Successfully updated.
 
@@ -384,12 +372,12 @@ Entidades.o:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 32 / storage = 320 B / avg = 10 B
-# current buf: size = 8162 B / used = 320 B / count = 32 / avg = 10 B
+# strcache buffers: 1 (0) / strings = 32 / storage = 318 B / avg = 9 B
+# current buf: size = 8162 B / used = 318 B / count = 32 / avg = 9 B
 
-# strcache performance: lookups = 52 / hit rate = 38%
+# strcache performance: lookups = 53 / hit rate = 39%
 # hash-table stats:
-# Load=32/8192=0%, Rehash=0, Collisions=0/52=0%
-# Finished Make data base on Fri Sep 23 20:53:32 2022
+# Load=32/8192=0%, Rehash=0, Collisions=0/53=0%
+# Finished Make data base on Thu Oct 20 18:00:05 2022
 
  
