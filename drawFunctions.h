@@ -13,6 +13,12 @@ void inverte_vetor(int L[4][2]);
 
 void draw_cube(float d, GLuint tex[], int id1, int id2);
 
+void draw_cylinder_z(float radius0,
+		     float radius1,
+		     float z0,
+		     float z1,
+		     int dtheta);
+
 void draw_curved_cylinder_x(float radius0,
 			    float radius1,
 			    float bend_radius,
@@ -151,6 +157,8 @@ void sphere_y(int sectorCount,
 
 
 void DrawFluffy();
+
+void DrawFluffy_hang();
 
 //Red Dragon:
 void DrawRedDragon();

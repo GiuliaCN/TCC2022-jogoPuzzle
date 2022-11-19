@@ -80,6 +80,56 @@ void draw_cube(float d, GLuint tex[], int id1, int id2){
   }
 }
 
+void draw_cylinder_z(float radius0,
+		     float radius1,
+		     float z0,
+		     float z1,
+		     int dtheta){
+  GLfloat angle, x0, y0, x1, y1, xb, yb, zb;
+  float cos_angle, sin_angle;
+  float mag;
+  float C[3];
+  int j;
+  glBegin(GL_QUAD_STRIP);
+  for(j = 0; j <= 360; j+= dtheta){
+    angle = (float)j * (PI / 180.0f);
+    cos_angle = cosf(angle);
+    sin_angle = sinf(angle);
+    y0 = radius0 * cos_angle;
+    x0 = radius0 * sin_angle;
+    y1 = radius1 * cos_angle;
+    x1 = radius1 * sin_angle;
+    
+    C[0] = x0;
+    C[1] = y0;
+    C[2] = 0;
+    mag = magnitude(C);
+    C[0] /= mag;
+    C[1] /= mag;
+    C[2] /= mag;
+    glNormal3f(C[0], C[1], C[2]);
+    yb = y0;
+    xb = x0;
+    zb = z0;
+    glVertex3f( xb, yb, zb );
+    
+    C[0] = x1;
+    C[1] = y1;
+    C[2] = 0;
+    mag = magnitude(C);
+    C[0] /= mag;
+    C[1] /= mag;
+    C[2] /= mag;
+    glNormal3f(C[0], C[1], C[2]);
+    yb = y1;
+    xb = x1;
+    zb = z1;
+    glVertex3f( xb, yb, zb );
+  }
+  glEnd();
+}
+
+
 void draw_curved_cylinder_x(float radius0,
 			    float radius1,
 			    float bend_radius,
@@ -1217,6 +1267,240 @@ void DrawFluffy(){
   */
 }
 
+
+void DrawFluffy_hang(){
+  static GLfloat white[] = { 1.0f, 1.0f,  1.0f, 1.0f };
+  static GLfloat black[] = { 0.0f, 0.0f,  0.0f, 1.0f };
+  static GLfloat  gray[] = { 0.65f, 0.65f,  0.65f, 1.0f };
+  static GLfloat   red[] = { 1.0f, 0.0f,  0.0f, 1.0f };
+  static GLfloat brilho[] = { 128.0 };
+  static GLfloat  opaco[] = { 0.0 };
+  float d = 30.0, a,b,c;
+  static int eye_opening = 200;
+  static int step_eye_opening = 6;
+  static float length_forearm = 0.75;
+  static float step_forearm = 0.00;
+  static float foot_angle = 25.0;
+  
+  glDisable(GL_TEXTURE_2D);
+  glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, white);
+  glPolygonMode(GL_BACK, GL_FILL);
+
+  a = 0.8*d;
+  b = d;
+  c = 0.8*d;
+  glTranslatef( 0.0, b*0.20,  0.0);
+  draw_hairy_ellipsoid(a, d, c, 40);
+
+  glPushMatrix();
+  glRotatef(-90, 0.0, 1.0, 0.0 );
+  draw_ellipsoid_lune(a, b, c, -5, 340, 40);
+  glMaterialfv(GL_FRONT, GL_SHININESS, opaco);
+  draw_ellipsoid_lune(a*0.95, b*0.95, c*0.95, -16,   0, 40);
+  draw_ellipsoid_lune(a*0.95, b*0.95, c*0.95, -40, -18, 40);
+  glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, black);
+  draw_ellipsoid_lune(a*0.94, b*0.94, c*0.94, -40, 0, 40);    
+  glMaterialfv(GL_FRONT, GL_SHININESS, brilho);
+  glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, white);
+  glPopMatrix();
+  glPushMatrix();
+  glRotatef(90, 1.0, 0.0, 0.0 );
+  draw_ellipsoid_lune(a, c, b,   0,  60, 40);
+  draw_ellipsoid_lune(a, c, b, 120, 180, 40);
+  glMaterialfv(GL_FRONT, GL_SHININESS, opaco);
+  glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, black);
+  draw_ellipsoid_lune(a*0.97, c*0.97, b*0.97,  55,  65, 40);
+  draw_ellipsoid_lune(a*0.97, c*0.97, b*0.97, 115, 125, 40);  
+  glMaterialfv(GL_FRONT, GL_SHININESS, brilho);
+  glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, white);
+  glPopMatrix();
+
+  //foot:
+  glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, red);
+
+  glPushMatrix();
+  glTranslatef( a*0.35, -b,  c*0.2);
+  glRotatef(foot_angle, 1.0, 0.0, 0.0 );
+  draw_ellipsoid_lune(a*0.30, b*0.10, c*0.70, 0,  180, 40);
+  glPopMatrix();
+
+  glPushMatrix();
+  glTranslatef( -a*0.35, -b,  c*0.2);
+  glRotatef(foot_angle, 1.0, 0.0, 0.0 );
+  draw_ellipsoid_lune(a*0.30, b*0.10, c*0.70, 0,  180, 40);
+  glPopMatrix();
+
+  //hands:
+  //left arm:
+  glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, white);
+  glPushMatrix();
+  glTranslatef( a*0.95 - 8.0, -c*0.10,  c*0.75 - a*0.25);
+  glRotatef(-50.0, 1.0, 0.0, 0.0);
+  draw_curved_cylinder_x(3.0,
+			 3.0,
+			 8.0, //32.0,
+			 90.0, //50.0,
+			 180.0,
+			 20);
+  glPopMatrix();
+  //left forearm:
+  if(length_forearm > 0.0){
+    glPushMatrix();
+    glTranslatef( a*0.95, -c*0.10,  c*0.75 - a*0.25);
+    glRotatef(-50.0, 1.0, 0.0, 0.0);
+    draw_cylinder_z(3.0,
+		    3.0,
+		    0,
+		    d*length_forearm,
+		    5);
+    glPopMatrix();
+  }
+  //left hand:  
+  glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, red);
+  glPushMatrix();
+  glTranslatef( a*0.95, b*0.7,  c*0.75 + d*0.3);
+  glRotatef(90.0, 0.0, 0.0, 1.0 );
+  glRotatef(90.0, 0.0, 1.0, 0.0 );
+  draw_ellipsoid(a*0.15, b*0.30, c*0.40, 40);
+
+  glTranslatef(-a*0.06, 0.0,  c*0.21); 
+  draw_ellipsoid(a*0.18, b*0.26, c*0.20, 40);
+  glTranslatef( a*0.06, 0.0, -c*0.21);
+
+  glTranslatef( -a*0.045, b*0.2, -c*0.1);  
+  glRotatef(-45.0, 1.0, 0.0, 0.0 );
+  glRotatef(-12.0, 0.0, 1.0, 0.0 );  
+  draw_ellipsoid(a*0.10, b*0.10, c*0.30, 40);
+  glPopMatrix();
+
+  //right arm:
+  glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, white);
+  glPushMatrix();
+  glTranslatef( -a*0.95 + 8.0, -c*0.10,  c*0.75 - a*0.25);
+  glRotatef(-50.0, 1.0, 0.0, 0.0);
+  draw_curved_cylinder_x(3.0,
+			 3.0,
+			 8.0, //32.0,
+			 180.0, //50.0,
+			 270.0,
+			 20);
+  glPopMatrix();
+  //right forearm:
+  if(length_forearm > 0.0){
+    glPushMatrix();
+    glTranslatef( -a*0.95, -c*0.10,  c*0.75 - a*0.25);
+    glRotatef(-50.0, 1.0, 0.0, 0.0);
+    draw_cylinder_z(3.0,
+		    3.0,
+		    0,
+		    d*length_forearm,
+		    5);
+    glPopMatrix();
+  }
+  //right hand:
+  glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, red);
+  glPushMatrix();
+  glTranslatef( -a*0.95, b*0.7,  c*0.75 + d*0.3);
+  glRotatef(-90.0, 0.0, 0.0, 1.0 );
+  glRotatef(-90.0, 0.0, 1.0, 0.0 );
+  draw_ellipsoid(a*0.15, b*0.30, c*0.40, 40);
+
+  glTranslatef( a*0.06, 0.0,  c*0.21); 
+  draw_ellipsoid(a*0.18, b*0.26, c*0.20, 40);
+  glTranslatef(-a*0.06, 0.0, -c*0.21);
+
+  glTranslatef( a*0.045, b*0.2, -c*0.1);  
+  glRotatef(-45.0, 1.0, 0.0, 0.0 );
+  glRotatef(12.0, 0.0, 1.0, 0.0 );  
+  draw_ellipsoid(a*0.10, b*0.10, c*0.30, 40);
+  glPopMatrix();
+
+  //topete:
+  glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, white);
+
+  //topete: (fio central)
+  glPushMatrix();
+  glTranslatef(0.0, b*0.9, c*0.15); //-c*0.5);
+  draw_curved_cylinder_y(2.0,
+			 0.0,
+			 8.0, //32.0,
+			 -20.0, //50.0,
+			 130.0,
+			 20,
+			 4);
+  glPopMatrix();
+  
+  //topete: (fio direito do fluffy)
+  glPushMatrix();
+  glTranslatef(-5.0, b*0.9, c*0.15);
+  glRotatef(30.0, 0.0, 1.0, 0.0 );
+  draw_curved_cylinder_y(2.0,
+			 0.0,
+			 8.0, //32.0,
+			 -20.0, //50.0,
+			 130.0,
+			 20,
+			 4);
+  glPopMatrix();
+
+  //topete: (fio esquerdo do fluffy)
+  glPushMatrix();
+  glTranslatef(5.0, b*0.9, c*0.15);
+  glRotatef(-30.0, 0.0, 1.0, 0.0 );
+  draw_curved_cylinder_y(2.0,
+			 0.0,
+			 8.0, //32.0,
+			 -20.0, //50.0,
+			 130.0,
+			 20,
+			 4);
+  glPopMatrix();
+
+  
+  //cauda:
+  glPushMatrix();
+  glTranslatef(0.0, 0.0, -c*1.05);
+  draw_ellipsoid(d*0.30, d*0.30, d*0.30, 10);
+  glPopMatrix();
+  
+  //sobrancelha:
+  glPushMatrix();
+  glTranslatef(-a*0.15, b*0.55, c*0.75);
+  glRotatef(-35.0, 0.0, 0.0, 1.0 );
+  glRotatef(-30.0, 0.0, 1.0, 0.0 );
+  draw_ellipsoid(d*0.25, d*0.15, d*0.15, 10);
+  glPopMatrix();
+
+  //sobrancelha:
+  glPushMatrix();
+  glTranslatef(a*0.15, b*0.55, c*0.75);
+  glRotatef(35.0, 0.0, 0.0, 1.0 );
+  glRotatef(30.0, 0.0, 1.0, 0.0 );
+  draw_ellipsoid(d*0.25, d*0.15, d*0.15, 10);
+  glPopMatrix();
+
+  //olhos:
+  glMaterialfv(GL_FRONT, GL_SHININESS, brilho);
+  glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, gray);
+  glPushMatrix();
+  glTranslatef(0.0, b*0.25, c*0.5);
+  glRotatef(90, 0.0, 1.0, 0.0 );
+  draw_ellipsoid_lune(d*0.45, d*0.45, d*0.45, 270-eye_opening/2, 270+eye_opening/2, 10);
+  glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, white);
+  draw_ellipsoid_lune(d*0.45, d*0.45, d*0.45, 270+eye_opening/2-360, 270-eye_opening/2, 10);
+  glPopMatrix();
+
+  if(eye_opening > 340 || eye_opening < 200)
+    step_eye_opening = -step_eye_opening;
+  eye_opening += step_eye_opening;
+
+  //focinho:
+  glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, black);
+  glPushMatrix();
+  glTranslatef(0.0, b*0.15, c*1.05); //0.0, 0.0, c
+  draw_ellipsoid(d*0.20, d*0.10, d*0.15, 10);
+  glPopMatrix();
+}
 
 
 //Red Dragon:

@@ -189,6 +189,56 @@ void entidade::mexe(posicao _posLim, velocidade _vel){
     setPosLim(_posLim);
 }
 
+// ------------------------------------------ CAMERA -----------------------------------
+
+camera::camera(){}
+
+string camera::CameraToString(){
+    string s = "";
+    s += "Camera (";
+    s += "Pos = " + pos->PosicaoToString();
+    s += ", Vel = " + vel->VelocidadeToString();
+    s += ", Estado = " + EstadoToString();
+    s += ", theta = " + to_string(theta_y);
+    s += ")";
+    return s;
+}
+
+void camera::SetCamera(string s){
+    pos = new posicao;
+    posLim = new posicao;
+    vel = new velocidade;
+    estado = Parado;
+
+    posicao p;
+    string delim = ",";
+
+    auto start = 0U;
+    auto end = s.find(delim);
+    p.x = stoi (s.substr(start, end - start));
+    start = end + delim.length();
+    end = s.find(delim, start);
+
+    p.y = stoi (s.substr(start, end - start));
+    start = end + delim.length();
+    end = s.find(delim, start);
+
+    p.z = stoi (s.substr(start, end - start));
+    start = end + delim.length();
+    end = s.find(delim, start);
+
+    theta_y = stoi (s.substr(start, end));
+    start = end + delim.length();
+    end = s.find(delim, start);
+
+    //theta_y = -30;
+
+    setPos(p);
+
+    setVel(velocidade(0,0,0));
+
+}
+
 
 // ------------------------------------------ PLAYER -----------------------------------
 
@@ -198,6 +248,12 @@ void player::setRotacao(velocidade r){
     rotacao->vx = r.vx;
     rotacao->vy = r.vy;
     rotacao->vz = r.vz;
+}
+
+void player::setAgarrar(posicao p){
+    posAgarrar->x = p.x;
+    posAgarrar->y = p.y;
+    posAgarrar->z = p.z;
 }
 
 string player::EstadoPlayerToString(){
@@ -213,6 +269,10 @@ string player::EstadoPlayerToString(){
     
     case Normal:
         return "Normal";
+        break;
+    
+    case TentaPendurar:
+        return "TentaPendurar";
         break;
     
     default:
@@ -239,6 +299,7 @@ void player::SetPlayer(string s){
     posLim = new posicao;
     vel = new velocidade;
     rotacao = new velocidade;
+    posAgarrar = new posicao;
     estado = Parado;
     estado2 = Normal;
 
@@ -269,9 +330,9 @@ void player::SetPlayer(string s){
 
 void player::Rotaciona(bool clockwise){
     if (clockwise)
-        iRotacao = (iRotacao+1)%4;
-    else
         iRotacao = (iRotacao+3)%4;
+    else
+        iRotacao = (iRotacao+1)%4;
 
     setRotacao(rotacoes[iRotacao]);
 }
@@ -592,7 +653,8 @@ void torre::SetTorre(string filename){
     arquivo.open (filename);
     if (!arquivo.is_open()) perror ("Error opening file");
 
-    // primeira linha eh info do player (pega e joga fora)
+    // 2 primeiras linhas sao info do player e camera (pega e joga fora)
+    getline (arquivo,line);
     getline (arquivo,line);
     //cout << line << "\n";
 
@@ -732,16 +794,34 @@ LLBlocos * torre::updateAndar(andar * a){
 
 tipoColisao torre::ChecaColisaoPlayer(player * pl){
     posicao pAprox = pl->pos->Aproximado();
+    block * b;
+    block * b2;
     if (pAprox == posicao(pl->pos)) // se esta proximo o bastante para poder interagir
     {
         // bloco esmagou
         if (retornaBloco(pAprox)!=nullptr) return ColisaoAgressiva;
 
-        // tem bloco embaixo
-        if (retornaBloco(pAprox + posicao(0,-1,0))!=nullptr) return ColisaoDeApoio;
+        // tem bloco na frente
+        // if (retornaBloco(pAprox + pl->rotacao)!=nullptr && retornaBloco(pAprox + posicao(0,-1,0))!=nullptr) 
+        //     return ColisaoMista;
 
         // tem bloco na frente
-        if (retornaBloco(pAprox + pl->rotacao)!=nullptr) return ColisaoLateral;
+        b2 = retornaBloco(pAprox + pl->rotacao);
+        if (pl->estado2 ==TentaPendurar
+             && b2 !=nullptr
+                && posicao(b2->pos) == posicao (pl->posAgarrar)) 
+                return ColisaoLateral;
+
+        // tem bloco na frente
+        if (pl->estado2 ==Pendurado &&
+             retornaBloco(pAprox + pl->rotacao)!=nullptr) return ColisaoLateral;
+
+        // checa vitoria
+        b = retornaBloco(pAprox + posicao(0,-1,0));
+        if (b!=nullptr && b->tipo == FinalFase) return Vitoria;
+
+        // tem bloco embaixo
+        if (retornaBloco(pAprox + posicao(0,-1,0))!=nullptr) return ColisaoDeApoio;  
 
     }
     return SemColisao;

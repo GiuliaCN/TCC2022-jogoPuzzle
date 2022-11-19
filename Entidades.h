@@ -7,7 +7,7 @@
 using namespace std;
 
 #define NUM_DESFAZ 9
-#define eps 0.1
+#define eps 0.05
 
 #define velQueda 0.1
 #define velEnt 0.1
@@ -17,10 +17,11 @@ using namespace std;
  * ColisaoDeApoio = bloco diretamente abaixo e em cruz ()
  * ColisaoLateral = bloco em frente do player
  * ColisaoAgressiva = entidades no mesmo lugar
+ * ColisaoMista = colisao lateral + colisao apoio
 */
-enum tipoColisao { SemColisao, ColisaoDeApoio, ColisaoLateral, ColisaoAgressiva };
+enum tipoColisao { SemColisao, ColisaoDeApoio, ColisaoLateral, ColisaoAgressiva, ColisaoMista, Vitoria };
 
-enum estadosPlayer { Morto, Pendurado, Normal};
+enum estadosPlayer { Morto, Pendurado, Normal, TentaPendurar};
 
 enum tipoBloco { Movel, Fixo, FinalFase};
 /*
@@ -153,6 +154,17 @@ class entidade
 
 class camera: public entidade
 {
+    public:
+    camera();
+    ~camera();
+
+    double theta_y;
+
+    void SetCamera(string s);
+    void ZoomIn();
+    void ZoomOut();
+
+    string CameraToString();
 
 };
 
@@ -167,6 +179,9 @@ class player: public entidade
 
         velocidade * rotacao;
         estadosPlayer estado2;
+        posicao * posAgarrar;
+
+        void setAgarrar (posicao p);
 
         void Rotaciona(bool clockwise);
         //void mexe(posicao _posLim, velocidade _vel);

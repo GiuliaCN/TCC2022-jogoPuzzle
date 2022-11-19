@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Thu Oct 20 18:00:05 2022
+# Make data base, printed on Fri Nov 18 17:55:41 2022
 
 # Variables
 
@@ -43,7 +43,7 @@ PWD = /home/giulia/Documents/IME/TCC/TCC2022-jogoPuzzle
 # automatic
 %D = $(patsubst %/,%,$(dir $%))
 # environment
-XDG_DATA_DIRS = /usr/share/ubuntu:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop
+XDG_DATA_DIRS = /usr/share/ubuntu:/home/giulia/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop
 # automatic
 ^D = $(patsubst %/,%,$(dir $^))
 # automatic
@@ -53,7 +53,7 @@ VSCODE_CODE_CACHE_PATH = /home/giulia/.config/Code/CachedData/74b1f979648cc44d38
 # environment
 LANG = C
 # environment
-XAUTHORITY = /run/user/1000/.mutter-Xwaylandauth.IVQVU1
+XAUTHORITY = /run/user/1000/.mutter-Xwaylandauth.TQHSV1
 # default
 .LOADED := 
 # default
@@ -87,13 +87,13 @@ MAKEFILE_LIST := Makefile
 # automatic
 @F = $(notdir $@)
 # environment
-VSCODE_PID = 16934
+VSCODE_PID = 3206
 # environment
 XDG_SESSION_TYPE = wayland
 # automatic
 ?D = $(patsubst %/,%,$(dir $?))
 # environment
-SESSION_MANAGER = local/Pandora:@/tmp/.ICE-unix/1841,unix/Pandora:/tmp/.ICE-unix/1841
+SESSION_MANAGER = local/Pandora:@/tmp/.ICE-unix/1857,unix/Pandora:/tmp/.ICE-unix/1857
 # automatic
 *F = $(notdir $*)
 # environment
@@ -135,7 +135,7 @@ LC_MONETARY = pt_BR.UTF-8
 # environment
 LC_TIME = pt_BR.UTF-8
 # environment
-INVOCATION_ID = d69121bc4fec4cae8b59d511cb100dc1
+INVOCATION_ID = b5605c602b3b4fb9ba3a799854ebf074
 # environment
 USERNAME = giulia
 # environment
@@ -165,7 +165,7 @@ GIO_LAUNCHED_DESKTOP_FILE = /usr/share/applications/code.desktop
 # makefile
 .DEFAULT_GOAL := all
 # environment
-SYSTEMD_EXEC_PID = 1860
+SYSTEMD_EXEC_PID = 1900
 # environment
 DISPLAY = :0
 # environment
@@ -175,11 +175,11 @@ GTK_MODULES = gail:atk-bridge
 # default
 MAKE_VERSION := 4.3
 # environment
-MANAGERPID = 1712
+MANAGERPID = 1711
 # environment
 LC_MEASUREMENT = pt_BR.UTF-8
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 16934
+GIO_LAUNCHED_DESKTOP_FILE_PID = 3206
 # environment
 _ = /usr/share/code/code
 # environment
@@ -189,7 +189,7 @@ XDG_RUNTIME_DIR = /run/user/1000
 # environment
 LC_CTYPE = pt_BR.UTF-8
 # environment
-JOURNAL_STREAM = 8:30638
+JOURNAL_STREAM = 8:32443
 # environment
 XDG_SESSION_CLASS = user
 # environment
@@ -224,7 +224,6 @@ GDMSESSION = ubuntu
 LC_IDENTIFICATION = pt_BR.UTF-8
 # variable set hash-table stats:
 # Load=106/1024=10%, Rehash=0, Collisions=3/139=2%
- 
 
 # Pattern-specific Variable Values
 
@@ -244,7 +243,7 @@ LC_IDENTIFICATION = pt_BR.UTF-8
 
 game: Entidades.o drawFunctions.o game.cpp
 #  Implicit rule search has not been done.
-#  Last modified 2022-10-20 17:46:37.845948468
+#  Last modified 2022-11-14 21:09:58.824054504
 #  File has been updated.
 #  Successfully updated.
 #  recipe to execute (from 'Makefile', line 10):
@@ -292,6 +291,7 @@ all: game
 #  File has been updated.
 #  Needs to be updated (-q is set).
 # automatic
+ 
 # @ := all
 # automatic
 # * := 
@@ -321,14 +321,14 @@ drawFunctions.cpp:
 # Not a target:
 game.cpp:
 #  Implicit rule search has been done.
-#  Last modified 2022-10-20 17:26:08.426157867
+#  Last modified 2022-11-14 21:09:51.008075814
 #  File has been updated.
 #  Successfully updated.
 
 # Not a target:
 drawFunctions.o:
 #  Implicit rule search has been done.
-#  Last modified 2022-08-22 01:52:24.437880865
+#  Last modified 2022-11-14 18:58:56.17745885
 #  File has been updated.
 #  Successfully updated.
 
@@ -360,7 +360,7 @@ Entidades.cpp:
 # Not a target:
 Entidades.o:
 #  Implicit rule search has been done.
-#  Last modified 2022-10-20 17:46:33.533987435
+#  Last modified 2022-11-14 21:09:15.248173295
 #  File has been updated.
 #  Successfully updated.
 
@@ -378,6 +378,6 @@ Entidades.o:
 # strcache performance: lookups = 53 / hit rate = 39%
 # hash-table stats:
 # Load=32/8192=0%, Rehash=0, Collisions=0/53=0%
-# Finished Make data base on Thu Oct 20 18:00:05 2022
+# Finished Make data base on Fri Nov 18 17:55:41 2022
 
  

@@ -1,21 +1,16 @@
 Log
 
-Entrou player front
-
-Sem bloco na frente do player
-player anda
-
-Entrou player back
+move_player_back >> Entrou player back
 
 Sem bloco atras do player
 
-Bloco (Pos = (3.000000, 2.000000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+Bloco (Pos = (6.000000, 2.000000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
 
  Colisao de apoio 
 
  lista: Numero de blocos =0 ;
 
- andar: Andar id =2 ;Numero de blocos =4 ;1o Bloco = (3.000000, 2.000000, 2.000000);2o Bloco = (5.000000, 2.000000, 3.000000);3o Bloco = (4.000000, 2.000000, 1.000000);4o Bloco = (2.000000, 2.000000, 1.000000);
+ andar: Andar id =2 ;Numero de blocos =3 ;1o Bloco = (6.000000, 2.000000, 2.000000);2o Bloco = (5.000000, 2.000000, 3.000000);3o Bloco = (5.000000, 2.000000, 1.000000);
 
  ------------
 
@@ -23,63 +18,19 @@ Entrou Update do andar_id=3
 
  Dando Update em andar
  
- Andar Atual antes: Andar id =3 ;Numero de blocos =3 ;1o Bloco = (3.000000, 3.000000, 2.000000);2o Bloco = (3.000000, 3.000000, 1.000000);3o Bloco = (2.000000, 3.000000, 1.000000);
+ Andar Atual antes: Andar id =3 ;Numero de blocos =4 ;1o Bloco = (5.000000, 3.000000, 4.000000);2o Bloco = (5.000000, 3.000000, 3.000000);3o Bloco = (5.000000, 3.000000, 2.000000);4o Bloco = (5.000000, 3.000000, 1.000000);
 
- checa suporte de Bloco (Pos = (3.000000, 3.000000, 2.000000), Vel = (566185184, 32760, 566185184), Estado = Parado)
+ checa suporte de Bloco (Pos = (5.000000, 3.000000, 4.000000), Vel = (1504516668, 5, 0), Estado = Parado)
 
- checa suporte de Bloco (Pos = (3.000000, 3.000000, 1.000000), Vel = (566185232, 32760, -841950688), Estado = Parado)
+ checa suporte de Bloco (Pos = (5.000000, 3.000000, 3.000000), Vel = (-786346736, 32585, -786346736), Estado = Parado)
 
- checa suporte de Bloco (Pos = (2.000000, 3.000000, 1.000000), Vel = (566185184, 32760, 566185184), Estado = Parado)
+ checa suporte de Bloco (Pos = (5.000000, 3.000000, 2.000000), Vel = (1504516963, 5, 0), Estado = Parado)
 
- Andar atual depois: Andar id =3 ;Numero de blocos =3 ;1o Bloco = (3.000000, 3.000000, 2.000000);2o Bloco = (3.000000, 3.000000, 1.000000);3o Bloco = (2.000000, 3.000000, 1.000000);
+ checa suporte de Bloco (Pos = (5.000000, 3.000000, 1.000000), Vel = (-786346736, 32585, -786346736), Estado = Parado)
 
-Entrou player back
+ Andar atual depois: Andar id =3 ;Numero de blocos =4 ;1o Bloco = (5.000000, 3.000000, 4.000000);2o Bloco = (5.000000, 3.000000, 3.000000);3o Bloco = (5.000000, 3.000000, 2.000000);4o Bloco = (5.000000, 3.000000, 1.000000);
 
-Sem bloco atras do player
-
-Bloco (Pos = (3.000000, 2.000000, 3.000000), Vel = (0, -1, 0), Estado = Caindo) 
-
- Colisao de apoio 
-
- lista: Numero de blocos =0 ;
-
- andar: Andar id =2 ;Numero de blocos =4 ;1o Bloco = (3.000000, 2.000000, 3.000000);2o Bloco = (5.000000, 2.000000, 3.000000);3o Bloco = (4.000000, 2.000000, 1.000000);4o Bloco = (2.000000, 2.000000, 1.000000);
-
- ------------
-
-Entrou Update do andar_id=3
-
- Dando Update em andar
- 
- Andar Atual antes: Andar id =3 ;Numero de blocos =3 ;1o Bloco = (3.000000, 3.000000, 2.000000);2o Bloco = (3.000000, 3.000000, 1.000000);3o Bloco = (2.000000, 3.000000, 1.000000);
-
- checa suporte de Bloco (Pos = (3.000000, 3.000000, 2.000000), Vel = (566185184, 32760, 566185184), Estado = Parado)
-
- checa suporte de Bloco (Pos = (3.000000, 3.000000, 1.000000), Vel = (566185232, 32760, -841950688), Estado = Parado)
-
- checa suporte de Bloco (Pos = (2.000000, 3.000000, 1.000000), Vel = (566185184, 32760, 566185184), Estado = Parado)
-
- Andar atual depois: Andar id =3 ;Numero de blocos =3 ;1o Bloco = (3.000000, 3.000000, 2.000000);2o Bloco = (3.000000, 3.000000, 1.000000);3o Bloco = (2.000000, 3.000000, 1.000000);
-
-Entrou player front
-
-Sem bloco na frente do player
-player anda
-
-Entrou player front
-
-Sem bloco na frente do player
-player anda
-
-Entrou player front
-
-Sem bloco na frente do player
-player anda
-
-Entrou player front
-
-Sem bloco na frente do player
-player anda
+Entrou player sideways
 
 Entrou player front
 
@@ -87,84 +38,325 @@ Entrou player front
 
  ChecaSePodeSubir 
 
+ Sobe 
+
 Entrou player front
 
  ComBlocoNaFrente 
 
  ChecaSePodeSubir 
 
+ Sobe 
+
 Entrou player front
 
  ComBlocoNaFrente 
 
- ChecaEmpurrar 
+ ChecaSePodeSubir 
 
- Empurra 
+ Sobe 
 
-Bloco (Pos = (3.000000, 2.000000, 4.000000), Vel = (0, -1, 0), Estado = Caindo) 
+Entrou player front
+
+Sem bloco na frente do player
+player anda
+
+move_player_back >> Entrou player back
+
+Sem bloco atras do player
+
+Bloco (Pos = (5.000000, 4.000000, 3.000000), Vel = (0, -1, 0), Estado = Caindo) 
 
  Colisao de apoio 
 
  lista: Numero de blocos =0 ;
 
- andar: Andar id =2 ;Numero de blocos =4 ;1o Bloco = (3.000000, 2.000000, 4.000000);2o Bloco = (5.000000, 2.000000, 3.000000);3o Bloco = (4.000000, 2.000000, 1.000000);4o Bloco = (2.000000, 2.000000, 1.000000);
+ andar: Andar id =4 ;Numero de blocos =2 ;1o Bloco = (5.000000, 4.000000, 3.000000);2o Bloco = (4.000000, 4.000000, 4.000000);
 
  ------------
 
-Entrou Update do andar_id=3
+Entrou Update do andar_id=5
 
  Dando Update em andar
  
- Andar Atual antes: Andar id =3 ;Numero de blocos =3 ;1o Bloco = (3.000000, 3.000000, 2.000000);2o Bloco = (3.000000, 3.000000, 1.000000);3o Bloco = (2.000000, 3.000000, 1.000000);
+ Andar Atual antes: Andar id =5 ;Numero de blocos =3 ;1o Bloco = (4.000000, 5.000000, 4.000000);2o Bloco = (4.000000, 5.000000, 3.000000);3o Bloco = (4.000000, 5.000000, 2.000000);
 
- checa suporte de Bloco (Pos = (3.000000, 3.000000, 2.000000), Vel = (566185184, 32760, 566185184), Estado = Parado)
+ checa suporte de Bloco (Pos = (4.000000, 5.000000, 4.000000), Vel = (-786346784, 32585, -786346784), Estado = Parado)
+
+ checa suporte de Bloco (Pos = (4.000000, 5.000000, 3.000000), Vel = (-786346784, 32585, -786346784), Estado = Parado)
+
+ checa suporte de Bloco (Pos = (4.000000, 5.000000, 2.000000), Vel = (-786346784, 32585, -786346784), Estado = Parado)
 
  cai bloco 
  
- checa suporte de Bloco (Pos = (3.000000, 3.000000, 1.000000), Vel = (566185232, 32760, -841950688), Estado = Parado)
-
- checa suporte de Bloco (Pos = (2.000000, 3.000000, 1.000000), Vel = (566185184, 32760, 566185184), Estado = Parado)
-
- Andar atual depois: Andar id =3 ;Numero de blocos =2 ;1o Bloco = (3.000000, 3.000000, 1.000000);2o Bloco = (2.000000, 3.000000, 1.000000);
+ Andar atual depois: Andar id =5 ;Numero de blocos =2 ;1o Bloco = (4.000000, 5.000000, 4.000000);2o Bloco = (4.000000, 5.000000, 3.000000);
 
  houve mudanca 
  
-Entrou Update do andar_id=4
+Entrou Update do andar_id=6
 
  Dando Update em andar
  
- Andar Atual antes: Andar id =4 ;Numero de blocos =2 ;1o Bloco = (3.000000, 4.000000, 2.000000);2o Bloco = (2.000000, 4.000000, 1.000000);
+ Andar Atual antes: Andar id =6 ;Numero de blocos =3 ;1o Bloco = (4.000000, 6.000000, 1.000000);2o Bloco = (3.000000, 6.000000, 4.000000);3o Bloco = (3.000000, 6.000000, 3.000000);
 
- checa suporte de Bloco (Pos = (3.000000, 4.000000, 2.000000), Vel = (566185232, 32760, -841956400), Estado = Parado)
+ checa suporte de Bloco (Pos = (4.000000, 6.000000, 1.000000), Vel = (-786346784, 32585, -786346784), Estado = Parado)
 
- checa suporte de Bloco (Pos = (2.000000, 4.000000, 1.000000), Vel = (566185184, 32760, 566185184), Estado = Parado)
+ cai bloco 
+ 
+ checa suporte de Bloco (Pos = (3.000000, 6.000000, 4.000000), Vel = (-786346752, 32585, -786346752), Estado = Parado)
 
- Andar atual depois: Andar id =4 ;Numero de blocos =2 ;1o Bloco = (3.000000, 4.000000, 2.000000);2o Bloco = (2.000000, 4.000000, 1.000000);
+ checa suporte de Bloco (Pos = (3.000000, 6.000000, 3.000000), Vel = (-786346784, 32585, -786346784), Estado = Parado)
 
-Bloco (Pos = (3.000000, 3.000000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+ Andar atual depois: Andar id =6 ;Numero de blocos =2 ;1o Bloco = (3.000000, 6.000000, 4.000000);2o Bloco = (3.000000, 6.000000, 3.000000);
 
-Bloco (Pos = (3.000000, 2.900000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+ houve mudanca 
+ 
+Entrou Update do andar_id=7
 
-Bloco (Pos = (3.000000, 2.800000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+ Dando Update em andar
+ 
+ Andar Atual antes: Andar id =7 ;Numero de blocos =3 ;1o Bloco = (4.000000, 7.000000, 1.000000);2o Bloco = (3.000000, 7.000000, 4.000000);3o Bloco = (3.000000, 7.000000, 3.000000);
 
-Bloco (Pos = (3.000000, 2.700000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+ checa suporte de Bloco (Pos = (4.000000, 7.000000, 1.000000), Vel = (-786346784, 32585, -786346784), Estado = Parado)
 
-Bloco (Pos = (3.000000, 2.600000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+ cai bloco 
+ 
+ checa suporte de Bloco (Pos = (3.000000, 7.000000, 4.000000), Vel = (-786346752, 32585, -786346752), Estado = Parado)
 
-Bloco (Pos = (3.000000, 2.500000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+ checa suporte de Bloco (Pos = (3.000000, 7.000000, 3.000000), Vel = (-786346784, 32585, -786346784), Estado = Parado)
 
-Bloco (Pos = (3.000000, 2.400000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+ Andar atual depois: Andar id =7 ;Numero de blocos =2 ;1o Bloco = (3.000000, 7.000000, 4.000000);2o Bloco = (3.000000, 7.000000, 3.000000);
 
-Bloco (Pos = (3.000000, 2.300000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+ houve mudanca 
+ 
+Entrou Update do andar_id=8
 
-Bloco (Pos = (3.000000, 2.200000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+ Dando Update em andar
+ 
+ Andar Atual antes: Andar id =8 ;Numero de blocos =1 ;1o Bloco = (2.000000, 8.000000, 4.000000);
 
-Bloco (Pos = (3.000000, 2.100000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+ checa suporte de Bloco (Pos = (2.000000, 8.000000, 4.000000), Vel = (-786346720, 32585, -776526464), Estado = Parado)
+
+ Andar atual depois: Andar id =8 ;Numero de blocos =1 ;1o Bloco = (2.000000, 8.000000, 4.000000);
+
+Bloco (Pos = (4.000000, 7.000000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 6.000000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 5.000000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 6.900000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 5.900000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 4.900000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 6.800000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 5.800000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 4.800000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 6.700000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 5.700000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 4.700000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 6.600000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 5.600000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 4.600000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 6.500000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 5.500000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 4.500000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 6.400000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 5.400000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 4.400000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 6.300000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 5.300000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 4.300000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 6.200000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 5.200000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 4.200000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 6.100000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 5.100000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 4.100000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 6.000000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 5.000000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 4.000000, 2.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+ Colisao de apoio 
+
+ lista: Numero de blocos =2 ;1o Bloco = (4.000000, 6.000000, 1.000000);2o Bloco = (4.000000, 5.000000, 1.000000);
+
+ andar: Andar id =4 ;Numero de blocos =3 ;1o Bloco = (4.000000, 4.000000, 2.000000);2o Bloco = (5.000000, 4.000000, 3.000000);3o Bloco = (4.000000, 4.000000, 4.000000);
+
+ ------------
+
+Bloco (Pos = (4.000000, 5.900000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 4.900000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 5.800000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 4.800000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 5.700000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 4.700000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 5.600000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 4.600000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 5.500000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 4.500000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 5.400000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 4.400000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 5.300000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 4.300000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 5.200000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 4.200000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 5.100000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 4.100000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+Bloco (Pos = (4.000000, 5.000000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+ Colisao de apoio 
+
+ lista: Numero de blocos =1 ;1o Bloco = (4.000000, 4.100000, 1.000000);
+
+ andar: Andar id =5 ;Numero de blocos =3 ;1o Bloco = (4.000000, 5.000000, 1.000000);2o Bloco = (4.000000, 5.000000, 4.000000);3o Bloco = (4.000000, 5.000000, 3.000000);
+
+ ------------
+
+Bloco (Pos = (4.000000, 4.000000, 1.000000), Vel = (0, -1, 0), Estado = Caindo) 
 
  Colisao de apoio 
 
  lista: Numero de blocos =0 ;
 
- andar: Andar id =2 ;Numero de blocos =5 ;1o Bloco = (3.000000, 2.000000, 2.000000);2o Bloco = (3.000000, 2.000000, 4.000000);3o Bloco = (5.000000, 2.000000, 3.000000);4o Bloco = (4.000000, 2.000000, 1.000000);5o Bloco = (2.000000, 2.000000, 1.000000);
+ andar: Andar id =4 ;Numero de blocos =4 ;1o Bloco = (4.000000, 4.000000, 1.000000);2o Bloco = (4.000000, 4.000000, 2.000000);3o Bloco = (5.000000, 4.000000, 3.000000);4o Bloco = (4.000000, 4.000000, 4.000000);
 
  ------------
+
+Entrou player sideways
+
+Entrou player front
+
+ ComBlocoNaFrente 
+
+ ChecaSePodeSubir 
+
+ Sobe 
+
+Entrou player front
+
+ ComBlocoNaFrente 
+
+ ChecaSePodeSubir 
+
+ Sobe 
+
+Entrou player front
+
+ ComBlocoNaFrente 
+
+ ChecaSePodeSubir 
+
+ Sobe 
+
+Entrou player front
+
+Sem bloco na frente do player
+player anda
+
+move_player_back >> Entrou player back
+
+Sem bloco atras do player
+
+Bloco (Pos = (4.000000, 6.000000, 4.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+ Colisao de apoio 
+
+ lista: Numero de blocos =0 ;
+
+ andar: Andar id =6 ;Numero de blocos =2 ;1o Bloco = (4.000000, 6.000000, 4.000000);2o Bloco = (3.000000, 6.000000, 3.000000);
+
+ ------------
+
+Entrou Update do andar_id=7
+
+ Dando Update em andar
+ 
+ Andar Atual antes: Andar id =7 ;Numero de blocos =2 ;1o Bloco = (3.000000, 7.000000, 4.000000);2o Bloco = (3.000000, 7.000000, 3.000000);
+
+ checa suporte de Bloco (Pos = (3.000000, 7.000000, 4.000000), Vel = (-786346752, 32585, -786346752), Estado = Parado)
+
+ checa suporte de Bloco (Pos = (3.000000, 7.000000, 3.000000), Vel = (-786346784, 32585, -786346784), Estado = Parado)
+
+ Andar atual depois: Andar id =7 ;Numero de blocos =2 ;1o Bloco = (3.000000, 7.000000, 4.000000);2o Bloco = (3.000000, 7.000000, 3.000000);
+
+Entrou player sideways
+
+Entrou player front
+
+ ComBlocoNaFrente 
+
+ ChecaSePodeSubir 
+
+ Sobe 
+
+Entrou player front
+
+ ComBlocoNaFrente 
+
+ ChecaSePodeSubir 
+
+ Sobe 
+
+Entrou player front
+
+ ComBlocoNaFrente 
+
+ ChecaSePodeSubir 
+
+ Sobe 
+
+Entrou player front
+
+ ComBlocoNaFrente 
+
+ ChecaSePodeSubir 
+
+ Sobe 
+Vitoria!

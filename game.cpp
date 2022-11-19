@@ -26,19 +26,21 @@ using namespace std;
 #define MAX_Y 30
 #define MAX_X 9 //7
 #define literate true
-#define numTex 6
+#define numTex 9
 
 #define PI 3.142857
 
 // globais
-float theta_y = -30.0;
+//float theta_y = -30.0;
 ofstream logfile;
 map<int, string> teclado;
 bool bloqueiaMov = false;
+int estadoJogo = 1; // 1 = em jogo, 2 = vitoria, 3 = derrota
 
 struct GameData{
   torre * Torre;
   player * Player;
+  camera * Camera;
   int cx = 3;
   int cy = 2;
   int cz = 3;
@@ -69,15 +71,15 @@ SDL_Surface *load_image( char *filename ) {
   return loadedImage; //optimizedImage; 
 }
 
-void ConfiguraMapTeclado(){
-  teclado[1073741906] = "UP";
-  teclado[1073741904] = "LEFT";
-  teclado[1073741905] = "DOWN";
-  teclado[1073741903] = "RIGHT";
-  teclado[1073742048] = "CTRL";
-  teclado[27] = "ESC";
+// void ConfiguraMapTeclado(){
+//   teclado[1073741906] = "UP";
+//   teclado[1073741904] = "LEFT";
+//   teclado[1073741905] = "DOWN";
+//   teclado[1073741903] = "RIGHT";
+//   teclado[1073742048] = "CTRL";
+//   teclado[27] = "ESC";
   
-}
+// }
 
 
 void LoadMap (struct GameData *GD, string filename){
@@ -86,16 +88,23 @@ void LoadMap (struct GameData *GD, string filename){
 
   arquivo.open (filename);
   if (arquivo.is_open()){
-    if (literate) printf("Arquivo Mapa aberto\n");
+    //if (literate) printf("Arquivo Mapa aberto\n");
+
     getline (arquivo,line);
-    if (literate) printf("Set Player\n----\n");
+    //if (literate) printf("Set Player\n----\n");
     GD->Player->SetPlayer(line);
+
+    getline (arquivo,line);
+    //if (literate) printf("Set Camera\n----\n");
+    GD->Camera->SetCamera(line);
+
     arquivo.close();
+
     if (literate)cout << GD->Player->PlayerToString() << endl;
-    if (literate) printf("Set Torre\n");
+    //if (literate) printf("Set Torre\n");
     GD->Torre->SetTorre(filename);
-    if (literate) printf("Mapa criado com sucesso\n");
-    if (literate) cout << GD->Torre->TorreToString() << endl;
+    //if (literate) printf("Mapa criado com sucesso\n");
+    //if (literate) cout << GD->Torre->TorreToString() << endl;
   }  
 
   else logfile << "Erro em abrir arquivo\n"; 
@@ -199,19 +208,20 @@ void move_player_front(struct GameData *GD, bool push){
 }
 
 void move_player_back(struct GameData *GD, bool pull){
-  logfile << "\nEntrou player back\n";
+  logfile << "\nmove_player_back >> Entrou player back\n";
 
   player * Player = GD->Player;
   torre * Torre = GD->Torre;
 
   posicao posDesejada = posicao(Player->pos) - velocidade(Player->rotacao);
   posicao posFrente = posicao(Player->pos) + velocidade(Player->rotacao);
+  posicao posChaoTras = posicao(Player->pos) - velocidade(Player->rotacao) + velocidade(0,-1,0);
 
-  block * b = Torre->retornaBloco(posDesejada);
+  bool podeIrAtras = Torre->retornaBloco(posDesejada) == nullptr;
   block * blocoNaFrente = Torre->retornaBloco(posFrente);
-
+  bool temChaoTras = Torre->retornaBloco(posChaoTras) != nullptr;
   // checa se pode ir para tras
-  if (b == nullptr){
+  if (podeIrAtras){
     logfile << "\nSem bloco atras do player\n";
     // puxa se tiver bloco
     if (pull && blocoNaFrente != nullptr && blocoNaFrente->tipo==Movel){
@@ -223,72 +233,66 @@ void move_player_back(struct GameData *GD, bool pull){
 
     // anda para tras
     Player->mexe(posDesejada,velocidade(Player->rotacao)*(-1));
-
-    // se nao tem chao, fica pendurado
-      //   if (! GD->Torre->andarAtual->ant->coordenadaOcupada(GD->Player->x, GD->Player->z)){
-  //     logfile << "\nse pendura\n";
-  //     GD->Torre->desceAndar();
-  //     GD->Player->andarAtual = GD->Torre->andarAtual->id;
-  //     GD->Player->estaPendurado=true;
-  //   }
+    
+    if (!temChaoTras) {
+      Player->estado2 = TentaPendurar;
+      Player->setAgarrar (posChaoTras + velocidade(Player->rotacao));
+    }
 
   }
 
   else
-    logfile << "\nBloco atras do player\n";
+    logfile << "\nmove_player_back >> Bloco atras do player\n";
 
-  // logfile << "\nEntrou player back\n";
-  // int nx,nz;
-  // nz = GD->Player->z + GD->Player->rotacao[1];
-  // nx = GD->Player->x + GD->Player->rotacao[0];
-
-  // // checa se pode ir para tras
-  // if (! GD->Torre->andarAtual->coordenadaOcupada(GD->Player->x - GD->Player->rotacao[0],GD->Player->z - GD->Player->rotacao[1])) {
-    
-  //   if(GD->Torre->andarAtual->coordenadaOcupada(nx,nz) && pull){
-  //     logfile << "\npuxando bloco\n";
-  //     GD->Torre->andarAtual->RemoveBloco(nx,nz);
-  //     GD->Torre->andarAtual->AdicionaBloco(GD->Player->x,GD->Player->z);
-  //     UpdateAndar(GD,GD->Torre->andarAtual->id + 1);
-  //   }
-
-  //   //anda para tras
-  //   logfile << "\nanda para tras\n";
-  //   GD->Player->x = GD->Player->x - GD->Player->rotacao[0];
-  //   GD->Player->z = GD->Player->z - GD->Player->rotacao[1];
-
-  //   // se nao tem chao, fica pendurado
-  //   if (! GD->Torre->andarAtual->ant->coordenadaOcupada(GD->Player->x, GD->Player->z)){
-  //     logfile << "\nse pendura\n";
-  //     GD->Torre->desceAndar();
-  //     GD->Player->andarAtual = GD->Torre->andarAtual->id;
-  //     GD->Player->estaPendurado=true;
-  //   }
-  // }
-  // else
-  //   logfile << "\nBloco atras do player\n";
-  
 }
 
-void move_player_sideways (struct GameData *GD,bool left){
-//   logfile << "\nEntrou player sideways\n";
-//   int cx, cz;
-//   int dir = GD->Player->iRotacao;
-//   if (left){
-//     // move em direcao anti horaria
-//     dir = (dir+3)%4;
-//   }
-//   else
-//     dir = (dir+1)%4;
+void move_player_sideways (struct GameData *GD,bool right){
+  logfile << "\nEntrou player sideways\n";
+
+  player * Player = GD->Player;
+  torre * Torre = GD->Torre;
+
+  velocidade rotacaoLado;
+
+  int dir = Player->iRotacao;
+  if (right){
+    // move em direcao horaria
+    dir = (dir+1)%4;
+  }
+  else
+    dir = (dir+3)%4;
+    
   
+  rotacaoLado = Player->rotacoes[dir];
 //   cx = GD->Player->rotacoes[dir][0];
 //   cz = GD->Player->rotacoes[dir][1];
 
-//   // se tem bloco para ir
-//   if (GD->Torre->andarAtual->coordenadaOcupada(GD->Player->x + cx + GD->Player->rotacao[0],GD->Player->z +GD->Player->rotacao[1]+ cz)){
-//     GD->Player->x += cx;
-//     GD->Player->z += cz;
-//   }
+  posicao posDesejada = posicao(Player->pos) + velocidade(rotacaoLado);
+
+  posicao apoioDesejado = posicao(Player->pos) + velocidade(rotacaoLado) + velocidade(Player->rotacao);
+
+  bool temApoio = Torre->retornaBloco(apoioDesejado) != nullptr;
+  bool posLivre = Torre->retornaBloco(posDesejada) == nullptr;
+  //logfile << "\nmove_player_sideways >> (temApoio, posLivre) = " << temApoio << posLivre<<"\n";
+  // movimentacao lateral
+  if (temApoio && posLivre){
+    Player->mexe(posDesejada,velocidade(rotacaoLado));
+  }
+  // se for canto
+  else {
+    if (posLivre){
+    Player->mexe(posDesejada + velocidade(Player->rotacao),velocidade(rotacaoLado) + velocidade(Player->rotacao));
+    }
+    if (right) Player->Rotaciona(1);
+    else Player->Rotaciona(0);
+  }
+
+
+  // se tem bloco para ir
+  // if (Torre->retornaBloco(posDesejada) == nullptr){
+  //   GD->Player->x += cx;
+  //   GD->Player->z += cz;
+  // }
 
 //   // se não tem, é um canto
 //   else{
@@ -308,107 +312,171 @@ static void handle_key( SDL_KeyboardEvent *key, struct GameData *GD, bool down){
   //if (literate) logfile << "\nhandle key = " << teclado[key->keysym.sym] << "\n";
   //if (literate) logfile << GD->Player->PlayerToString() + "\n";
   player * Player = GD->Player;
-  if(Player->estado == Parado){
+  camera * Camera = GD->Camera;
+  bool podeMover = Player->estado == Parado;
     //if (literate) logfile << "Pode Mover";
 
-    switch( key->keysym.sym ) {
+  switch( key->keysym.sym ) {
 
-      case SDLK_ESCAPE:
-        if(down) quit_game( 0 );
-        break;
+    case SDLK_ESCAPE:
+      if(down) quit_game( 0 );
+      break;
 
-      case SDLK_SPACE:
-        break;
+    case SDLK_SPACE:
+      break;
 
-      case SDLK_LEFT:
-        if(down) {     
-          if (Player->estado2 == Pendurado){
-            move_player_sideways(GD,1);
-          }
-          else{
-            GD->Player->Rotaciona(0);
-          }
+    case SDLK_LEFT:
+      if(down && podeMover) {     
+        if (Player->estado2 == Pendurado){
+          move_player_sideways(GD,1);
         }
-        break;
-        
-      case SDLK_RIGHT:
-        if(down) {
-          if (Player->estado2 == Pendurado){
-            move_player_sideways(GD,0);
-          }
-          else{
-            GD->Player->Rotaciona(1);
-          }
+        else{
+          GD->Player->Rotaciona(0);
         }
-        break;
-
-      case SDLK_DOWN:
-        if(down) {
-          if (Player->estado2 == Pendurado){
-            Player->estado2 == Normal;
-            Player->cai();
-          }
-          else
-            move_player_back(GD, hold_ctrl);
-        }
-        break;
-
-      case SDLK_UP:
-        if(down) {
-          // if (Player->estado2 == Pendurado)
-          //     Player->estado2 == Normal;
-
-          move_player_front(GD, hold_ctrl);
-        }
-        break;
-
-      case SDLK_z:
-        if(down) theta_y -= 1.0;
-        break;
-
-      case SDLK_x:
-        if(down) theta_y += 1.0;
-        break; 
-
-      case SDLK_LCTRL: //Left Ctrl
-        if(down) hold_ctrl = true;
-        else     hold_ctrl = false;
-        break;
-
-      case SDLK_RALT: //Right Alt
-        break;
-
-      default:
-        break;
       }
-  }
+      break;
+      
+    case SDLK_RIGHT:
+      if(down && podeMover) {
+        if (Player->estado2 == Pendurado){
+          move_player_sideways(GD,0);
+        }
+        else{
+          GD->Player->Rotaciona(1);
+        }
+      }
+      break;
+
+    case SDLK_DOWN:
+      if(down && podeMover) {
+        if (Player->estado2 == Pendurado){
+          Player->estado2 = Normal;
+          Player->cai();
+          logfile << "\n handle_key >> solta da beirada \n";
+          logfile << Player->PlayerToString();
+          //Player->mexe(posicao(Player->pos) + velocidade(0,-1,0),velocidade(0,-1,0));
+        }
+        else
+          move_player_back(GD, hold_ctrl);
+      }
+      break;
+
+    case SDLK_UP:
+      if(down && podeMover) {
+        if (Player->estado2 == Pendurado)
+            Player->estado2 = Normal;
+
+        move_player_front(GD, hold_ctrl);
+      }
+      break;
+
+    case SDLK_LCTRL: //Left Ctrl
+      if(down) hold_ctrl = true;
+      else     hold_ctrl = false;
+      break;
+
+    case SDLK_RALT: //Right Alt
+      break;
+
+    // camera
+    case SDLK_z: // controle de rotacao
+      if(down) Camera->theta_y += 1.0;
+      break;
+
+    case SDLK_x:
+      if(down) Camera->theta_y -= 1.0;
+      break; 
+      
+    case SDLK_a: // controle no plano
+      if(down) {
+        Camera->setPos(posicao(Camera->pos)+posicao(1,0,0));
+      }
+      break;
+
+    case SDLK_s:
+      if(down) {
+        Camera->setPos(posicao(Camera->pos)+posicao(-1,0,0));
+      }
+      break; 
+      
+    case SDLK_d: // controle de altura
+      if(down) {
+        Camera->setPos(posicao(Camera->pos)+posicao(0,1,0));
+      }
+      break;
+
+    case SDLK_f:
+      if(down) {
+        Camera->setPos(posicao(Camera->pos)+posicao(0,-1,0));
+      }
+      break; 
+
+    case SDLK_g: //
+      if(down) Camera->setPos(posicao(Camera->pos)+posicao(0,0,1));
+      break;
+
+    case SDLK_h:
+      if(down) Camera->setPos(posicao(Camera->pos)+posicao(0,0,-1));
+      break; 
+    case SDLK_p:
+      if(down) {
+        logfile <<"\n" << Camera->CameraToString() << "\n";
+        }
+      break; 
+
+    default:
+      break;
+    }
+  
+}
+
+// update camera
+static void UpdateCamera(camera * Camera){
+  Camera->atualizaPos();
 }
 
 // update player
 static void UpdatePlayer(player * Player, torre * Torre){
   // update player
   //logfile << Player->PlayerToString() << "\n";
+  tipoColisao colisaoTorre;
+  colisaoTorre = Torre->ChecaColisaoPlayer(Player);
   if (Player->pos->y < -2){
-    logfile << "\n------Game Over------\n";
+    logfile << "\n Player caiu do mapa \n";
+    estadoJogo = 3;
   }
-  tipoColisao colisaoTorre = Torre->ChecaColisaoPlayer(Player); // operacao cara?
+
+  if (colisaoTorre == ColisaoAgressiva){
+    logfile << "\n Player esmagado \n";
+    estadoJogo = 3;
+  }
+  //logfile << "\n UpdatePlayer >> colisao com torre = " << colisaoTorre <<"\n";
   switch (Player->estado)
   {
   case Caindo:
-    if (colisaoTorre == ColisaoLateral) {
-      // se pendurar
+    switch (colisaoTorre)
+    {
+    case ColisaoDeApoio:
       Player->para();
-      //Player->estado2 = Pendurado;
-    }
-    else if (colisaoTorre == ColisaoDeApoio){
+      //Player->estado2 = Normal;
+      break;
+
+    case ColisaoLateral:
+      Player->estado2 = Pendurado;
       Player->para();
+      break;
+
+    case Vitoria:
+      estadoJogo = 2;
+      break;
+    
+    default:
+      Player->atualizaPos();
+      break;
     }
-    else Player->atualizaPos();
+
+
     break;
-
-  // case Parado:
-
-  //   break;
 
   case Movimento:
     Player->atualizaPos();
@@ -467,6 +535,7 @@ static void process_events(struct GameData *GD){
     /* Our SDL event placeholder. */
     SDL_Event event;
 
+    //UpdateCamera(GD->Camera);
 
     UpdateLista(GD->ListaUpdate, GD->Torre);
 
@@ -520,14 +589,6 @@ void fix_player_direction(player * Player){
   default:
     break;
   }
-  // if(Player->rotacao[0] == 0 && Player->rotacao[1]  == 1)
-  //   return;
-  // else if(Player->rotacao[0]  == 0 && Player->rotacao[1] == -1)
-  //   glRotatef(180.0, 0.0, 1.0, 0.0 );
-  // else if(Player->rotacao[0]  == -1 && Player->rotacao[1] == 0)
-  //   glRotatef(-90.0, 0.0, 1.0, 0.0 );
-  // else if(Player->rotacao[0]  == 1 && Player->rotacao[1] == 0)
-  //   glRotatef(90.0, 0.0, 1.0, 0.0 );
 }
 
 void draw_screen(SDL_Window *Window,
@@ -552,34 +613,35 @@ void draw_screen(SDL_Window *Window,
   // desenha Torre
   for (andar * a = GD->Torre->primeiroAndar; a != nullptr; a = a->prox)
     for (block * b = a->Lista->lista; b != nullptr; b = b->prox){
-      dk = b->pos->x - GD->cx;
-      di = b->pos->y - GD->cy;
-      dj = b->pos->z - GD->cz;
+      dk = b->pos->x - GD->Camera->pos->x;
+      di = b->pos->y - GD->Camera->pos->y;
+      dj = b->pos->z - GD->Camera->pos->z;
       // di = a->id - GD->cy;
       // dk = b->z - GD->cz;
-      SetInitialView(theta_y);      
+      SetInitialView(GD->Camera->theta_y);      
       glTranslatef( dj*d*2.0, di*d*2.0, dk*d*2.0 );
-      if (b->tipo == Fixo) draw_cube(d, tex, 5, 5);
+      if (b->tipo == Fixo) draw_cube(d, tex, 5, 6);
+      if (b->tipo == FinalFase) draw_cube(d, tex, 7, 8);
       else draw_cube(d, tex, 0, 1);
     }
   
   // desenha lista updates
   for (block * b = GD->ListaUpdate->lista; b != nullptr; b = b->prox){
-      dk = b->pos->x - GD->cx;
-      di = b->pos->y - GD->cy;
-      dj = b->pos->z - GD->cz;
-      SetInitialView(theta_y);      
+      dk = b->pos->x - GD->Camera->pos->x;
+      di = b->pos->y - GD->Camera->pos->y;
+      dj = b->pos->z - GD->Camera->pos->z;
+      SetInitialView(GD->Camera->theta_y);      
       glTranslatef( dj*d*2.0, di*d*2.0, dk*d*2.0 );
       if (b->tipo == Fixo) draw_cube(d, tex, 5, 6);
       else draw_cube(d, tex, 0, 1);
   }
 
   // desenha player
-  SetInitialView(theta_y);
+  SetInitialView(GD->Camera->theta_y);
   glTranslatef( 
-    (GD->Player->pos->z - GD->cx)*d*2.0,
-		(GD->Player->pos->y - GD->cy)*d*2.0,
-		(GD->Player->pos->x - GD->cz)*d*2.0);
+    (GD->Player->pos->z - GD->Camera->pos->z)*d*2.0,
+		(GD->Player->pos->y - GD->Camera->pos->y)*d*2.0,
+		(GD->Player->pos->x - GD->Camera->pos->x)*d*2.0);
   fix_player_direction(GD->Player);
   DrawFluffy();
  
@@ -638,17 +700,18 @@ static void setup_opengl( int width, int height ){
 
 
 int main( int argc, char* argv[] ){
-  if (literate) printf("Cria estruturas\n");
+  //if (literate) printf("Cria estruturas\n");
   struct GameData GD;
   GD.Player = new player;
   GD.Torre = new torre;
   GD.ListaUpdate = new LLBlocos;
+  GD.Camera = new camera;
 
   logfile.open ("logfile.txt");
   logfile << "Log\n";
 
-  ConfiguraMapTeclado();
-    if (literate) printf("Configura SDL\n");
+  // ConfiguraMapTeclado();
+  //  if (literate) printf("Configura SDL\n");
   /* Dimensions of our window. */
   int width =  1366; //1067; //512; //640;
   int height = 768; //600; //288; //480;
@@ -787,34 +850,77 @@ int main( int argc, char* argv[] ){
 		  GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D,
 		  GL_TEXTURE_MIN_FILTER,
-		  GL_LINEAR);
-  
+		  GL_LINEAR);  
   img = load_image((char *)"texture/block-fixo/1.png");
   glTexImage2D(GL_TEXTURE_2D, 0,
 	       GL_RGBA, 512, 512, 0,
 	       GL_RGBA, GL_UNSIGNED_BYTE,
 	       img->pixels);
-
+  glBindTexture(GL_TEXTURE_2D, tex[6]);
+  glTexParameteri(GL_TEXTURE_2D,
+		  GL_TEXTURE_MAG_FILTER,
+		  GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,
+		  GL_TEXTURE_MIN_FILTER,
+		  GL_LINEAR);  
   img = load_image((char *)"texture/block-fixo/5.png");
   glTexImage2D(GL_TEXTURE_2D, 0,
 	       GL_RGBA, 512, 512, 0,
 	       GL_RGBA, GL_UNSIGNED_BYTE,
 	       img->pixels);
 
+// bloco final
+  glBindTexture(GL_TEXTURE_2D, tex[7]);
+  glTexParameteri(GL_TEXTURE_2D,
+		  GL_TEXTURE_MAG_FILTER,
+		  GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,
+		  GL_TEXTURE_MIN_FILTER,
+		  GL_LINEAR);  
+  img = load_image((char *)"texture/block_final/1.png");
+  glTexImage2D(GL_TEXTURE_2D, 0,
+	       GL_RGBA, 512, 512, 0,
+	       GL_RGBA, GL_UNSIGNED_BYTE,
+	       img->pixels);
+// ---
+  glBindTexture(GL_TEXTURE_2D, tex[8]);
+  glTexParameteri(GL_TEXTURE_2D,
+		  GL_TEXTURE_MAG_FILTER,
+		  GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,
+		  GL_TEXTURE_MIN_FILTER,
+		  GL_LINEAR);  
+  img = load_image((char *)"texture/block_final/2.png");
+  glTexImage2D(GL_TEXTURE_2D, 0,
+	       GL_RGBA, 512, 512, 0,
+	       GL_RGBA, GL_UNSIGNED_BYTE,
+	       img->pixels);
+  
+  
+  
   if (literate) printf("Carrega Mapa\n");
-  LoadMap(&GD, "mapa/01.txt");
+  //LoadMap(&GD, "mapa/01.txt");
+  LoadMap(&GD, "mapa/fase01.txt");
   //PrintMap(&GD);
   /*
    * Now we want to begin our normal app process--
    * an event loop with a lot of redrawing.
    */
   if (literate) printf("Comeca jogo\n");
-  while( 1 ) {
+  while( estadoJogo == 1 ) {
     /* Process incoming events. */
     process_events(&GD);
 
     /* Draw the screen. */
     draw_screen(Window, &GD, tex);
+  }
+  if (estadoJogo == 2){
+    printf("Vitoria!\n");
+    logfile << "Vitoria!";
+  }
+  else if (estadoJogo == 3){
+    printf("Derrota!\n");
+    logfile << "Derrota!";
   }
   logfile.close();
   /*
@@ -828,3 +934,24 @@ int main( int argc, char* argv[] ){
   return 0;
 }
 
+// music = Mix_LoadMUS(MY_COOL_OGG);
+//   if(music == NULL) {
+//     printf("Unable to load Ogg file: %s\n", Mix_GetError());
+//     exit(1);
+//   }
+  
+//   if(Mix_PlayMusic(music, 0) == -1) {
+//     printf("Unable to play Ogg file: %s\n", Mix_GetError());
+//     exit(1);
+//   }
+// int audio_rate = 22050;
+//   Uint16 audio_format = AUDIO_S16SYS;
+//   int audio_channels = 2;
+//   int audio_buffers = 4096;
+ 
+//   if(Mix_OpenAudio(audio_rate, audio_format, audio_channels, audio_buffers) != 0) {
+//     fprintf(stderr, "Unable to initialize audio: %s\n", Mix_GetError());
+//     exit(1);
+//   }
+
+// static const char *MY_COOL_OGG = "SabatonSmokingSnakes.ogg";
