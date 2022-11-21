@@ -2041,10 +2041,10 @@ void DrawMonsterPlant(GLuint tex[], float theta_y){
   */
 }
 
-void SetInitialView(float theta_y){
+void SetInitialView(float theta_y, float zoom, float rotacao){
   glLoadIdentity( );
-  glTranslatef( 0.0, 0.0, -300.0);
-  glRotatef(35.0, 1.0, 0.0, 0.0 );
+  glTranslatef( 0.0, 0.0, zoom*1.0);
+  glRotatef(rotacao*1.0, 1.0, 0.0, 0.0 );
   glRotatef(theta_y, 0.0, 1.0, 0.0 );
 }
 

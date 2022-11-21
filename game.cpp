@@ -27,6 +27,7 @@ using namespace std;
 #define MAX_X 9 //7
 #define literate true
 #define numTex 9
+#define passoCam 2
 
 #define PI 3.142857
 
@@ -40,10 +41,10 @@ int estadoJogo = 1; // 1 = em jogo, 2 = vitoria, 3 = derrota
 struct GameData{
   torre * Torre;
   player * Player;
-  camera * Camera;
-  int cx = 3;
-  int cy = 2;
-  int cz = 3;
+  //camera * Camera;
+  float zoom;
+  float theta_y;
+  int cx, cz;
   LLBlocos * ListaUpdate;
 };
 
@@ -81,6 +82,38 @@ SDL_Surface *load_image( char *filename ) {
   
 // }
 
+void SetCamera (struct GameData *GD, string s){
+    string delim = ",";
+
+    auto start = 0U;
+    auto end = s.find(delim);
+    GD->cx = stoi (s.substr(start, end - start));
+    start = end + delim.length();
+    end = s.find(delim, start);
+
+    GD->cz = stoi (s.substr(start, end - start));
+    start = end + delim.length();
+    end = s.find(delim, start);
+
+    GD->theta_y = stoi (s.substr(start, end - start));
+    start = end + delim.length();
+    end = s.find(delim, start);
+
+    GD->zoom = stoi (s.substr(start, end));
+    start = end + delim.length();
+    end = s.find(delim, start);
+}
+
+string CameraToString (struct GameData *GD){
+  string s = "";
+  s += "Camera (";
+  s += "cx = " + to_string(GD->cx);
+  s += ", cz = " + to_string(GD->cz);
+  s += ", theta = " + to_string(GD->theta_y);
+  s += ", zoom = " + to_string(GD->zoom);
+  s += ")";
+  return s;
+}
 
 void LoadMap (struct GameData *GD, string filename){
   ifstream arquivo;
@@ -96,7 +129,7 @@ void LoadMap (struct GameData *GD, string filename){
 
     getline (arquivo,line);
     //if (literate) printf("Set Camera\n----\n");
-    GD->Camera->SetCamera(line);
+    SetCamera(GD, line);
 
     arquivo.close();
 
@@ -312,7 +345,7 @@ static void handle_key( SDL_KeyboardEvent *key, struct GameData *GD, bool down){
   //if (literate) logfile << "\nhandle key = " << teclado[key->keysym.sym] << "\n";
   //if (literate) logfile << GD->Player->PlayerToString() + "\n";
   player * Player = GD->Player;
-  camera * Camera = GD->Camera;
+  //camera * Camera = GD->Camera;
   bool podeMover = Player->estado == Parado;
     //if (literate) logfile << "Pode Mover";
 
@@ -380,47 +413,48 @@ static void handle_key( SDL_KeyboardEvent *key, struct GameData *GD, bool down){
 
     // camera
     case SDLK_z: // controle de rotacao
-      if(down) Camera->theta_y += 1.0;
+      if(down) GD->theta_y += 1.0;
       break;
 
     case SDLK_x:
-      if(down) Camera->theta_y -= 1.0;
+      if(down) GD->theta_y -= 1.0;
       break; 
       
     case SDLK_a: // controle no plano
       if(down) {
-        Camera->setPos(posicao(Camera->pos)+posicao(1,0,0));
+        GD->zoom += passoCam;
       }
       break;
 
     case SDLK_s:
       if(down) {
-        Camera->setPos(posicao(Camera->pos)+posicao(-1,0,0));
+        GD->zoom -= passoCam;
       }
       break; 
       
-    case SDLK_d: // controle de altura
-      if(down) {
-        Camera->setPos(posicao(Camera->pos)+posicao(0,1,0));
-      }
-      break;
+    // case SDLK_d: // controle de altura
+    //   if(down) {
+    //     Camera->setPos(posicao(Camera->pos)+posicao(0,1,0));
+    //   }
+    //   break;
 
-    case SDLK_f:
-      if(down) {
-        Camera->setPos(posicao(Camera->pos)+posicao(0,-1,0));
-      }
-      break; 
+    // case SDLK_f:
+    //   if(down) {
+    //     Camera->setPos(posicao(Camera->pos)+posicao(0,-1,0));
+    //   }
+    //   break; 
 
-    case SDLK_g: //
-      if(down) Camera->setPos(posicao(Camera->pos)+posicao(0,0,1));
-      break;
+    // case SDLK_g: //
+    //   if(down) Camera->setPos(posicao(Camera->pos)+posicao(0,0,1));
+    //   break;
 
-    case SDLK_h:
-      if(down) Camera->setPos(posicao(Camera->pos)+posicao(0,0,-1));
-      break; 
+    // case SDLK_h:
+    //   if(down) Camera->setPos(posicao(Camera->pos)+posicao(0,0,-1));
+    //   break; 
+
     case SDLK_p:
       if(down) {
-        logfile <<"\n" << Camera->CameraToString() << "\n";
+        logfile <<"\n" << CameraToString(GD) << "\n";
         }
       break; 
 
@@ -428,11 +462,6 @@ static void handle_key( SDL_KeyboardEvent *key, struct GameData *GD, bool down){
       break;
     }
   
-}
-
-// update camera
-static void UpdateCamera(camera * Camera){
-  Camera->atualizaPos();
 }
 
 // update player
@@ -610,15 +639,19 @@ void draw_screen(SDL_Window *Window,
   // We don't want to modify the projection matrix.
   glMatrixMode( GL_MODELVIEW );
 
+  //GD->Camera->pos->y = GD->Player->pos->y;
+
   // desenha Torre
   for (andar * a = GD->Torre->primeiroAndar; a != nullptr; a = a->prox)
     for (block * b = a->Lista->lista; b != nullptr; b = b->prox){
-      dk = b->pos->x - GD->Camera->pos->x;
-      di = b->pos->y - GD->Camera->pos->y;
-      dj = b->pos->z - GD->Camera->pos->z;
-      // di = a->id - GD->cy;
-      // dk = b->z - GD->cz;
-      SetInitialView(GD->Camera->theta_y);      
+      // dj = b->pos->z - GD->Camera->pos->z;
+      // di = b->pos->y - GD->Camera->pos->y;
+      // dk = b->pos->x - GD->Camera->pos->x;
+      // SetInitialView(GD->Camera->theta_y, 35, GD->zoom);   
+      dj = b->pos->z - GD->cz;
+      di = b->pos->y - GD->Player->pos->y;
+      dk = b->pos->x - GD->cx;
+      SetInitialView(GD->theta_y, GD->zoom);      
       glTranslatef( dj*d*2.0, di*d*2.0, dk*d*2.0 );
       if (b->tipo == Fixo) draw_cube(d, tex, 5, 6);
       if (b->tipo == FinalFase) draw_cube(d, tex, 7, 8);
@@ -627,21 +660,21 @@ void draw_screen(SDL_Window *Window,
   
   // desenha lista updates
   for (block * b = GD->ListaUpdate->lista; b != nullptr; b = b->prox){
-      dk = b->pos->x - GD->Camera->pos->x;
-      di = b->pos->y - GD->Camera->pos->y;
-      dj = b->pos->z - GD->Camera->pos->z;
-      SetInitialView(GD->Camera->theta_y);      
+      dj = b->pos->z - GD->cz;
+      di = b->pos->y - GD->Player->pos->y;      
+      dk = b->pos->x - GD->cx;
+      SetInitialView(GD->theta_y, GD->zoom);       
       glTranslatef( dj*d*2.0, di*d*2.0, dk*d*2.0 );
       if (b->tipo == Fixo) draw_cube(d, tex, 5, 6);
       else draw_cube(d, tex, 0, 1);
   }
 
   // desenha player
-  SetInitialView(GD->Camera->theta_y);
+  SetInitialView(GD->theta_y, GD->zoom);     
   glTranslatef( 
-    (GD->Player->pos->z - GD->Camera->pos->z)*d*2.0,
-		(GD->Player->pos->y - GD->Camera->pos->y)*d*2.0,
-		(GD->Player->pos->x - GD->Camera->pos->x)*d*2.0);
+    (GD->Player->pos->z - GD->cz)*d*2.0,
+		(GD->Player->pos->y - GD->Player->pos->y)*d*2.0,
+		(GD->Player->pos->x - GD->cx)*d*2.0);
   fix_player_direction(GD->Player);
   DrawFluffy();
  
@@ -705,7 +738,11 @@ int main( int argc, char* argv[] ){
   GD.Player = new player;
   GD.Torre = new torre;
   GD.ListaUpdate = new LLBlocos;
-  GD.Camera = new camera;
+  //GD.Camera = new camera;
+  GD.zoom = -300;
+  GD.theta_y = -30.0;
+  GD.cx = 3;
+  GD.cz = 3;
 
   logfile.open ("logfile.txt");
   logfile << "Log\n";

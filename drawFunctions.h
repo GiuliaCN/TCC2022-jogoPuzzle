@@ -165,7 +165,7 @@ void DrawRedDragon();
 
 void DrawMonsterPlant(GLuint tex[], float theta_y);
 
-void SetInitialView(float theta_y);
+void SetInitialView(float theta_y, float zoom = -300, float rotacao = 35);
 
 void triangle(float x1, float y1, float z1,
 	      float x2, float y2, float z2,
