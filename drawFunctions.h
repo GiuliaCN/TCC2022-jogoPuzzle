@@ -158,7 +158,17 @@ void sphere_y(int sectorCount,
 
 void DrawFluffy();
 
+void DrawFluffy_push();
+
+void DrawFluffy_pull();
+
+void DrawFluffy_walk();
+
 void DrawFluffy_hang();
+
+void DrawFluffy_hangright();
+
+void DrawFluffy_hangleft();
 
 //Red Dragon:
 void DrawRedDragon();

@@ -1,3 +1,57 @@
 Log
 
-Camera (cx = 6, cz = 6, theta = -27.000000, zoom = -340.000000)
+Entrou player front
+
+Sem bloco na frente do player
+player anda
+
+Entrou player front
+
+Sem bloco na frente do player
+player anda
+
+move_player_back >> Entrou player back
+
+Sem bloco atras do player
+
+move_player_back >> Entrou player back
+
+Sem bloco atras do player
+
+move_player_back >> Entrou player back
+
+Sem bloco atras do player
+
+Entrou player front
+
+ ComBlocoNaFrente 
+
+ ChecaSePodeSubir 
+
+ Sobe 
+
+move_player_back >> Entrou player back
+
+Sem bloco atras do player
+
+Entrou player sideways
+
+Entrou player front
+
+ ComBlocoNaFrente 
+
+ ChecaSePodeSubir 
+
+Entrou player sideways
+
+Entrou player sideways
+
+Entrou player sideways
+
+Entrou player front
+
+ ComBlocoNaFrente 
+
+ ChecaSePodeSubir 
+
+ Sobe 

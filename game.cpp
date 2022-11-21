@@ -208,6 +208,7 @@ void move_player_front(struct GameData *GD, bool push){
     logfile << "\nSem bloco na frente do player\n";
     logfile << "player anda\n";
     Player->mexe(posDesejada, velocidade(Player->rotacao));
+    Player->animacao = AnimAnda;
   }
   // com bloco na frente
   else {
@@ -220,6 +221,7 @@ void move_player_front(struct GameData *GD, bool push){
       if (Torre->retornaBloco(posBlocoAtras) == nullptr){
         logfile << "\n Empurra \n";
         b->mexe(posBlocoAtras, velocidade(Player->rotacao));
+        Player->animacao = AnimEmpurra;
         Torre->EjetaBloco(b);
         GD->ListaUpdate->AdicionaBloco(b);
         //UpdateAndar(GD->ListaUpdate, Torre, posDesejada.y + 1);
@@ -232,8 +234,10 @@ void move_player_front(struct GameData *GD, bool push){
       posicao posAcima = posicao(Player->pos) + velocidade(0,1,0);
       if (Torre->retornaBloco(posSubir) == nullptr && Torre->retornaBloco(posAcima) == nullptr){
         logfile << "\n Sobe \n";
+        Player->estado2 = Normal;
         //Player->setVel(velocidade(0,1,0));
         Player->mexe(posSubir,velocidade(Player->rotacao) + velocidade(0,1,0));
+        Player->animacao = AnimAnda;//seria anim pula
         //logfile << Player->vel->VelocidadeToString() << "\n";
       }
     }
@@ -261,8 +265,10 @@ void move_player_back(struct GameData *GD, bool pull){
         blocoNaFrente->mexe(posicao(Player->pos), velocidade(Player->rotacao)*(-1));
         Torre->EjetaBloco(blocoNaFrente);
         GD->ListaUpdate->AdicionaBloco(blocoNaFrente);
+        Player->animacao = AnimPuxa;
         //UpdateAndar(GD->ListaUpdate, Torre, blocoNaFrente->pos->y);
     }
+    else Player->animacao = AnimAnda;
 
     // anda para tras
     Player->mexe(posDesejada,velocidade(Player->rotacao)*(-1));
@@ -291,9 +297,12 @@ void move_player_sideways (struct GameData *GD,bool right){
   if (right){
     // move em direcao horaria
     dir = (dir+1)%4;
+    Player->animacao = AnimPenduradoDir;
   }
-  else
+  else {
     dir = (dir+3)%4;
+    Player->animacao = AnimPenduradoEsq;
+  }
     
   
   rotacaoLado = Player->rotacoes[dir];
@@ -396,9 +405,6 @@ static void handle_key( SDL_KeyboardEvent *key, struct GameData *GD, bool down){
 
     case SDLK_UP:
       if(down && podeMover) {
-        if (Player->estado2 == Pendurado)
-            Player->estado2 = Normal;
-
         move_player_front(GD, hold_ctrl);
       }
       break;
@@ -487,12 +493,13 @@ static void UpdatePlayer(player * Player, torre * Torre){
     {
     case ColisaoDeApoio:
       Player->para();
-      //Player->estado2 = Normal;
+      Player->animacao = AnimNormal;
       break;
 
     case ColisaoLateral:
       Player->estado2 = Pendurado;
       Player->para();
+      Player->animacao = AnimPendurado;
       break;
 
     case Vitoria:
@@ -518,7 +525,7 @@ static void UpdatePlayer(player * Player, torre * Torre){
 }
 
 // update lista
-static void UpdateLista(LLBlocos * ListaUpdate, torre * Torre){  
+static void UpdateLista(LLBlocos * ListaUpdate, torre * Torre, player * Player){  
   bool emMovimento = false;
   bool mudaEstado = false;
   int n = 0;
@@ -547,6 +554,9 @@ static void UpdateLista(LLBlocos * ListaUpdate, torre * Torre){
           logfile << "\n lista: " << ListaUpdate->ListaToString() << "\n";
           logfile << "\n andar: " << Torre->retornaAndarN(aux->pos->y)->AndarToString() << "\n";
           logfile << "\n ------------\n";
+
+          // gambiarra ?
+          if (Player->animacao == AnimEmpurra) Player->animacao = AnimNormal;
         }
         else if (colisao == ColisaoAgressiva){
           logfile << "\n Deleta Bloco \n";
@@ -566,7 +576,7 @@ static void process_events(struct GameData *GD){
 
     //UpdateCamera(GD->Camera);
 
-    UpdateLista(GD->ListaUpdate, GD->Torre);
+    UpdateLista(GD->ListaUpdate, GD->Torre, GD->Player);
 
     UpdatePlayer(GD->Player, GD->Torre);
 
@@ -676,7 +686,40 @@ void draw_screen(SDL_Window *Window,
 		(GD->Player->pos->y - GD->Player->pos->y)*d*2.0,
 		(GD->Player->pos->x - GD->cx)*d*2.0);
   fix_player_direction(GD->Player);
-  DrawFluffy();
+  // animacao player
+  switch (GD->Player->animacao)
+  {
+  case AnimNormal:
+    DrawFluffy();
+    break;
+  
+  case AnimAnda:
+    DrawFluffy_walk();
+    break;
+    
+  case AnimPuxa:
+    DrawFluffy_pull();
+    break;
+    
+  case AnimEmpurra:
+    DrawFluffy_push();
+    break;
+    
+  case AnimPendurado:
+    DrawFluffy_hang();
+    break;
+    
+  case AnimPenduradoDir:
+    DrawFluffy_hangright();
+    break;
+    
+  case AnimPenduradoEsq:
+    DrawFluffy_hangleft();
+    break;
+  
+  default:
+    break;
+  }
  
   //DrawMonsterPlant(tex);
 
@@ -936,8 +979,8 @@ int main( int argc, char* argv[] ){
   
   
   if (literate) printf("Carrega Mapa\n");
-  //LoadMap(&GD, "mapa/01.txt");
-  LoadMap(&GD, "mapa/fase01.txt");
+  LoadMap(&GD, "mapa/01.txt");
+  //LoadMap(&GD, "mapa/fase01.txt");
   //PrintMap(&GD);
   /*
    * Now we want to begin our normal app process--

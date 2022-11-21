@@ -281,6 +281,43 @@ string player::EstadoPlayerToString(){
     }
 }
 
+string player::AnimacaoPlayerToString(){
+    switch (animacao)
+    {
+    case AnimNormal:
+        return "AnimNormal";
+        break;
+    
+    case AnimAnda:
+        return "AnimAnda";
+        break;
+    
+    case AnimEmpurra:
+        return "AnimEmpurra";
+        break;
+    
+    case AnimPuxa:
+        return "AnimPuxa";
+        break;
+        
+    case AnimPendurado:
+        return "AnimPendurado";
+        break;
+        
+    case AnimPenduradoDir:
+        return "AnimPenduradoDir";
+        break;
+    
+    case AnimPenduradoEsq:
+        return "AnimPenduradoEsq";
+        break;
+    
+    default:
+        return "";
+        break;
+    }
+}
+
 string player::PlayerToString(){
     string s = "";
     s += "Player (";
@@ -302,6 +339,7 @@ void player::SetPlayer(string s){
     posAgarrar = new posicao;
     estado = Parado;
     estado2 = Normal;
+    animacao = AnimNormal;
 
     posicao p;
     iRotacao = 0;

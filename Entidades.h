@@ -23,6 +23,9 @@ enum tipoColisao { SemColisao, ColisaoDeApoio, ColisaoLateral, ColisaoAgressiva,
 
 enum estadosPlayer { Morto, Pendurado, Normal, TentaPendurar};
 
+enum animacaoPlayer {AnimNormal, AnimPendurado, AnimPenduradoEsq, AnimPenduradoDir,
+    AnimEmpurra, AnimPuxa, AnimAnda};
+
 enum tipoBloco { Movel, Fixo, FinalFase};
 /*
  * Parado = bloco diretamente abaixo
@@ -179,6 +182,7 @@ class player: public entidade
 
         velocidade * rotacao;
         estadosPlayer estado2;
+        animacaoPlayer animacao;
         posicao * posAgarrar;
 
         void setAgarrar (posicao p);
@@ -189,6 +193,7 @@ class player: public entidade
         void setRotacao(velocidade r);
         string PlayerToString();
         string EstadoPlayerToString();
+        string AnimacaoPlayerToString();
         
 };
 

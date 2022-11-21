@@ -1,5 +1,3 @@
-
-#include "drawFunctions.h"
 //#include <SDL/SDL.h>
 #include <SDL2/SDL.h> 
 #include <SDL2/SDL_image.h>
@@ -8,9 +6,69 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#define PI 3.142857
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <math.h>
 
 #define SQUARE(x) ((x)*(x))
+
+#define MAX_Z 6 //4
+#define MAX_Y 30
+#define MAX_X 9 //7
+
+#define PI 3.142857
+
+
+enum animationType {Normal, Pushing, Walking, Pulling, Hanging, HangingLeft, HangingRight};
+
+enum animationType anim;
+
+
+float theta_y = -30.0;
+
+struct GameData{
+  int Level[MAX_Z][MAX_Y][MAX_X];
+  //Player position:
+  int  px;
+  int  py;
+  int  pz;
+  int  p_dirx;
+  int  p_dirz;
+  bool p_hanging;
+  //Camera position:
+  float cx;
+  float cy;
+  float cz;
+  //Camera velocity:
+  float c_vely;
+};
+
+
+
+SDL_Surface *load_image( char *filename ) { 
+  //The image that's loaded 
+  SDL_Surface* loadedImage = NULL; 
+  //The optimized image that will be used 
+  //SDL_Surface* optimizedImage = NULL; 
+  //Load the image using SDL_image 
+  loadedImage = IMG_Load( filename ); 
+
+  if( loadedImage == NULL ) {
+    printf("Error: Load Image %s\n",filename);
+    exit(1);
+  }
+  //If the image loaded 
+  //if( loadedImage != NULL ) { 
+    //Create an optimized image 
+    //optimizedImage = SDL_DisplayFormat( loadedImage ); 
+    //Free the old image 
+    //SDL_FreeSurface( loadedImage ); 
+  //}
+  //Return the optimized image 
+  return loadedImage; //optimizedImage; 
+}
+
 
 void crossproduct(float A[3], float B[3], float C[3]){
   C[0] = A[1]*B[2] - A[2]*B[1];
@@ -21,6 +79,230 @@ void crossproduct(float A[3], float B[3], float C[3]){
 float magnitude(float A[3]){
   return sqrtf(A[0]*A[0] + A[1]*A[1] + A[2]*A[2]);
 }
+
+
+void LoadLevel01(struct GameData *GD){ //int Level[MAX_Z][MAX_Y][MAX_X]){
+  int x,y,z;
+  for(z = 0; z < MAX_Z; z++)
+    for(y = 0; y < MAX_Y; y++)
+      for(x = 0; x < MAX_X; x++)
+	GD->Level[z][y][x] = 0;
+  y = 0;
+  for(z = 1; z < MAX_Z-1; z++)
+    for(x = 1; x < MAX_X-1; x++)
+      GD->Level[z][y][x] = 1;
+  z = 1;
+  x = (MAX_X-2)/2 + 1;
+  for(y = 0; y < MAX_Y; y++)
+      GD->Level[z][y][x] = 1;
+  GD->Level[3][1][3] = 1;
+  GD->pz = 4;
+  GD->py = 1;
+  GD->px = 5;
+  GD->cz = GD->pz;
+  GD->cy = GD->py;
+  GD->cx = GD->px;
+  GD->p_dirx = 0;
+  GD->p_dirz = 1;
+  GD->c_vely = 0.025;
+}
+
+
+
+static void quit_game( int code ){
+  /*
+   * Quit SDL so we can release the fullscreen
+   * mode and restore the previous video settings,
+   * etc.
+   */
+  SDL_Quit( );
+  
+  /* Exit program. */
+  exit( code );
+}
+
+
+void move_player_front(struct GameData *GD, bool push){
+  int nx,nz;
+  nz = GD->pz + GD->p_dirz;
+  nx = GD->px + GD->p_dirx;
+  if(nz >= MAX_Z || nz < 0 || nx >= MAX_X || nx < 0)
+    return;
+  else if(!push &&
+	  GD->Level[nz][GD->py][nx] != 0 &&
+	  GD->Level[nz][GD->py+1][nx] != 0)
+    return;
+  else if(push &&
+	  GD->Level[nz][GD->py][nx] != 0 &&
+	  GD->Level[nz+ GD->p_dirz][GD->py][nx+ GD->p_dirx] != 0)
+    return;
+
+  if(push &&
+     GD->Level[nz][GD->py][nx] != 0){
+    GD->Level[nz+ GD->p_dirz][GD->py][nx+ GD->p_dirx] = GD->Level[nz][GD->py][nx];
+    GD->Level[nz][GD->py][nx] = 0;
+  }
+  
+  if(!push &&
+     GD->Level[nz][GD->py][nx] != 0)
+    GD->py += 1;
+  else if(GD->Level[nz][GD->py-1][nx] == 0)
+    GD->py -= 1;
+  GD->pz = nz;
+  GD->px = nx;  
+}
+
+
+
+void move_player_back(struct GameData *GD, bool pull){
+  int nx,nz;
+  nz = GD->pz - GD->p_dirz;
+  nx = GD->px - GD->p_dirx;
+  if(nz >= MAX_Z || nz < 0 || nx >= MAX_X || nx < 0)
+    return;
+  else if(GD->Level[nz][GD->py][nx] != 0)
+    return;
+
+  if(pull){
+    GD->Level[GD->pz][GD->py][GD->px] = GD->Level[GD->pz+GD->p_dirz][GD->py][GD->px+GD->p_dirx];
+    GD->Level[GD->pz+GD->p_dirz][GD->py][GD->px+GD->p_dirx] = 0;
+  }
+  
+  if(GD->Level[nz][GD->py-1][nx] == 0)
+    GD->py -= 1;
+  GD->pz = nz;
+  GD->px = nx;  
+}
+
+
+
+void rotate_clockwise(struct GameData *GD){
+  if(GD->p_dirx == 1 && GD->p_dirz == 0){
+    GD->p_dirx = 0;
+    GD->p_dirz = 1;
+  }
+  else if(GD->p_dirx == -1 && GD->p_dirz == 0){
+    GD->p_dirx = 0;
+    GD->p_dirz = -1;
+  }
+  else if(GD->p_dirx == 0 && GD->p_dirz == 1){
+    GD->p_dirx = -1;
+    GD->p_dirz = 0;
+  }
+  else if(GD->p_dirx == 0 && GD->p_dirz == -1){
+    GD->p_dirx = 1;
+    GD->p_dirz = 0;
+  }
+}
+
+
+
+void rotate_counter_clockwise(struct GameData *GD){
+  if(GD->p_dirx == 1 && GD->p_dirz == 0){
+    GD->p_dirx = 0;
+    GD->p_dirz = -1;
+  }
+  else if(GD->p_dirx == -1 && GD->p_dirz == 0){
+    GD->p_dirx = 0;
+    GD->p_dirz = 1;
+  }
+  else if(GD->p_dirx == 0 && GD->p_dirz == 1){
+    GD->p_dirx = 1;
+    GD->p_dirz = 0;
+  }
+  else if(GD->p_dirx == 0 && GD->p_dirz == -1){
+    GD->p_dirx = -1;
+    GD->p_dirz = 0;
+  }
+}
+
+
+
+static void handle_key( SDL_KeyboardEvent *key, struct GameData *GD, bool down){
+  static bool hold_ctrl = false;
+  switch( key->keysym.sym ) {
+  case SDLK_ESCAPE:
+    if(down) quit_game( 0 );
+    break;
+  case SDLK_SPACE:
+    break;
+  case SDLK_LEFT:
+    if(down) rotate_counter_clockwise(GD);
+    break;
+  case SDLK_RIGHT:
+    if(down) rotate_clockwise(GD);
+    break;
+  case SDLK_DOWN:
+    if(down) move_player_back(GD, hold_ctrl);
+    break;
+  case SDLK_UP:
+    if(down) move_player_front(GD, hold_ctrl);
+    break;
+  case SDLK_z:
+    if(down) theta_y -= 1.0;
+    break;
+  case SDLK_x:
+    if(down) theta_y += 1.0;
+    break;    
+  case SDLK_LCTRL: //Left Ctrl
+    if(down) hold_ctrl = true;
+    else     hold_ctrl = false;
+    break;
+  case SDLK_RALT: //Right Alt
+    break;
+  case SDLK_0:
+    anim = Normal;
+    break;
+  case SDLK_1:
+    anim = Pushing;
+    break;
+  case SDLK_2:
+    anim = Walking;
+    break;
+  case SDLK_3:
+    anim = Pulling;
+    break;
+  case SDLK_4:
+    anim = Hanging;
+    break;
+  case SDLK_5:
+    anim = HangingRight;
+    break;
+  case SDLK_6:
+    anim = HangingLeft;
+    break;
+  default:
+    break;
+  }
+}
+
+
+static void process_events(struct GameData *GD){
+    /* Our SDL event placeholder. */
+    SDL_Event event;
+
+    /* Grab all the events off the queue. */
+    while( SDL_PollEvent( &event ) ) {
+
+        switch( event.type ) {
+        case SDL_KEYDOWN:
+	  /* Handle key presses. */
+	  handle_key( &event.key, GD, true);
+	  break;
+	case SDL_KEYUP:
+	  handle_key( &event.key, GD, false);
+	  break;
+	case SDL_QUIT:
+	  /* Handle quit requests (like Ctrl-c). */
+	  quit_game( 0 );
+	  break;
+        }
+
+    }
+
+}
+
+
 
 void inverte_vetor(int L[4][2]){
   int N = 4, tmp, i, j;
@@ -53,7 +335,7 @@ void draw_cube(float d, GLuint tex[], int id1, int id2){
     for(l = 0; l < 4; l++){
       j = L[l][0];
       i = L[l][1];
-      glTexCoord2f((j+1)/2, (i+1)/2);
+      glTexCoord2f((j+1)/2, 1-(i+1)/2);
       glVertex3f(j*d, i*d, k*d);
     }
     glEnd();
@@ -64,7 +346,7 @@ void draw_cube(float d, GLuint tex[], int id1, int id2){
     for(l = 3; l >= 0; l--){
       j = L[l][0];
       i = L[l][1];
-      glTexCoord2f((j+1)/2, (i+1)/2);
+      glTexCoord2f((j+1)/2, 1-(i+1)/2);
       glVertex3f(k*d, i*d, j*d);
     }
     glEnd();
@@ -82,54 +364,55 @@ void draw_cube(float d, GLuint tex[], int id1, int id2){
   }
 }
 
-void draw_cylinder_z(float radius0,
-		     float radius1,
-		     float z0,
-		     float z1,
-		     int dtheta){
-  GLfloat angle, x0, y0, x1, y1, xb, yb, zb;
-  float cos_angle, sin_angle;
-  float mag;
-  float C[3];
-  int j;
-  glBegin(GL_QUAD_STRIP);
-  for(j = 0; j <= 360; j+= dtheta){
-    angle = (float)j * (PI / 180.0f);
-    cos_angle = cosf(angle);
-    sin_angle = sinf(angle);
-    y0 = radius0 * cos_angle;
-    x0 = radius0 * sin_angle;
-    y1 = radius1 * cos_angle;
-    x1 = radius1 * sin_angle;
-    
-    C[0] = x0;
-    C[1] = y0;
-    C[2] = 0;
-    mag = magnitude(C);
-    C[0] /= mag;
-    C[1] /= mag;
-    C[2] /= mag;
-    glNormal3f(C[0], C[1], C[2]);
-    yb = y0;
-    xb = x0;
-    zb = z0;
-    glVertex3f( xb, yb, zb );
-    
-    C[0] = x1;
-    C[1] = y1;
-    C[2] = 0;
-    mag = magnitude(C);
-    C[0] /= mag;
-    C[1] /= mag;
-    C[2] /= mag;
-    glNormal3f(C[0], C[1], C[2]);
-    yb = y1;
-    xb = x1;
-    zb = z1;
-    glVertex3f( xb, yb, zb );
+
+
+void draw_clock_tower(float d, GLuint tex[], int id1, int id2){
+  static GLfloat white[] = { 1.0f, 1.0f,  1.0f, 1.0f };
+  static GLfloat brilho[] = { 128.0 };
+  int L[4][2] = {{-1,-1}, { 1,-1}, { 1, 1}, {-1, 1}};
+  int i,j,k,l;
+  glMaterialfv(GL_FRONT, GL_SPECULAR, white);
+  glMaterialfv(GL_FRONT, GL_SHININESS, brilho);
+  glPolygonMode(GL_FRONT, GL_FILL);
+  glPolygonMode(GL_BACK, GL_LINE);   
+  for(k = -1; k <= 1; k += 2){
+    inverte_vetor(L);
+    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, white);
+    glBindTexture(GL_TEXTURE_2D, tex[id1]);
+    glBegin(GL_QUADS);
+    glNormal3f(0.0, 0.0, k);
+    for(l = 0; l < 4; l++){
+      j = L[l][0];
+      i = L[l][1];
+      glTexCoord2f((j+1)/2, 1-(i+1)/2);
+      glVertex3f(j*d, i*d, k*d*0.1);
+    }
+    glEnd();
+    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, white);
+    glBindTexture(GL_TEXTURE_2D, tex[id2]);
+    glBegin(GL_QUADS);
+    glNormal3f(k, 0.0, 0.0);
+    for(l = 3; l >= 0; l--){
+      j = L[l][0];
+      i = L[l][1];
+      glTexCoord2f((j+1)/2, 1-(i+1)/2);
+      glVertex3f(k*d, i*d, j*d*0.1);
+    }
+    glEnd();
+    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, white);
+    glBindTexture(GL_TEXTURE_2D, tex[id2]);
+    glBegin(GL_QUADS);
+    glNormal3f(0.0, k, 0.0);
+    for(l = 0; l < 4; l++){
+      j = L[l][0];
+      i = L[l][1];
+      glTexCoord2f((j+1)/2, (i+1)/2);
+      glVertex3f(i*d, k*d, j*d*0.1);
+    }
+    glEnd();
   }
-  glEnd();
 }
+
 
 
 void draw_curved_cylinder_x(float radius0,
@@ -199,6 +482,8 @@ void draw_curved_cylinder_x(float radius0,
   }
 }
 
+
+
 void draw_curved_cylinder_x(float radius,
 			    float bend_radius,
 			    float bend_ang,
@@ -222,6 +507,9 @@ void draw_curved_cylinder_x(float radius,
 			 bend_ang1,
 			 slices);
 }
+
+
+
 
 void draw_curved_cylinder_y(float radius0,
 			    float radius1,
@@ -290,6 +578,9 @@ void draw_curved_cylinder_y(float radius0,
     glEnd();
   }
 }
+
+
+
 
 
 /* Horn */
@@ -399,6 +690,60 @@ void draw_curved_cylinder_y(float radius,
 			 slices,
 			 dtheta);
 }
+
+
+
+
+
+void draw_cylinder_z(float radius0,
+		     float radius1,
+		     float z0,
+		     float z1,
+		     int dtheta){
+  GLfloat angle, x0, y0, x1, y1, xb, yb, zb;
+  float cos_angle, sin_angle;
+  float mag;
+  float C[3];
+  int j;
+  glBegin(GL_QUAD_STRIP);
+  for(j = 0; j <= 360; j+= dtheta){
+    angle = (float)j * (PI / 180.0f);
+    cos_angle = cosf(angle);
+    sin_angle = sinf(angle);
+    y0 = radius0 * cos_angle;
+    x0 = radius0 * sin_angle;
+    y1 = radius1 * cos_angle;
+    x1 = radius1 * sin_angle;
+    
+    C[0] = x0;
+    C[1] = y0;
+    C[2] = 0;
+    mag = magnitude(C);
+    C[0] /= mag;
+    C[1] /= mag;
+    C[2] /= mag;
+    glNormal3f(C[0], C[1], C[2]);
+    yb = y0;
+    xb = x0;
+    zb = z0;
+    glVertex3f( xb, yb, zb );
+    
+    C[0] = x1;
+    C[1] = y1;
+    C[2] = 0;
+    mag = magnitude(C);
+    C[0] /= mag;
+    C[1] /= mag;
+    C[2] /= mag;
+    glNormal3f(C[0], C[1], C[2]);
+    yb = y1;
+    xb = x1;
+    zb = z1;
+    glVertex3f( xb, yb, zb );
+  }
+  glEnd();
+}
+
 
 
 
@@ -1067,6 +1412,52 @@ void sphere_y(int sectorCount,
 }
 
 
+
+
+void find_player(struct GameData *GD,
+		 int *px, int *py, int *pz){
+  *px = GD->px;
+  *py = GD->py;
+  *pz = GD->pz;
+}
+
+
+/*
+void find_player(struct GameData *GD,
+		 int *px, int *py, int *pz){
+  int i,j,k;
+  for(k = 0; k < MAX_Z; k++)
+    for(i = 0; i < MAX_Y; i++)
+      for(j = 0; j < MAX_X; j++)
+	if(Level[k][i][j] == 2){
+	  *pz = k;
+	  *py = i;
+	  *px = j;
+	}
+}
+*/
+
+
+void triangle(float x1, float y1, float z1,
+	      float x2, float y2, float z2,
+	      float x3, float y3, float z3){
+  glBegin(GL_TRIANGLES);
+  glVertex3f(x1, y1, z1);
+  glVertex3f(x2, y2, z2);
+  glVertex3f(x3, y3, z3);
+  glEnd();
+}
+
+
+void SetInitialView(){
+  glLoadIdentity( );
+  glTranslatef( 0.0, 0.0, -300.0);
+  glRotatef(35.0, 1.0, 0.0, 0.0 );
+  glRotatef(theta_y, 0.0, 1.0, 0.0 );
+}
+
+
+
 void DrawFluffy(){
   static GLfloat white[] = { 1.0f, 1.0f,  1.0f, 1.0f };
   static GLfloat black[] = { 0.0f, 0.0f,  0.0f, 1.0f };
@@ -1082,7 +1473,6 @@ void DrawFluffy(){
   glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, white);
   glPolygonMode(GL_BACK, GL_FILL);
 
-  glTranslatef( 0.0, b*0.10,  0.0);
   /*
   sphere_z(20, 20,
 	   0.0, 360.0,
@@ -1134,6 +1524,11 @@ void DrawFluffy(){
   glPushMatrix();
   glTranslatef( a*0.95, 0.0,  c*0.75);
   draw_ellipsoid(a*0.15, b*0.30, c*0.40, 40);
+
+  glTranslatef(-a*0.06, 0.0,  c*0.21); 
+  draw_ellipsoid(a*0.18, b*0.26, c*0.20, 40);
+  glTranslatef( a*0.06, 0.0, -c*0.21);
+
   glTranslatef( -a*0.045, b*0.2, -c*0.1);  
   glRotatef(-45.0, 1.0, 0.0, 0.0 );
   glRotatef(-12.0, 0.0, 1.0, 0.0 );  
@@ -1142,6 +1537,11 @@ void DrawFluffy(){
   glPushMatrix();
   glTranslatef( -a*0.95, 0.0,  c*0.75);
   draw_ellipsoid(a*0.15, b*0.30, c*0.40, 40);
+
+  glTranslatef( a*0.06, 0.0,  c*0.21); 
+  draw_ellipsoid(a*0.18, b*0.26, c*0.20, 40);
+  glTranslatef(-a*0.06, 0.0, -c*0.21);
+
   glTranslatef( a*0.045, b*0.2, -c*0.1);  
   glRotatef(-45.0, 1.0, 0.0, 0.0 );
   glRotatef(12.0, 0.0, 1.0, 0.0 );  
@@ -1268,6 +1668,9 @@ void DrawFluffy(){
   glPopMatrix();
   */
 }
+
+
+
 
 
 void DrawFluffy_push(){
@@ -1503,6 +1906,9 @@ void DrawFluffy_push(){
   draw_ellipsoid(d*0.20, d*0.10, d*0.15, 10);
   glPopMatrix();
 }
+
+
+
 
 
 void DrawFluffy_pull(){
@@ -1750,6 +2156,9 @@ void DrawFluffy_pull(){
 }
 
 
+
+
+
 void DrawFluffy_walk(){
   static GLfloat white[] = { 1.0f, 1.0f,  1.0f, 1.0f };
   static GLfloat black[] = { 0.0f, 0.0f,  0.0f, 1.0f };
@@ -1931,6 +2340,8 @@ void DrawFluffy_walk(){
   draw_ellipsoid(d*0.20, d*0.10, d*0.15, 10);
   glPopMatrix();
 }
+
+
 
 
 void DrawFluffy_hang(){
@@ -2166,6 +2577,9 @@ void DrawFluffy_hang(){
   draw_ellipsoid(d*0.20, d*0.10, d*0.15, 10);
   glPopMatrix();
 }
+
+
+
 
 
 void DrawFluffy_hangright(){
@@ -2466,6 +2880,8 @@ void DrawFluffy_hangright(){
 }
 
 
+
+
 void DrawFluffy_hangleft(){
   static GLfloat white[] = { 1.0f, 1.0f,  1.0f, 1.0f };
   static GLfloat black[] = { 0.0f, 0.0f,  0.0f, 1.0f };
@@ -2763,6 +3179,9 @@ void DrawFluffy_hangleft(){
   glPopMatrix();
 }
 
+
+
+
 //Red Dragon:
 void DrawRedDragon(){
   static GLfloat darkgray[] = { 0.2f, 0.2f, 0.2f, 1.0f };
@@ -2831,7 +3250,7 @@ void DrawRedDragon(){
 
 
 
-void DrawMonsterPlant(GLuint tex[], float theta_y){
+void DrawMonsterPlant(GLuint tex[]){
   static GLfloat pink[] = { 1.0f, 0.753f,  0.796f, 1.0f };
   static GLfloat pink2[] = { 1.0f, 0.0f,  0.851f, 1.0f };  
   static GLfloat green1[] = { 0.125f, 0.914f,  0.047f, 1.0f };
@@ -2866,7 +3285,7 @@ void DrawMonsterPlant(GLuint tex[], float theta_y){
   glRotatef(35.0, 1.0, 0.0, 0.0 );
   glRotatef(theta_y, 0.0, 1.0, 0.0 );
   */
-  SetInitialView(theta_y);
+  SetInitialView();
   
   glTranslatef( 0.0, 50.0-d, 0.0);
   glDisable(GL_TEXTURE_2D);
@@ -3060,7 +3479,7 @@ void DrawMonsterPlant(GLuint tex[], float theta_y){
   glRotatef(35.0, 1.0, 0.0, 0.0 );
   glRotatef(theta_y, 0.0, 1.0, 0.0 );
   */
-  SetInitialView(theta_y);
+  SetInitialView();
 
 
   //glTranslatef( 0.0, 20.0, -130);
@@ -3091,7 +3510,7 @@ void DrawMonsterPlant(GLuint tex[], float theta_y){
   glRotatef(35.0, 1.0, 0.0, 0.0 );
   glRotatef(theta_y, 0.0, 1.0, 0.0 );
   */
-  SetInitialView(theta_y);
+  SetInitialView();
 
   glTranslatef( 0.0, 50.0-d+dy, dz);  
   glEnable(GL_TEXTURE_2D);
@@ -3112,7 +3531,7 @@ void DrawMonsterPlant(GLuint tex[], float theta_y){
   glRotatef(35.0, 1.0, 0.0, 0.0 );
   glRotatef(theta_y, 0.0, 1.0, 0.0 );
   */
-  SetInitialView(theta_y);
+  SetInitialView();
 
   glTranslatef( 0.0, 50.0-d+dy, dz);  
   glRotatef(theta_head, 0.0, 1.0, 0.0 );
@@ -3263,7 +3682,7 @@ void DrawMonsterPlant(GLuint tex[], float theta_y){
   glRotatef(35.0, 1.0, 0.0, 0.0 );
   glRotatef(theta_y, 0.0, 1.0, 0.0 );
   */
-  SetInitialView(theta_y);
+  SetInitialView();
 
   glTranslatef( 0.0, 50.0-d, 0.0);
 
@@ -3301,20 +3720,377 @@ void DrawMonsterPlant(GLuint tex[], float theta_y){
   */
 }
 
-void SetInitialView(float theta_y, float zoom, float rotacao){
+
+
+void fix_player_direction(struct GameData *GD){
+  if(GD->p_dirx == 0 && GD->p_dirz == 1)
+    return;
+  else if(GD->p_dirx == 0 && GD->p_dirz == -1)
+    glRotatef(180.0, 0.0, 1.0, 0.0 );
+  else if(GD->p_dirx == -1 && GD->p_dirz == 0)
+    glRotatef(-90.0, 0.0, 1.0, 0.0 );
+  else if(GD->p_dirx == 1 && GD->p_dirz == 0)
+    glRotatef(90.0, 0.0, 1.0, 0.0 );
+}
+
+
+
+void draw_screen(SDL_Window *Window,
+		 struct GameData *GD, //int Level[MAX_Z][MAX_Y][MAX_X],
+		 GLuint tex[]){
+  /*
+  static float theta_x = 0.0;
+  static float theta_y = 0.0;
+  static float theta_z = 0.0;
+  */
+  float d = 30.0;
+  int px,py,pz,i,j,k;
+  float di,dj,dk;
+  //find_player(GD, &px, &py, &pz);
+
+  //Camera movement:
+  if(fabs(GD->py - GD->cy) <= GD->c_vely)
+    GD->cy = GD->py;
+  else if(GD->py < GD->cy)
+    GD->cy -= GD->c_vely;
+  else
+    GD->cy += GD->c_vely;
+    
+  // Clear the color and depth buffers.
+  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+  
+  // We don't want to modify the projection matrix.
+  glMatrixMode( GL_MODELVIEW );
+
+  for(k = 0; k < MAX_Z; k++)
+    for(i = 0; i < MAX_Y; i++)
+      for(j = 0; j < MAX_X; j++)
+	if(GD->Level[k][i][j] == 1){
+	  dj = j - GD->cx;
+	  di = i - GD->cy;
+	  dk = k - GD->cz;
+	  /*
+	  glLoadIdentity( );
+	  glTranslatef( 0.0, 0.0, -300.0);
+	  glRotatef(35.0, 1.0, 0.0, 0.0 );
+	  glRotatef(theta_y, 0.0, 1.0, 0.0 );
+	  */
+	  SetInitialView();
+	  
+	  glTranslatef( dj*d*2.0, di*d*2.0, dk*d*2.0 );
+
+	  // Rotate.
+	  /*
+	    theta_x += 0.025;
+	    theta_y += 0.025;
+	    glRotatef(theta_x, 1.0, 0.0, 0.0 );
+	    glRotatef(theta_y, 0.0, 1.0, 0.0 );
+	    glRotatef(theta_z, 0.0, 0.0, 1.0 );  
+	  */
+	  draw_cube(d, tex, 0, 1);
+	}
+
+
+  j = 4;
+  k = 5;
+  for(i = 1; i <= 6; i++){
+    dj = j - GD->cx;
+    di = i - GD->cy;
+    dk = k - GD->cz;
+    SetInitialView();
+    glTranslatef( dj*d*2.0,  di*d*2.0,  dk*d*2.0 );
+    draw_clock_tower(d, tex, 4+i, 11);
+    SetInitialView();
+    glTranslatef( dj*d*2.0,  di*d*2.0,  (dk-0.4)*d*2.0 );
+    draw_clock_tower(d, tex, 11+i, 11);
+  }
+
+  //DrawMonsterPlant(tex);
+
+  SetInitialView();
+  //glTranslatef(   -2*d*2.0,   -d +d*2.0 + 70.0,      0.0);
+  glTranslatef(   -4*d*2.0,   -d +d*2.0 + 70.0,      0.0);  
+  DrawRedDragon();
+
+  SetInitialView();
+  glTranslatef( (GD->px-GD->cx)*d*2.0,
+		(GD->py-GD->cy)*d*2.0,
+		(GD->pz-GD->cz)*d*2.0);
+  fix_player_direction(GD);
+
+  if(anim == Normal)
+    DrawFluffy();
+  else if(anim == Pushing)
+    DrawFluffy_push();
+  else if(anim == Walking)
+    DrawFluffy_walk();
+  else if(anim == Pulling)
+    DrawFluffy_pull();
+  else if(anim == Hanging)
+    DrawFluffy_hang();
+  else if(anim == HangingRight)
+    DrawFluffy_hangright();
+  else if(anim == HangingLeft)
+    DrawFluffy_hangleft();
+  
+  glEnable(GL_TEXTURE_2D);
+  SDL_GL_SwapWindow(Window);
+}
+
+
+
+
+static void setup_opengl( int width, int height ){
+  float ratio = (float) width / (float) height;
+  static GLfloat light_pos[] = { 0.0f, 0.0f,  0.0f, 1.0f };
+  static GLfloat light_amb[] = { 0.7f, 0.7f,  0.7f, 1.0f };
+  static GLfloat light_dif[] = { 0.8f, 0.8f,  0.8f, 1.0f };
+  static GLfloat light_spe[] = { 1.0f, 1.0f,  1.0f, 1.0f };
+  static GLfloat light_att[] = { 0.00002f };
+  glDepthFunc(GL_LESS);
+  glEnable(GL_DEPTH_TEST);
+  /* Our shading model--Gouraud (smooth). */
+  glShadeModel( GL_SMOOTH );
+
+  glEnable(GL_LIGHTING);
+  glEnable(GL_LIGHT0);
+  glLightfv(GL_LIGHT0, GL_POSITION, light_pos );
+  glLightfv(GL_LIGHT0, GL_AMBIENT,  light_amb);
+  glLightfv(GL_LIGHT0, GL_DIFFUSE,  light_dif);
+  glLightfv(GL_LIGHT0, GL_SPECULAR, light_spe);
+  glLightfv(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, light_att);
+
+  /* Culling. */
+  //CullFace( GL_BACK );
+  //FrontFace( GL_CCW );
+  //Enable( GL_CULL_FACE );
+  
+  /* Set the clear color. */
+  glClearColor( 0, 0, 0, 0 );
+  
+  /* Setup our viewport. */
+  glViewport( 0, 0, width, height );
+  
+  /*
+   * Change to the projection matrix and set
+   * our viewing volume.
+   */
+  glMatrixMode( GL_PROJECTION );
   glLoadIdentity( );
-  glTranslatef( 0.0, 0.0, zoom*1.0);
-  glRotatef(rotacao*1.0, 1.0, 0.0, 0.0 );
-  glRotatef(theta_y, 0.0, 1.0, 0.0 );
+  
+  gluPerspective( 60.0, ratio, 1.0, 1024.0 );
+  //glFrustum(-width/2, width/2, -height/2, height/2, 200.0, 1024.0);
 }
 
 
-void triangle(float x1, float y1, float z1,
-	      float x2, float y2, float z2,
-	      float x3, float y3, float z3){
-  glBegin(GL_TRIANGLES);
-  glVertex3f(x1, y1, z1);
-  glVertex3f(x2, y2, z2);
-  glVertex3f(x3, y3, z3);
-  glEnd();
+int main( int argc, char* argv[] ){
+  //int Level[MAX_Z][MAX_Y][MAX_X];
+  struct GameData GD;
+  
+  /* Dimensions of our window. */
+  int width =  1366; //1067; //512; //640;
+  int height = 768; //600; //288; //480;
+  /* Flags we will pass into SDL_SetVideoMode. */
+  int flags = 0;
+  SDL_Window *Window;
+  GLuint tex[18];
+  SDL_Surface *img = NULL;
+  char filename[512];
+  int i;
+  
+  /* First, initialize SDL's video subsystem. */
+  /*
+    if( SDL_Init( SDL_INIT_VIDEO ) < 0 ) {
+    fprintf( stderr, "Video initialization failed: %s\n",
+    SDL_GetError( ) );
+    quit_game( 1 );
+    }
+  */
+  
+  Window = SDL_CreateWindow("OpenGL Test",
+			    0, 0,
+			    width, height,
+			    SDL_WINDOW_OPENGL);
+  assert(Window);
+  SDL_GLContext Context = SDL_GL_CreateContext(Window);
+  //SDL_SetWindowFullscreen(Window, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN_DESKTOP);
+  
+  /*
+   * Now, we want to setup our requested
+   * window attributes for our OpenGL window.
+   * We want *at least* 5 bits of red, green
+   * and blue. We also want at least a 16-bit
+   * depth buffer.
+   *
+   * The last thing we do is request a double
+   * buffered window. '1' turns on double
+   * buffering, '0' turns it off.
+   *
+   * Note that we do not use SDL_DOUBLEBUF in
+   * the flags to SDL_SetVideoMode. That does
+   * not affect the GL attribute state, only
+   * the standard 2D blitting setup.
+     */
+  SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
+  SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 5 );
+  SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );
+  SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
+  SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+  
+  /*
+   * At this point, we should have a properly setup
+   * double-buffered window for use with OpenGL.
+   */
+  setup_opengl( width, height );
+
+  
+
+  glEnable(GL_TEXTURE_2D);
+  glGenTextures(5+7+6, tex);
+
+  glBindTexture(GL_TEXTURE_2D, tex[0]);
+  glTexParameteri(GL_TEXTURE_2D,
+		  GL_TEXTURE_MAG_FILTER,
+		  GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,
+		  GL_TEXTURE_MIN_FILTER,
+		  GL_LINEAR);
+  img = load_image((char *)"wall_texture2.png");
+  glTexImage2D(GL_TEXTURE_2D, 0,
+	       GL_RGB, 512, 512, 0,
+	       GL_RGB, GL_UNSIGNED_BYTE,
+	       img->pixels);
+
+  glBindTexture(GL_TEXTURE_2D, tex[1]);
+  glTexParameteri(GL_TEXTURE_2D,
+		  GL_TEXTURE_MAG_FILTER,
+		  GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,
+		  GL_TEXTURE_MIN_FILTER,
+		  GL_LINEAR);
+  img = load_image((char *)"wall_texture_sup2.png");
+  glTexImage2D(GL_TEXTURE_2D, 0,
+	       GL_RGB, 512, 512, 0,
+	       GL_RGB, GL_UNSIGNED_BYTE,
+	       img->pixels);
+  
+  /*
+  img = load_image((char *)"spiderplant_c.png");
+  glTexImage2D(GL_TEXTURE_2D, 0,
+	       GL_RGB, 512, 512, 0,
+	       GL_RGB, GL_UNSIGNED_BYTE,
+	       img->pixels);
+  */  
+  glBindTexture(GL_TEXTURE_2D, tex[2]);
+  glTexParameteri(GL_TEXTURE_2D,
+		  GL_TEXTURE_MAG_FILTER,
+		  GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,
+		  GL_TEXTURE_MIN_FILTER,
+		  GL_LINEAR);
+  img = load_image((char *)"monsterplant_c.png");
+  glTexImage2D(GL_TEXTURE_2D, 0,
+	       GL_RGB, 2048, 2048, 0,
+	       GL_RGB, GL_UNSIGNED_BYTE,
+	       img->pixels);
+
+  
+  glBindTexture(GL_TEXTURE_2D, tex[3]);
+  glTexParameteri(GL_TEXTURE_2D,
+		  GL_TEXTURE_MAG_FILTER,
+		  GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,
+		  GL_TEXTURE_MIN_FILTER,
+		  GL_LINEAR);
+  img = load_image((char *)"face_monsterplant_2.png");
+  glTexImage2D(GL_TEXTURE_2D, 0,
+	       GL_RGB, 1024, 1024, 0,
+	       GL_RGB, GL_UNSIGNED_BYTE,
+	       img->pixels);
+
+  glBindTexture(GL_TEXTURE_2D, tex[4]);
+  glTexParameteri(GL_TEXTURE_2D,
+		  GL_TEXTURE_MAG_FILTER,
+		  GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,
+		  GL_TEXTURE_MIN_FILTER,
+		  GL_LINEAR);
+  img = load_image((char *)"umbigo.png");
+  glTexImage2D(GL_TEXTURE_2D, 0,
+	       GL_RGB, 64, 64, 0,
+	       GL_RGB, GL_UNSIGNED_BYTE,
+	       img->pixels);
+
+
+  for(i = 1; i <= 6; i++){
+    glBindTexture(GL_TEXTURE_2D, tex[4+i]);
+    glTexParameteri(GL_TEXTURE_2D,
+		    GL_TEXTURE_MAG_FILTER,
+		    GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,
+		    GL_TEXTURE_MIN_FILTER,
+		    GL_LINEAR);
+    sprintf(filename, "torre_A%d.png", i);
+    img = load_image(filename);
+    glTexImage2D(GL_TEXTURE_2D, 0,
+		 GL_RGB, 512, 512, 0,
+		 GL_RGB, GL_UNSIGNED_BYTE,
+		 img->pixels);
+  }
+
+
+  glBindTexture(GL_TEXTURE_2D, tex[11]);
+  glTexParameteri(GL_TEXTURE_2D,
+		  GL_TEXTURE_MAG_FILTER,
+		  GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D,
+		  GL_TEXTURE_MIN_FILTER,
+		  GL_LINEAR);
+  img = load_image((char *)"torre_L.png");
+  glTexImage2D(GL_TEXTURE_2D, 0,
+	       GL_RGB, 512, 512, 0,
+	       GL_RGB, GL_UNSIGNED_BYTE,
+	       img->pixels);  
+  
+
+  for(i = 1; i <= 6; i++){
+    glBindTexture(GL_TEXTURE_2D, tex[11+i]);
+    glTexParameteri(GL_TEXTURE_2D,
+		    GL_TEXTURE_MAG_FILTER,
+		    GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,
+		    GL_TEXTURE_MIN_FILTER,
+		    GL_LINEAR);
+    sprintf(filename, "torre_B%d.png", i);
+    img = load_image(filename);
+    glTexImage2D(GL_TEXTURE_2D, 0,
+		 GL_RGB, 512, 512, 0,
+		 GL_RGB, GL_UNSIGNED_BYTE,
+		 img->pixels);
+  }
+
+  
+  LoadLevel01(&GD);
+
+  /*
+   * Now we want to begin our normal app process--
+   * an event loop with a lot of redrawing.
+   */
+  while( 1 ) {
+    /* Process incoming events. */
+    process_events(&GD);
+    /* Draw the screen. */
+    draw_screen(Window, &GD, tex);
+  }
+  
+  /*
+   * EXERCISE:
+   * Record timings using SDL_GetTicks() and
+   * and print out frames per second at program
+   * end.
+   */
+  
+  /* Never reached. */
+  return 0;
 }
+
