@@ -36,7 +36,7 @@ cria um novo, o que está errado
 
 - musica
 - Undo
-- fall blocks
+
 
 
 bloco
@@ -50,4 +50,3 @@ bloco
 - lista de blocos sofrendo update
 
 - mapa de que ve efeito de cascata
-- camera movimenta
