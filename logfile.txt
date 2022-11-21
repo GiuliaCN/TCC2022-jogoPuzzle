@@ -10,17 +10,105 @@ Entrou player front
 Sem bloco na frente do player
 player anda
 
+Entrou player front
+
+ ComBlocoNaFrente 
+
+ ChecaSePodeSubir 
+
+ Sobe 
+
+Entrou player front
+
+Sem bloco na frente do player
+player anda
+
+Entrou player front
+
+Sem bloco na frente do player
+player anda
+
+Entrou player front
+
+Sem bloco na frente do player
+player anda
+
 move_player_back >> Entrou player back
 
 Sem bloco atras do player
 
+Bloco (Pos = (5.000000, 2.000000, 4.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+ Colisao de apoio 
+
+ lista: Numero de blocos =0 ;
+
+ andar: Andar id =2 ;Numero de blocos =4 ;1o Bloco = (5.000000, 2.000000, 4.000000);2o Bloco = (4.000000, 2.000000, 1.000000);3o Bloco = (3.000000, 2.000000, 1.000000);4o Bloco = (2.000000, 2.000000, 1.000000);
+
+ ------------
+
+Entrou Update do andar_id=3
+
+ Dando Update em andar
+ 
+ Andar Atual antes: Andar id =3 ;Numero de blocos =3 ;1o Bloco = (3.000000, 3.000000, 2.000000);2o Bloco = (3.000000, 3.000000, 1.000000);3o Bloco = (2.000000, 3.000000, 1.000000);
+
+ checa suporte de Bloco (Pos = (3.000000, 3.000000, 2.000000), Vel = (401755360, 32637, 401755360), Estado = Parado)
+
+ checa suporte de Bloco (Pos = (3.000000, 3.000000, 1.000000), Vel = (401755760, 32637, 401755760), Estado = Parado)
+
+ checa suporte de Bloco (Pos = (2.000000, 3.000000, 1.000000), Vel = (401755360, 32637, 401755360), Estado = Parado)
+
+ Andar atual depois: Andar id =3 ;Numero de blocos =3 ;1o Bloco = (3.000000, 3.000000, 2.000000);2o Bloco = (3.000000, 3.000000, 1.000000);3o Bloco = (2.000000, 3.000000, 1.000000);
+
+Entrou player front
+
+ ComBlocoNaFrente 
+
+ ChecaEmpurrar 
+
+ Empurra 
+
+Bloco (Pos = (5.000000, 2.000000, 3.000000), Vel = (0, -1, 0), Estado = Caindo) 
+
+ Colisao de apoio 
+
+ lista: Numero de blocos =0 ;
+
+ andar: Andar id =2 ;Numero de blocos =4 ;1o Bloco = (5.000000, 2.000000, 3.000000);2o Bloco = (4.000000, 2.000000, 1.000000);3o Bloco = (3.000000, 2.000000, 1.000000);4o Bloco = (2.000000, 2.000000, 1.000000);
+
+ ------------
+
+Entrou Update do andar_id=3
+
+ Dando Update em andar
+ 
+ Andar Atual antes: Andar id =3 ;Numero de blocos =3 ;1o Bloco = (3.000000, 3.000000, 2.000000);2o Bloco = (3.000000, 3.000000, 1.000000);3o Bloco = (2.000000, 3.000000, 1.000000);
+
+ checa suporte de Bloco (Pos = (3.000000, 3.000000, 2.000000), Vel = (401755360, 32637, 401755360), Estado = Parado)
+
+ checa suporte de Bloco (Pos = (3.000000, 3.000000, 1.000000), Vel = (401755760, 32637, 401755760), Estado = Parado)
+
+ checa suporte de Bloco (Pos = (2.000000, 3.000000, 1.000000), Vel = (401755360, 32637, 401755360), Estado = Parado)
+
+ Andar atual depois: Andar id =3 ;Numero de blocos =3 ;1o Bloco = (3.000000, 3.000000, 2.000000);2o Bloco = (3.000000, 3.000000, 1.000000);3o Bloco = (2.000000, 3.000000, 1.000000);
+
+Entrou player front
+
+Sem bloco na frente do player
+player anda
+
 move_player_back >> Entrou player back
 
 Sem bloco atras do player
 
-move_player_back >> Entrou player back
+Entrou player sideways
 
-Sem bloco atras do player
+Entrou player sideways
+
+Entrou player sideways
+
+Entrou player sideways
 
 Entrou player front
 
@@ -30,24 +118,6 @@ Entrou player front
 
  Sobe 
 
-move_player_back >> Entrou player back
-
-Sem bloco atras do player
-
-Entrou player sideways
-
-Entrou player front
-
- ComBlocoNaFrente 
-
- ChecaSePodeSubir 
-
-Entrou player sideways
-
-Entrou player sideways
-
-Entrou player sideways
-
 Entrou player front
 
  ComBlocoNaFrente 
@@ -55,3 +125,8 @@ Entrou player front
  ChecaSePodeSubir 
 
  Sobe 
+
+Entrou player front
+
+Sem bloco na frente do player
+player anda

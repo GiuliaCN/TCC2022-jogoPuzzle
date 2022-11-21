@@ -18,7 +18,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <map>
 
 using namespace std;
 
@@ -32,16 +31,33 @@ using namespace std;
 #define PI 3.142857
 
 // globais
-//float theta_y = -30.0;
+//The music that will be played
+Mix_Music *gMusic = NULL;
+
 ofstream logfile;
-map<int, string> teclado;
+
 bool bloqueiaMov = false;
-int estadoJogo = 1; // 1 = em jogo, 2 = vitoria, 3 = derrota
+
+enum estadosJogo {
+  EmJogo,
+  Vitoria,
+  Derrota
+  };
+estadosJogo estadoJogo = EmJogo;
+
+// o que mostrar na tela
+enum GameScreen {
+  Fase,
+  MenuInicial
+};
+//GameScreen estadoTela = MenuInicial;
+GameScreen estadoTela = Fase;
 
 struct GameData{
+  int fase;
+  //bool bloqueiaMov = false;
   torre * Torre;
   player * Player;
-  //camera * Camera;
   float zoom;
   float theta_y;
   int cx, cz;
@@ -71,16 +87,6 @@ SDL_Surface *load_image( char *filename ) {
   //Return the optimized image 
   return loadedImage; //optimizedImage; 
 }
-
-// void ConfiguraMapTeclado(){
-//   teclado[1073741906] = "UP";
-//   teclado[1073741904] = "LEFT";
-//   teclado[1073741905] = "DOWN";
-//   teclado[1073741903] = "RIGHT";
-//   teclado[1073742048] = "CTRL";
-//   teclado[27] = "ESC";
-  
-// }
 
 void SetCamera (struct GameData *GD, string s){
     string delim = ",";
@@ -150,12 +156,16 @@ static void quit_game( int code ){
    * mode and restore the previous video settings,
    * etc.
    */
+  // free music
+  Mix_FreeMusic( gMusic );
+  gMusic = NULL;
+
+  Mix_Quit();
   SDL_Quit( );
   
   /* Exit program. */
   exit( code );
 }
-
 
 void UpdateAndar(LLBlocos * ListaUpdate, torre * Torre, int n){
   logfile << "\nEntrou Update do andar_id=" << n << "\n";
@@ -192,7 +202,6 @@ void UpdateAndar(LLBlocos * ListaUpdate, torre * Torre, int n){
   }  
 }
 
-
 void move_player_front(struct GameData *GD, bool push){
   logfile << "\nEntrou player front\n";
 
@@ -224,7 +233,6 @@ void move_player_front(struct GameData *GD, bool push){
         Player->animacao = AnimEmpurra;
         Torre->EjetaBloco(b);
         GD->ListaUpdate->AdicionaBloco(b);
-        //UpdateAndar(GD->ListaUpdate, Torre, posDesejada.y + 1);
       }
     }
     else {
@@ -235,10 +243,8 @@ void move_player_front(struct GameData *GD, bool push){
       if (Torre->retornaBloco(posSubir) == nullptr && Torre->retornaBloco(posAcima) == nullptr){
         logfile << "\n Sobe \n";
         Player->estado2 = Normal;
-        //Player->setVel(velocidade(0,1,0));
         Player->mexe(posSubir,velocidade(Player->rotacao) + velocidade(0,1,0));
         Player->animacao = AnimAnda;//seria anim pula
-        //logfile << Player->vel->VelocidadeToString() << "\n";
       }
     }
   }
@@ -306,8 +312,6 @@ void move_player_sideways (struct GameData *GD,bool right){
     
   
   rotacaoLado = Player->rotacoes[dir];
-//   cx = GD->Player->rotacoes[dir][0];
-//   cz = GD->Player->rotacoes[dir][1];
 
   posicao posDesejada = posicao(Player->pos) + velocidade(rotacaoLado);
 
@@ -315,8 +319,7 @@ void move_player_sideways (struct GameData *GD,bool right){
 
   bool temApoio = Torre->retornaBloco(apoioDesejado) != nullptr;
   bool posLivre = Torre->retornaBloco(posDesejada) == nullptr;
-  //logfile << "\nmove_player_sideways >> (temApoio, posLivre) = " << temApoio << posLivre<<"\n";
-  // movimentacao lateral
+
   if (temApoio && posLivre){
     Player->mexe(posDesejada,velocidade(rotacaoLado));
   }
@@ -328,23 +331,6 @@ void move_player_sideways (struct GameData *GD,bool right){
     if (right) Player->Rotaciona(1);
     else Player->Rotaciona(0);
   }
-
-
-  // se tem bloco para ir
-  // if (Torre->retornaBloco(posDesejada) == nullptr){
-  //   GD->Player->x += cx;
-  //   GD->Player->z += cz;
-  // }
-
-//   // se não tem, é um canto
-//   else{
-//     GD->Player->x += cx + GD->Player->rotacao[0];
-//     GD->Player->z += cz + GD->Player->rotacao[1];
-//     if (left)
-//       GD->Player->Rotaciona(1);
-//     else
-//       GD->Player->Rotaciona(0);
-//   }
 
 }
 
@@ -437,6 +423,36 @@ static void handle_key( SDL_KeyboardEvent *key, struct GameData *GD, bool down){
         GD->zoom -= passoCam;
       }
       break; 
+
+    case SDLK_o: // pause/play music
+      if(down){
+        logfile << "music" << "\n";
+        //If there is no music playing
+        if( Mix_PlayingMusic() == 0 )
+        {
+            //Play the music
+            Mix_PlayMusic( gMusic, -1 );
+        }
+        //If music is being played
+        else
+        {
+            //If the music is paused
+            if( Mix_PausedMusic() == 1 )
+            {
+                //Resume the music
+                Mix_ResumeMusic();
+            }
+            //If the music is playing
+            else
+            {
+                //Pause the music
+                Mix_PauseMusic();
+            }
+        }
+      }
+      break;
+
+
       
     // case SDLK_d: // controle de altura
     //   if(down) {
@@ -478,12 +494,12 @@ static void UpdatePlayer(player * Player, torre * Torre){
   colisaoTorre = Torre->ChecaColisaoPlayer(Player);
   if (Player->pos->y < -2){
     logfile << "\n Player caiu do mapa \n";
-    estadoJogo = 3;
+    estadoJogo = Derrota;
   }
 
   if (colisaoTorre == ColisaoAgressiva){
     logfile << "\n Player esmagado \n";
-    estadoJogo = 3;
+    estadoJogo = Derrota;
   }
   //logfile << "\n UpdatePlayer >> colisao com torre = " << colisaoTorre <<"\n";
   switch (Player->estado)
@@ -502,8 +518,8 @@ static void UpdatePlayer(player * Player, torre * Torre){
       Player->animacao = AnimPendurado;
       break;
 
-    case Vitoria:
-      estadoJogo = 2;
+    case BlocoVitoria:
+      estadoJogo = Vitoria;
       break;
     
     default:
@@ -790,8 +806,6 @@ int main( int argc, char* argv[] ){
   logfile.open ("logfile.txt");
   logfile << "Log\n";
 
-  // ConfiguraMapTeclado();
-  //  if (literate) printf("Configura SDL\n");
   /* Dimensions of our window. */
   int width =  1366; //1067; //512; //640;
   int height = 768; //600; //288; //480;
@@ -801,16 +815,24 @@ int main( int argc, char* argv[] ){
   GLuint tex[numTex];
   SDL_Surface *img = NULL;
 
-
-
   /* First, initialize SDL's video subsystem. */
-  /*
-    if( SDL_Init( SDL_INIT_VIDEO ) < 0 ) {
+  
+    if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0 ) {
     fprintf( stderr, "Video initialization failed: %s\n",
     SDL_GetError( ) );
     quit_game( 1 );
     }
-  */
+    //Initialize SDL_mixer
+    if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 )
+    {
+        printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
+        //success = false;
+    }
+  
+
+ //Load music
+ //https://www.looperman.com/loops/detail/314853/subspace-club-type-sample-free-115bpm-disco-pad-loop
+  gMusic = Mix_LoadMUS( "music/looperman-l-5041336-0314853-subspace-club-type-sample.wav" );
   
   Window = SDL_CreateWindow("OpenGL Test",
 			    0, 0,
@@ -876,14 +898,7 @@ int main( int argc, char* argv[] ){
 	       GL_RGB, 512, 512, 0,
 	       GL_RGB, GL_UNSIGNED_BYTE,
 	       img->pixels);
-  
-  /*
-  img = load_image((char *)"spiderplant_c.png");
-  glTexImage2D(GL_TEXTURE_2D, 0,
-	       GL_RGB, 512, 512, 0,
-	       GL_RGB, GL_UNSIGNED_BYTE,
-	       img->pixels);
-  */  
+   
   glBindTexture(GL_TEXTURE_2D, tex[2]);
   glTexParameteri(GL_TEXTURE_2D,
 		  GL_TEXTURE_MAG_FILTER,
@@ -981,24 +996,27 @@ int main( int argc, char* argv[] ){
   if (literate) printf("Carrega Mapa\n");
   LoadMap(&GD, "mapa/01.txt");
   //LoadMap(&GD, "mapa/fase01.txt");
-  //PrintMap(&GD);
+
   /*
    * Now we want to begin our normal app process--
    * an event loop with a lot of redrawing.
    */
+
   if (literate) printf("Comeca jogo\n");
-  while( estadoJogo == 1 ) {
+  //Play the music
+  Mix_PlayMusic( gMusic, -1 );
+  while( estadoJogo == EmJogo ) {
     /* Process incoming events. */
     process_events(&GD);
 
     /* Draw the screen. */
     draw_screen(Window, &GD, tex);
   }
-  if (estadoJogo == 2){
+  if (estadoJogo == Vitoria){
     printf("Vitoria!\n");
     logfile << "Vitoria!";
   }
-  else if (estadoJogo == 3){
+  else if (estadoJogo == Derrota){
     printf("Derrota!\n");
     logfile << "Derrota!";
   }

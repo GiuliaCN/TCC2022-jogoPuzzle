@@ -19,7 +19,7 @@ using namespace std;
  * ColisaoAgressiva = entidades no mesmo lugar
  * ColisaoMista = colisao lateral + colisao apoio
 */
-enum tipoColisao { SemColisao, ColisaoDeApoio, ColisaoLateral, ColisaoAgressiva, ColisaoMista, Vitoria };
+enum tipoColisao { SemColisao, ColisaoDeApoio, ColisaoLateral, ColisaoAgressiva, ColisaoMista, BlocoVitoria };
 
 enum estadosPlayer { Morto, Pendurado, Normal, TentaPendurar};
 
@@ -155,13 +155,15 @@ class entidade
 
 };
 
-class camera: public entidade
+class camera
 {
     public:
     camera();
     ~camera();
 
-    double theta_y;
+    float zoom;
+    float theta_y;
+    int cx, cz;
 
     void SetCamera(string s);
     void ZoomIn();

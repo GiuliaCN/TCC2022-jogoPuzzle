@@ -195,47 +195,47 @@ camera::camera(){}
 
 string camera::CameraToString(){
     string s = "";
-    s += "Camera (";
-    s += "Pos = " + pos->PosicaoToString();
-    s += ", Vel = " + vel->VelocidadeToString();
-    s += ", Estado = " + EstadoToString();
-    s += ", theta = " + to_string(theta_y);
-    s += ")";
+    // s += "Camera (";
+    // s += "Pos = " + pos->PosicaoToString();
+    // s += ", Vel = " + vel->VelocidadeToString();
+    // s += ", Estado = " + EstadoToString();
+    // s += ", theta = " + to_string(theta_y);
+    // s += ")";
     return s;
 }
 
 void camera::SetCamera(string s){
-    pos = new posicao;
-    posLim = new posicao;
-    vel = new velocidade;
-    estado = Parado;
+    // pos = new posicao;
+    // posLim = new posicao;
+    // vel = new velocidade;
+    // estado = Parado;
 
-    posicao p;
-    string delim = ",";
+    // posicao p;
+    // string delim = ",";
 
-    auto start = 0U;
-    auto end = s.find(delim);
-    p.x = stoi (s.substr(start, end - start));
-    start = end + delim.length();
-    end = s.find(delim, start);
+    // auto start = 0U;
+    // auto end = s.find(delim);
+    // p.x = stoi (s.substr(start, end - start));
+    // start = end + delim.length();
+    // end = s.find(delim, start);
 
-    p.y = stoi (s.substr(start, end - start));
-    start = end + delim.length();
-    end = s.find(delim, start);
+    // p.y = stoi (s.substr(start, end - start));
+    // start = end + delim.length();
+    // end = s.find(delim, start);
 
-    p.z = stoi (s.substr(start, end - start));
-    start = end + delim.length();
-    end = s.find(delim, start);
+    // p.z = stoi (s.substr(start, end - start));
+    // start = end + delim.length();
+    // end = s.find(delim, start);
 
-    theta_y = stoi (s.substr(start, end));
-    start = end + delim.length();
-    end = s.find(delim, start);
+    // theta_y = stoi (s.substr(start, end));
+    // start = end + delim.length();
+    // end = s.find(delim, start);
 
-    //theta_y = -30;
+    // //theta_y = -30;
 
-    setPos(p);
+    // setPos(p);
 
-    setVel(velocidade(0,0,0));
+    // setVel(velocidade(0,0,0));
 
 }
 
@@ -856,7 +856,7 @@ tipoColisao torre::ChecaColisaoPlayer(player * pl){
 
         // checa vitoria
         b = retornaBloco(pAprox + posicao(0,-1,0));
-        if (b!=nullptr && b->tipo == FinalFase) return Vitoria;
+        if (b!=nullptr && b->tipo == FinalFase) return BlocoVitoria;
 
         // tem bloco embaixo
         if (retornaBloco(pAprox + posicao(0,-1,0))!=nullptr) return ColisaoDeApoio;  
