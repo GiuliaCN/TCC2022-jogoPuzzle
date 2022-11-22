@@ -185,6 +185,7 @@ class player: public entidade
         velocidade * rotacao;
         estadosPlayer estado2;
         animacaoPlayer animacao;
+        animacaoPlayer animacaoAnterior;
         posicao * posAgarrar;
 
         void setAgarrar (posicao p);

@@ -647,17 +647,12 @@ void fix_player_direction(player * Player){
 }
 
 void draw_screen(SDL_Window *Window,
-		 struct GameData *GD, //int Level[MAX_Z][MAX_Y][MAX_X],
+		 struct GameData *GD,
 		 GLuint tex[]){
-  /*
-  static float theta_x = 0.0;
-  static float theta_y = 0.0;
-  static float theta_z = 0.0;
-  */
+
   float d = 30.0;
-  //int px,py,pz,i,j,k;
+
   float di,dj,dk;
-  //find_player(GD, &px, &py, &pz);
 
   // Clear the color and depth buffers.
   glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -665,15 +660,10 @@ void draw_screen(SDL_Window *Window,
   // We don't want to modify the projection matrix.
   glMatrixMode( GL_MODELVIEW );
 
-  //GD->Camera->pos->y = GD->Player->pos->y;
-
   // desenha Torre
   for (andar * a = GD->Torre->primeiroAndar; a != nullptr; a = a->prox)
     for (block * b = a->Lista->lista; b != nullptr; b = b->prox){
-      // dj = b->pos->z - GD->Camera->pos->z;
-      // di = b->pos->y - GD->Camera->pos->y;
-      // dk = b->pos->x - GD->Camera->pos->x;
-      // SetInitialView(GD->Camera->theta_y, 35, GD->zoom);   
+
       dj = b->pos->z - GD->cz;
       di = b->pos->y - GD->Player->pos->y;
       dk = b->pos->x - GD->cx;
@@ -718,7 +708,9 @@ void draw_screen(SDL_Window *Window,
     break;
     
   case AnimEmpurra:
-    DrawFluffy_push();
+    if (GD->Player->animacaoAnterior != AnimEmpurra)
+      DrawFluffy_push(true);
+    else DrawFluffy_push(false);
     break;
     
   case AnimPendurado:
@@ -736,13 +728,7 @@ void draw_screen(SDL_Window *Window,
   default:
     break;
   }
- 
-  //DrawMonsterPlant(tex);
-
-  // SetInitialView(theta_y);
-  // //glTranslatef(   -2*d*2.0,   -d +d*2.0 + 70.0,      0.0);
-  // glTranslatef(   -4*d*2.0,   -d +d*2.0 + 70.0,      0.0);  
-  // DrawRedDragon();
+  GD->Player->animacaoAnterior = GD->Player->animacao;
   
   glEnable(GL_TEXTURE_2D);
   SDL_GL_SwapWindow(Window);
@@ -807,8 +793,8 @@ int main( int argc, char* argv[] ){
   logfile << "Log\n";
 
   /* Dimensions of our window. */
-  int width =  1366; //1067; //512; //640;
-  int height = 768; //600; //288; //480;
+  int width =  1067; //1366; //512; //640;
+  int height = 600; //768; //288; //480;
   /* Flags we will pass into SDL_SetVideoMode. */
   int flags = 0;
   SDL_Window *Window;
@@ -994,8 +980,8 @@ int main( int argc, char* argv[] ){
   
   
   if (literate) printf("Carrega Mapa\n");
-  LoadMap(&GD, "mapa/01.txt");
-  //LoadMap(&GD, "mapa/fase01.txt");
+  //LoadMap(&GD, "mapa/01.txt");
+  LoadMap(&GD, "mapa/fase01.txt");
 
   /*
    * Now we want to begin our normal app process--

@@ -158,7 +158,7 @@ void sphere_y(int sectorCount,
 
 void DrawFluffy();
 
-void DrawFluffy_push();
+void DrawFluffy_push(bool reset);
 
 void DrawFluffy_pull();
 

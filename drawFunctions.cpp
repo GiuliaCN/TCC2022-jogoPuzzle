@@ -1270,7 +1270,7 @@ void DrawFluffy(){
 }
 
 
-void DrawFluffy_push(){
+void DrawFluffy_push(bool reset){
   static GLfloat white[] = { 1.0f, 1.0f,  1.0f, 1.0f };
   static GLfloat black[] = { 0.0f, 0.0f,  0.0f, 1.0f };
   static GLfloat  gray[] = { 0.65f, 0.65f,  0.65f, 1.0f };
@@ -1281,7 +1281,12 @@ void DrawFluffy_push(){
   static int eye_opening = 200;
   static int step_eye_opening = 6;
   static float length_forearm = 0.0;
-  static float step_forearm = 0.05;
+  static float step_forearm = 0.1;
+
+  if (reset){
+    length_forearm = 0;
+    step_forearm = step_forearm > 0? step_forearm : -step_forearm;
+  }
   
   glDisable(GL_TEXTURE_2D);
   glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, white);
@@ -2183,7 +2188,7 @@ void DrawFluffy_hangright(){
   static float foot_angle = 25.0;
   static float arm_angle_left  = 0.0; //20.0;
   static float arm_angle_right = 0.0;
-  static float step_arm_angle = 1.0;
+  static float step_arm_angle = 15.0;
   static int   turn_arm = 0;
   float displacement, L_proj, L_right, gamma_right, L_left, gamma_left;
   
@@ -2481,7 +2486,7 @@ void DrawFluffy_hangleft(){
   static float foot_angle = 25.0;
   static float arm_angle_left  = 0.0; //20.0;
   static float arm_angle_right = 0.0;
-  static float step_arm_angle = 1.0;
+  static float step_arm_angle = 15.0;
   static int   turn_arm = 0;
   float displacement, L_proj, L_right, gamma_right, L_left, gamma_left;
   

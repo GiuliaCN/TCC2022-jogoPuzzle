@@ -340,6 +340,7 @@ void player::SetPlayer(string s){
     estado = Parado;
     estado2 = Normal;
     animacao = AnimNormal;
+    animacaoAnterior = AnimNormal;
 
     posicao p;
     iRotacao = 0;
