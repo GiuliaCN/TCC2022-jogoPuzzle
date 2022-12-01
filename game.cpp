@@ -21,12 +21,10 @@
 
 using namespace std;
 
-#define MAX_Z 6 //4
-#define MAX_Y 30
-#define MAX_X 9 //7
 #define literate true
 #define numTex 9
 #define passoCam 2
+#define numFases 3
 
 #define PI 3.142857
 
@@ -38,20 +36,23 @@ ofstream logfile;
 
 bool bloqueiaMov = false;
 
+SDL_Rect arrowPosition;
+
+enum idTela {
+  MenuInicial, MenuPause, Next, GameOver, TelaInstrucoes
+};
+
 enum estadosJogo {
+  Menu,
+  Instrucoes,
+  Pause,
   EmJogo,
   Vitoria,
   Derrota
   };
-estadosJogo estadoJogo = EmJogo;
+estadosJogo estadoJogo = Menu;
 
-// o que mostrar na tela
-enum GameScreen {
-  Fase,
-  MenuInicial
-};
-//GameScreen estadoTela = MenuInicial;
-GameScreen estadoTela = Fase;
+//GameScreen estadoTela = Fase;
 
 struct GameData{
   int fase;
@@ -62,6 +63,15 @@ struct GameData{
   float theta_y;
   int cx, cz;
   LLBlocos * ListaUpdate;
+};
+
+struct Tela{
+  idTela nomeTela;
+  SDL_Surface * background;
+  int x1,x2;
+  int y1,y2;
+  bool selecionaOpcao1 = true;
+  bool temOpcao2 = true;
 };
 
 
@@ -117,6 +127,14 @@ string CameraToString (struct GameData *GD){
   s += ", cz = " + to_string(GD->cz);
   s += ", theta = " + to_string(GD->theta_y);
   s += ", zoom = " + to_string(GD->zoom);
+  s += ")";
+  return s;
+}
+string ArrowToString (){
+  string s = "";
+  s += "Arrow (";
+  s += "x = " + to_string(arrowPosition.x);
+  s += ", y = " + to_string(arrowPosition.y);
   s += ")";
   return s;
 }
@@ -334,15 +352,69 @@ void move_player_sideways (struct GameData *GD,bool right){
 
 }
 
-static void handle_key( SDL_KeyboardEvent *key, struct GameData *GD, bool down){
+void ProximaAcao (struct GameData *GD, struct Tela *tela){
+
+  logfile << "\nProximaAcao << entrou \n";
+  switch (tela->nomeTela)
+  {
+  case MenuInicial:
+    // inicia fase 1
+    if (tela->selecionaOpcao1) {
+      GD->fase = 1;
+      LoadMap(GD, "mapa/fase0" + to_string(GD->fase) +".txt");
+      estadoJogo = EmJogo;
+    }
+
+    // instrucoes
+    else {
+      estadoJogo = Instrucoes;
+    }
+    break;
+
+  case TelaInstrucoes:
+    estadoJogo = Menu;
+    break;
+
+  case Next:
+    GD->fase +=1;
+    if (GD->fase > numFases) estadoJogo = Menu;
+    else {
+      LoadMap(GD, "mapa/fase0" + to_string(GD->fase) +".txt");
+      estadoJogo = EmJogo;
+    }
+    break;
+
+  case GameOver:
+    logfile << "\nProximaAcao << GameOver \n";
+    estadoJogo = Menu;
+    break;
+
+  case MenuPause:
+    if (tela->selecionaOpcao1) {
+      estadoJogo = EmJogo;
+    }
+    // instrucoes
+    else {
+      estadoJogo = Instrucoes;
+    }
+    break;
+  
+  default:
+    break;
+  }
+}
+
+static void handle_key( SDL_KeyboardEvent *key, struct GameData *GD, bool down, 
+  struct Tela *tela = NULL)
+  {
   static bool hold_ctrl = false;
 
   //if (literate) logfile << "\nhandle key = " << teclado[key->keysym.sym] << "\n";
   //if (literate) logfile << GD->Player->PlayerToString() + "\n";
   player * Player = GD->Player;
   //camera * Camera = GD->Camera;
-  bool podeMover = Player->estado == Parado;
-    //if (literate) logfile << "Pode Mover";
+  bool podeMover = Player->estado == Parado && estadoJogo==EmJogo;
+  bool emTela = estadoJogo!=EmJogo && tela!=NULL;
 
   switch( key->keysym.sym ) {
 
@@ -354,44 +426,70 @@ static void handle_key( SDL_KeyboardEvent *key, struct GameData *GD, bool down){
       break;
 
     case SDLK_LEFT:
-      if(down && podeMover) {     
-        if (Player->estado2 == Pendurado){
-          move_player_sideways(GD,1);
-        }
-        else{
-          GD->Player->Rotaciona(0);
+      if(down) {   
+        //arrowPosition.x += 1;  
+        if (podeMover){
+          if (Player->estado2 == Pendurado){
+            move_player_sideways(GD,1);
+          }
+          else{
+            GD->Player->Rotaciona(0);
+          }
         }
       }
       break;
       
     case SDLK_RIGHT:
-      if(down && podeMover) {
-        if (Player->estado2 == Pendurado){
-          move_player_sideways(GD,0);
-        }
-        else{
-          GD->Player->Rotaciona(1);
+      if(down) {
+        //arrowPosition.x -= 1;
+        if (podeMover){
+          if (Player->estado2 == Pendurado){
+            move_player_sideways(GD,0);
+          }
+          else{
+            GD->Player->Rotaciona(1);
+          }
         }
       }
       break;
 
     case SDLK_DOWN:
-      if(down && podeMover) {
-        if (Player->estado2 == Pendurado){
-          Player->estado2 = Normal;
-          Player->cai();
-          logfile << "\n handle_key >> solta da beirada \n";
-          logfile << Player->PlayerToString();
-          //Player->mexe(posicao(Player->pos) + velocidade(0,-1,0),velocidade(0,-1,0));
+      if(down) {
+        //arrowPosition.y += 1;
+        if (podeMover){
+          if (Player->estado2 == Pendurado){
+            Player->estado2 = Normal;
+            Player->cai();
+            logfile << "\n handle_key >> solta da beirada \n";
+            logfile << Player->PlayerToString();
+            //Player->mexe(posicao(Player->pos) + velocidade(0,-1,0),velocidade(0,-1,0));
+          }
+          else
+            move_player_back(GD, hold_ctrl);
         }
-        else
-          move_player_back(GD, hold_ctrl);
+        if (emTela){
+          logfile << "\n handle_key >> entrou \n";
+          if (tela->temOpcao2) tela->selecionaOpcao1 = !tela->selecionaOpcao1;
+        }
       }
       break;
 
     case SDLK_UP:
-      if(down && podeMover) {
-        move_player_front(GD, hold_ctrl);
+      if(down) {
+        //arrowPosition.y -= 1;
+        if (podeMover)
+          move_player_front(GD, hold_ctrl);
+        if (emTela){
+          if (tela->temOpcao2) tela->selecionaOpcao1 = !tela->selecionaOpcao1;
+        }
+      }
+      break;
+    
+    case SDLK_RETURN:
+      if(down && emTela) {
+
+        logfile << "\nHandle Key << proxima \n";
+        ProximaAcao (GD,tela);
       }
       break;
 
@@ -452,31 +550,10 @@ static void handle_key( SDL_KeyboardEvent *key, struct GameData *GD, bool down){
       }
       break;
 
-
-      
-    // case SDLK_d: // controle de altura
-    //   if(down) {
-    //     Camera->setPos(posicao(Camera->pos)+posicao(0,1,0));
-    //   }
-    //   break;
-
-    // case SDLK_f:
-    //   if(down) {
-    //     Camera->setPos(posicao(Camera->pos)+posicao(0,-1,0));
-    //   }
-    //   break; 
-
-    // case SDLK_g: //
-    //   if(down) Camera->setPos(posicao(Camera->pos)+posicao(0,0,1));
-    //   break;
-
-    // case SDLK_h:
-    //   if(down) Camera->setPos(posicao(Camera->pos)+posicao(0,0,-1));
-    //   break; 
-
     case SDLK_p:
       if(down) {
-        logfile <<"\n" << CameraToString(GD) << "\n";
+        //logfile <<"\n" << CameraToString(GD) << "\n";
+        logfile <<"\n" << ArrowToString() << "\n";
         }
       break; 
 
@@ -586,15 +663,17 @@ static void UpdateLista(LLBlocos * ListaUpdate, torre * Torre, player * Player){
   //else logfile << "\n----------lista update vazia\n";
 }
 
-static void process_events(struct GameData *GD){
+static void process_events(struct GameData *GD, struct Tela *tela = NULL){
     /* Our SDL event placeholder. */
+
     SDL_Event event;
 
     //UpdateCamera(GD->Camera);
+    if (estadoJogo == EmJogo){
+      UpdateLista(GD->ListaUpdate, GD->Torre, GD->Player);
 
-    UpdateLista(GD->ListaUpdate, GD->Torre, GD->Player);
-
-    UpdatePlayer(GD->Player, GD->Torre);
+      UpdatePlayer(GD->Player, GD->Torre);
+    }
 
     /* Grab all the events off the queue. */
     while( SDL_PollEvent( &event ) ) {
@@ -602,7 +681,7 @@ static void process_events(struct GameData *GD){
       switch( event.type ) {
         case SDL_KEYDOWN:
           /* Handle key presses. */
-          handle_key( &event.key, GD, true);
+          handle_key( &event.key, GD, true, tela);
           
           break;
         case SDL_KEYUP:
@@ -734,6 +813,30 @@ void draw_screen(SDL_Window *Window,
   SDL_GL_SwapWindow(Window);
 }
 
+void draw_menu(SDL_Window *Window,
+		 struct Tela *tela, SDL_Surface *arrow){
+
+  SDL_Surface* gScreenSurface = SDL_GetWindowSurface( Window );
+  
+  //Apply the image
+  SDL_BlitSurface( tela->background, NULL, gScreenSurface, NULL );
+
+  if(tela->selecionaOpcao1){
+    arrowPosition.x=tela->x1;
+    arrowPosition.y=tela->y1;
+  }
+  else {
+    arrowPosition.x=tela->x2;
+    arrowPosition.y=tela->y2;
+  }
+  
+  //Apply the arrow
+  SDL_BlitSurface( arrow, NULL, gScreenSurface, &arrowPosition );
+
+  //Update the surface
+  SDL_UpdateWindowSurface( Window );
+}
+
 static void setup_opengl( int width, int height ){
   float ratio = (float) width / (float) height;
   static GLfloat light_pos[] = { 0.0f, 0.0f,  0.0f, 1.0f };
@@ -776,7 +879,6 @@ static void setup_opengl( int width, int height ){
   //glFrustum(-width/2, width/2, -height/2, height/2, 200.0, 1024.0);
 }
 
-
 int main( int argc, char* argv[] ){
   //if (literate) printf("Cria estruturas\n");
   struct GameData GD;
@@ -788,6 +890,11 @@ int main( int argc, char* argv[] ){
   GD.theta_y = -30.0;
   GD.cx = 3;
   GD.cz = 3;
+
+  struct Tela TelaMenu;
+  struct Tela TelaPause;
+  struct Tela TelaGameOver;
+  struct Tela TelaNext;
 
   logfile.open ("logfile.txt");
   logfile << "Log\n";
@@ -801,19 +908,52 @@ int main( int argc, char* argv[] ){
   GLuint tex[numTex];
   SDL_Surface *img = NULL;
 
-  /* First, initialize SDL's video subsystem. */
+  SDL_Surface *imgArrow = SDL_LoadBMP("texture/arrow.bmp");
+
+  TelaMenu.background = SDL_LoadBMP("texture/TelasMenuBMP/1.bmp");
+  TelaMenu.nomeTela = MenuInicial;
+  TelaMenu.x1=654;
+  TelaMenu.y1=290;
+  TelaMenu.x2=680;
+  TelaMenu.y2=352;
+
+  TelaPause.background = SDL_LoadBMP("texture/TelasMenuBMP/2.bmp");
+  TelaPause.nomeTela = MenuPause;
+  TelaPause.x1=635;
+  TelaPause.y1=288;
+  TelaPause.x2=680;
+  TelaPause.y2=349;
+
+  TelaGameOver.background = SDL_LoadBMP("texture/TelasMenuBMP/3.bmp");
+  TelaGameOver.nomeTela = GameOver;
+  TelaGameOver.x1=601;
+  TelaGameOver.y1=288;
+  TelaGameOver.temOpcao2 = false;
+
+  TelaNext.background = SDL_LoadBMP("texture/TelasMenuBMP/4.bmp");
+  TelaNext.nomeTela = Next;
+  TelaNext.x1=702;
+  TelaNext.y1=352;
+  TelaNext.temOpcao2 = false;
+
+  SDL_Surface *imgTelaPause = NULL;
+  SDL_Surface *imgTelaGameOver = NULL;
+  SDL_Surface *imgTelaNext = NULL;
+
   
-    if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0 ) {
-    fprintf( stderr, "Video initialization failed: %s\n",
-    SDL_GetError( ) );
-    quit_game( 1 );
-    }
-    //Initialize SDL_mixer
-    if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 )
-    {
-        printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
-        //success = false;
-    }
+/* First, initialize SDL's video subsystem. */
+
+  if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) < 0 ) {
+  fprintf( stderr, "Video initialization failed: %s\n",
+  SDL_GetError( ) );
+  quit_game( 1 );
+  }
+  //Initialize SDL_mixer
+  if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 )
+  {
+      printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
+      //success = false;
+  }
   
 
  //Load music
@@ -979,8 +1119,7 @@ int main( int argc, char* argv[] ){
   
   
   
-  if (literate) printf("Carrega Mapa\n");
-  //LoadMap(&GD, "mapa/01.txt");
+  //if (literate) printf("Carrega Mapa\n");
   LoadMap(&GD, "mapa/fase01.txt");
 
   /*
@@ -988,24 +1127,51 @@ int main( int argc, char* argv[] ){
    * an event loop with a lot of redrawing.
    */
 
-  if (literate) printf("Comeca jogo\n");
   //Play the music
   Mix_PlayMusic( gMusic, -1 );
-  while( estadoJogo == EmJogo ) {
-    /* Process incoming events. */
-    process_events(&GD);
 
-    /* Draw the screen. */
-    draw_screen(Window, &GD, tex);
+  while( 1 ) {
+
+    if (estadoJogo == Menu){
+      process_events(&GD,&TelaMenu);
+      draw_menu(Window, &TelaMenu, imgArrow);
+    }
+
+
+    if (estadoJogo == Pause){
+      process_events(&GD,&TelaPause);
+      draw_menu(Window, &TelaPause, imgArrow);
+    }
+
+    if (estadoJogo == EmJogo){
+      process_events(&GD);
+      draw_screen(Window, &GD, tex);
+    }
+
+    if (estadoJogo == Derrota){
+      process_events(&GD,&TelaGameOver);
+      draw_menu(Window, &TelaGameOver, imgArrow);
+    }
+
+    if (estadoJogo == Vitoria){
+      process_events(&GD,&TelaNext);
+      draw_menu(Window, &TelaNext, imgArrow);
+    }
   }
-  if (estadoJogo == Vitoria){
-    printf("Vitoria!\n");
-    logfile << "Vitoria!";
-  }
-  else if (estadoJogo == Derrota){
-    printf("Derrota!\n");
-    logfile << "Derrota!";
-  }
+  
+  // while( estadoJogo == EmJogo || estadoJogo==Pause) {
+  //   /* Process incoming events. */
+  //   process_events(&GD,&TelaMenu);
+
+  //   /* Draw the screen. */
+  //   if (estadoTela == Fase)
+  //     draw_screen(Window, &GD, tex);
+  //   else {
+  //     //draw_menu(Window, imgTelaMenu, imgArrow, arrowPosition);
+  //     draw_menu(Window, &TelaMenu, imgArrow);
+  //     //game over, next
+  //   }
+
   logfile.close();
   /*
    * EXERCISE:
@@ -1017,25 +1183,3 @@ int main( int argc, char* argv[] ){
   /* Never reached. */
   return 0;
 }
-
-// music = Mix_LoadMUS(MY_COOL_OGG);
-//   if(music == NULL) {
-//     printf("Unable to load Ogg file: %s\n", Mix_GetError());
-//     exit(1);
-//   }
-  
-//   if(Mix_PlayMusic(music, 0) == -1) {
-//     printf("Unable to play Ogg file: %s\n", Mix_GetError());
-//     exit(1);
-//   }
-// int audio_rate = 22050;
-//   Uint16 audio_format = AUDIO_S16SYS;
-//   int audio_channels = 2;
-//   int audio_buffers = 4096;
- 
-//   if(Mix_OpenAudio(audio_rate, audio_format, audio_channels, audio_buffers) != 0) {
-//     fprintf(stderr, "Unable to initialize audio: %s\n", Mix_GetError());
-//     exit(1);
-//   }
-
-// static const char *MY_COOL_OGG = "SabatonSmokingSnakes.ogg";

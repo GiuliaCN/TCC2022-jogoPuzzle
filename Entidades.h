@@ -280,6 +280,7 @@ class torre
         void deletaAndarRec(andar * a);
         int nAndares;       
         void adicionaAndar(string s);
+        void Reset();
     public:
         torre();
         ~torre();
@@ -298,7 +299,6 @@ class torre
         void desceAndar ();
         LLBlocos * updateAndar (andar * a);
         //void Copia (torre * t);
-        //void Reset();
         void adicionaBloco (block * b);
         LLBlocos * EjetaBlocosSemSuporte(andar * a);
         tipoColisao ChecaColisao(block * b);

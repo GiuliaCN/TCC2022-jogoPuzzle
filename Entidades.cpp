@@ -242,7 +242,13 @@ void camera::SetCamera(string s){
 
 // ------------------------------------------ PLAYER -----------------------------------
 
-player::player(){}
+player::player(){
+    pos = new posicao;
+    posLim = new posicao;
+    vel = new velocidade;
+    rotacao = new velocidade;
+    posAgarrar = new posicao;
+}
 
 void player::setRotacao(velocidade r){
     rotacao->vx = r.vx;
@@ -332,11 +338,6 @@ string player::PlayerToString(){
 }
 
 void player::SetPlayer(string s){
-    pos = new posicao;
-    posLim = new posicao;
-    vel = new velocidade;
-    rotacao = new velocidade;
-    posAgarrar = new posicao;
     estado = Parado;
     estado2 = Normal;
     animacao = AnimNormal;
@@ -635,7 +636,10 @@ tipoColisao andar::ColisaoAndar(entidade * e){
 }
 
 andar::~andar(){
-    // this->Reset();
+    cout << "deleta andar id =" << id << "\n";
+    if (prox == nullptr)
+        delete Lista;
+    else delete prox;
 }
 
 
@@ -688,6 +692,8 @@ void torre::SetTorre(string filename){
     ifstream arquivo;
     string line;
     string conjunto = "";
+
+    if (primeiroAndar != nullptr) Reset();
 
     arquivo.open (filename);
     if (!arquivo.is_open()) perror ("Error opening file");
@@ -787,11 +793,11 @@ void torre::deletaAndarRec(andar * a){
     delete a;
 }
 
-// void torre::Reset(){
-//     deletaAndarRec(primeiroAndar);
-//     primeiroAndar=nullptr;
-//     nAndares=0;
-// }
+void torre::Reset(){
+    delete primeiroAndar;
+    primeiroAndar=nullptr;
+    nAndares=0;
+}
 
 LLBlocos * torre::EjetaBlocosSemSuporte(andar * a){
     LLBlocos * BlocosSemSuporte = new LLBlocos;
