@@ -207,6 +207,7 @@ class block: public entidade
     public:
         block();
         block(posicao p, int t);
+        block(posicao p, tipoBloco t);
         ~block();
 
         block * prox;
@@ -235,6 +236,7 @@ class LLBlocos
         block * RetornaBloco(posicao p);
         void EjetaBloco(block * b);
         void AdicionaBloco(posicao p, int t);
+        void AdicionaBloco(posicao p, tipoBloco t);
         void AdicionaBloco(block * b);
         void RemoveBloco(posicao p);
         void RemoveBloco(block * b);
@@ -265,6 +267,7 @@ class andar
 
         bool coordenadaOcupada (posicao p);
         void AdicionaBloco(posicao p, int t);
+        void AdicionaBloco(posicao p, tipoBloco t);
         void AdicionaBloco(block * b);
         void RemoveBloco(posicao p);
         bool temSuporte (block * b);
@@ -278,12 +281,13 @@ class torre
 {
     private:
         void deletaAndarRec(andar * a);
-        int nAndares;       
         void adicionaAndar(string s);
-        void Reset();
+        
     public:
         torre();
         ~torre();
+
+        int nAndares;       
 
         andar * primeiroAndar;
         andar * andarAtual;
@@ -294,11 +298,9 @@ class torre
         void DeletaBloco (posicao p);
         andar * retornaAndarN (int n);
         void SetTorre (string filename);
-        void vaiParaAndar (int n);
-        void sobeAndar ();
-        void desceAndar ();
         LLBlocos * updateAndar (andar * a);
         //void Copia (torre * t);
+        void Reset();
         void adicionaBloco (block * b);
         LLBlocos * EjetaBlocosSemSuporte(andar * a);
         tipoColisao ChecaColisao(block * b);
@@ -309,16 +311,24 @@ class torre
         bool coordenadaOcupada (posicao p);
 };
 
-// class desfaz
-// {
-//     private:
-//         torre * ListaTorreInstancias[NUM_DESFAZ];
-//         player * ListaPlayerInstancias[NUM_DESFAZ];
-//         int indexAtual;
-//     public:
-//         desfaz();
-//         void CriaInstancia(torre * T, player * P);
-//         bool DesfazAcao(torre * T, player * P); // false se não conseguir (numero maximo de desfaz)
-// };
+class desfaz
+{
+    private:
+        torre * ListaTorreInstancias[NUM_DESFAZ];
+        player * ListaPlayerInstancias[NUM_DESFAZ];
+        int indexAtual;
+        andar * CriaAndar(andar * A);
+        void copiaTorre(torre * T);
+        void copiaAndar(andar * A, torre * TorreAlvo);
+        void copiaPlayer(player * P);
+        void setTorre(torre * T);
+        void setPlayer(player * P);
+    public:
+        desfaz();
+        ~desfaz();
+        void ClearDesfaz();
+        void CriaInstancia(torre * T, player * P);
+        bool DesfazAcao(torre * T, player * P); // false se não conseguir (numero maximo de desfaz)
+};
 
 #endif /* ENTIDADES_H */

@@ -63,6 +63,7 @@ struct GameData{
   float theta_y;
   int cx, cz;
   LLBlocos * ListaUpdate;
+  desfaz * Desfaz;
 };
 
 struct Tela{
@@ -74,6 +75,18 @@ struct Tela{
   bool temOpcao2 = true;
 };
 
+void CriaInstanciaDesfaz(struct GameData *GD){
+  logfile << "\n CriaInstanciaDesfaz >> entra\n";
+  GD->Desfaz->CriaInstancia(GD->Torre,GD->Player);
+}
+
+void AplicaDesfaz(struct GameData *GD){
+  logfile << "\n AplicaDesfaz >> entra\n";
+  if (GD->Desfaz->DesfazAcao(GD->Torre,GD->Player))
+    logfile << "AplicaDesfaz >> sucesso\n";
+  else
+    logfile << "AplicaDesfaz >> nao pode desfazer\n";
+}
 
 SDL_Surface *load_image( char *filename ) { 
   //The image that's loaded 
@@ -142,6 +155,7 @@ string ArrowToString (){
 void LoadMap (struct GameData *GD, string filename){
   ifstream arquivo;
   string line;
+  GD->Desfaz->ClearDesfaz();
 
   arquivo.open (filename);
   if (arquivo.is_open()){
@@ -201,7 +215,7 @@ void UpdateAndar(LLBlocos * ListaUpdate, torre * Torre, int n){
     {
       aux = b;
       b = b->prox;
-      logfile << "\n checa suporte de " << aux->BlocoToString() << "\n";
+      //logfile << "\n checa suporte de " << aux->BlocoToString() << "\n";
       if (aux ->tipo==Movel && ! base->temSuporte(aux)){
         logfile << "\n cai bloco \n ";
         houveMudanca = true;
@@ -211,10 +225,10 @@ void UpdateAndar(LLBlocos * ListaUpdate, torre * Torre, int n){
         ListaUpdate->AdicionaBloco(aux);
       }
     }
-    logfile << "\n Andar atual depois: " << atual->AndarToString() << "\n";
+    //logfile << "\n Andar atual depois: " << atual->AndarToString() << "\n";
     //logfile << "\n Andar base depois: " << base->AndarToString() << "\n";
     if (houveMudanca) {
-      logfile << "\n houve mudanca \n ";
+      //logfile << "\n houve mudanca \n ";
       UpdateAndar(ListaUpdate, Torre, n+1);
     }
   }  
@@ -239,14 +253,16 @@ void move_player_front(struct GameData *GD, bool push){
   }
   // com bloco na frente
   else {
-    logfile << "\n ComBlocoNaFrente \n";
+    logfile << "ComBlocoNaFrente \n";
     // esta empurrando
+    logfile << "bloco tipo:" << b->tipo <<"\n";
     if (push && b->tipo == Movel){
       // checa se pode
-      logfile << "\n ChecaEmpurrar \n";
+      logfile << "ChecaEmpurrar \n";
       posicao posBlocoAtras = posDesejada + velocidade(Player->rotacao);
       if (Torre->retornaBloco(posBlocoAtras) == nullptr){
-        logfile << "\n Empurra \n";
+        logfile << "Empurra \n";
+        CriaInstanciaDesfaz(GD);
         b->mexe(posBlocoAtras, velocidade(Player->rotacao));
         Player->animacao = AnimEmpurra;
         Torre->EjetaBloco(b);
@@ -283,14 +299,16 @@ void move_player_back(struct GameData *GD, bool pull){
   bool temChaoTras = Torre->retornaBloco(posChaoTras) != nullptr;
   // checa se pode ir para tras
   if (podeIrAtras){
-    logfile << "\nSem bloco atras do player\n";
+    logfile << "Sem bloco atras do player\n";
     // puxa se tiver bloco
     if (pull && blocoNaFrente != nullptr && blocoNaFrente->tipo==Movel){
-        blocoNaFrente->mexe(posicao(Player->pos), velocidade(Player->rotacao)*(-1));
-        Torre->EjetaBloco(blocoNaFrente);
-        GD->ListaUpdate->AdicionaBloco(blocoNaFrente);
-        Player->animacao = AnimPuxa;
-        //UpdateAndar(GD->ListaUpdate, Torre, blocoNaFrente->pos->y);
+      logfile << "move_player_back >> puxa\n";
+      CriaInstanciaDesfaz(GD);
+      blocoNaFrente->mexe(posicao(Player->pos), velocidade(Player->rotacao)*(-1));
+      Torre->EjetaBloco(blocoNaFrente);
+      GD->ListaUpdate->AdicionaBloco(blocoNaFrente);
+      Player->animacao = AnimPuxa;
+      //UpdateAndar(GD->ListaUpdate, Torre, blocoNaFrente->pos->y);
     }
     else Player->animacao = AnimAnda;
 
@@ -422,8 +440,10 @@ static void handle_key( SDL_KeyboardEvent *key, struct GameData *GD, bool down,
       if(down) quit_game( 0 );
       break;
 
-    case SDLK_SPACE:
+    case SDLK_SPACE:      
+      if(down && podeMover) AplicaDesfaz(GD);
       break;
+
 
     case SDLK_LEFT:
       if(down) {   
@@ -553,7 +573,8 @@ static void handle_key( SDL_KeyboardEvent *key, struct GameData *GD, bool down,
     case SDLK_p:
       if(down) {
         //logfile <<"\n" << CameraToString(GD) << "\n";
-        logfile <<"\n" << ArrowToString() << "\n";
+        //logfile <<"\n" << ArrowToString() << "\n";
+        logfile << GD->Torre->TorreToString() << "\n";
         }
       break; 
 
@@ -638,14 +659,14 @@ static void UpdateLista(LLBlocos * ListaUpdate, torre * Torre, player * Player){
       b=b->prox;
       if (aux->estado != Movimento){
         tipoColisao colisao = Torre->ChecaColisao(aux);
-        logfile << "\n" << aux->BlocoToString() << " \n";
+        logfile << "\nUpdateLista >> tipo de colisao: " << colisao << " \n";
         if (colisao == ColisaoDeApoio){
-          logfile << "\n Colisao de apoio \n";
+          //logfile << "\n Colisao de apoio \n";
           aux->para();
           ListaUpdate->EjetaBloco(aux);
           Torre->adicionaBloco(aux);
-          logfile << "\n lista: " << ListaUpdate->ListaToString() << "\n";
-          logfile << "\n andar: " << Torre->retornaAndarN(aux->pos->y)->AndarToString() << "\n";
+          //logfile << "\n lista: " << ListaUpdate->ListaToString() << "\n";
+          //logfile << "\n andar: " << Torre->retornaAndarN(aux->pos->y)->AndarToString() << "\n";
           logfile << "\n ------------\n";
 
           // gambiarra ?
@@ -885,7 +906,8 @@ int main( int argc, char* argv[] ){
   GD.Player = new player;
   GD.Torre = new torre;
   GD.ListaUpdate = new LLBlocos;
-  //GD.Camera = new camera;
+  GD.Desfaz = new desfaz;
+
   GD.zoom = -300;
   GD.theta_y = -30.0;
   GD.cx = 3;
@@ -984,140 +1006,142 @@ int main( int argc, char* argv[] ){
    * not affect the GL attribute state, only
    * the standard 2D blitting setup.
      */
-  SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
-  SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 5 );
-  SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );
-  SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
-  SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-  
-  /*
-   * At this point, we should have a properly setup
-   * double-buffered window for use with OpenGL.
-   */
-  setup_opengl( width, height );
+    //set texturas etc
+    if (1){
+      SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
+      SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 5 );
+      SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );
+      SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
+      SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+      
+      /*
+      * At this point, we should have a properly setup
+      * double-buffered window for use with OpenGL.
+      */
+      setup_opengl( width, height );
 
-  glEnable(GL_TEXTURE_2D);
-  glGenTextures(6, tex);
+      glEnable(GL_TEXTURE_2D);
+      glGenTextures(6, tex);
 
-  glBindTexture(GL_TEXTURE_2D, tex[0]);
-  glTexParameteri(GL_TEXTURE_2D,
-		  GL_TEXTURE_MAG_FILTER,
-		  GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D,
-		  GL_TEXTURE_MIN_FILTER,
-		  GL_LINEAR);
-  img = load_image((char *)"texture/wall_texture2.png");
-  glTexImage2D(GL_TEXTURE_2D, 0,
-	       GL_RGB, 512, 512, 0,
-	       GL_RGB, GL_UNSIGNED_BYTE,
-	       img->pixels);
+      glBindTexture(GL_TEXTURE_2D, tex[0]);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MAG_FILTER,
+          GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MIN_FILTER,
+          GL_LINEAR);
+      img = load_image((char *)"texture/wall_texture2.png");
+      glTexImage2D(GL_TEXTURE_2D, 0,
+            GL_RGB, 512, 512, 0,
+            GL_RGB, GL_UNSIGNED_BYTE,
+            img->pixels);
 
-  glBindTexture(GL_TEXTURE_2D, tex[1]);
-  glTexParameteri(GL_TEXTURE_2D,
-		  GL_TEXTURE_MAG_FILTER,
-		  GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D,
-		  GL_TEXTURE_MIN_FILTER,
-		  GL_LINEAR);
-  img = load_image((char *)"texture/wall_texture_sup2.png");
-  glTexImage2D(GL_TEXTURE_2D, 0,
-	       GL_RGB, 512, 512, 0,
-	       GL_RGB, GL_UNSIGNED_BYTE,
-	       img->pixels);
-   
-  glBindTexture(GL_TEXTURE_2D, tex[2]);
-  glTexParameteri(GL_TEXTURE_2D,
-		  GL_TEXTURE_MAG_FILTER,
-		  GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D,
-		  GL_TEXTURE_MIN_FILTER,
-		  GL_LINEAR);
-  img = load_image((char *)"texture/monsterplant_c.png");
-  glTexImage2D(GL_TEXTURE_2D, 0,
-	       GL_RGB, 2048, 2048, 0,
-	       GL_RGB, GL_UNSIGNED_BYTE,
-	       img->pixels);
+      glBindTexture(GL_TEXTURE_2D, tex[1]);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MAG_FILTER,
+          GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MIN_FILTER,
+          GL_LINEAR);
+      img = load_image((char *)"texture/wall_texture_sup2.png");
+      glTexImage2D(GL_TEXTURE_2D, 0,
+            GL_RGB, 512, 512, 0,
+            GL_RGB, GL_UNSIGNED_BYTE,
+            img->pixels);
+      
+      glBindTexture(GL_TEXTURE_2D, tex[2]);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MAG_FILTER,
+          GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MIN_FILTER,
+          GL_LINEAR);
+      img = load_image((char *)"texture/monsterplant_c.png");
+      glTexImage2D(GL_TEXTURE_2D, 0,
+            GL_RGB, 2048, 2048, 0,
+            GL_RGB, GL_UNSIGNED_BYTE,
+            img->pixels);
 
-  
-  glBindTexture(GL_TEXTURE_2D, tex[3]);
-  glTexParameteri(GL_TEXTURE_2D,
-		  GL_TEXTURE_MAG_FILTER,
-		  GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D,
-		  GL_TEXTURE_MIN_FILTER,
-		  GL_LINEAR);
-  img = load_image((char *)"texture/face_monsterplant_2.png");
-  glTexImage2D(GL_TEXTURE_2D, 0,
-	       GL_RGB, 1024, 1024, 0,
-	       GL_RGB, GL_UNSIGNED_BYTE,
-	       img->pixels);
+      
+      glBindTexture(GL_TEXTURE_2D, tex[3]);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MAG_FILTER,
+          GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MIN_FILTER,
+          GL_LINEAR);
+      img = load_image((char *)"texture/face_monsterplant_2.png");
+      glTexImage2D(GL_TEXTURE_2D, 0,
+            GL_RGB, 1024, 1024, 0,
+            GL_RGB, GL_UNSIGNED_BYTE,
+            img->pixels);
 
-  glBindTexture(GL_TEXTURE_2D, tex[4]);
-  glTexParameteri(GL_TEXTURE_2D,
-		  GL_TEXTURE_MAG_FILTER,
-		  GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D,
-		  GL_TEXTURE_MIN_FILTER,
-		  GL_LINEAR);
-  img = load_image((char *)"texture/umbigo.png");
-  glTexImage2D(GL_TEXTURE_2D, 0,
-	       GL_RGB, 64, 64, 0,
-	       GL_RGB, GL_UNSIGNED_BYTE,
-	       img->pixels);
+      glBindTexture(GL_TEXTURE_2D, tex[4]);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MAG_FILTER,
+          GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MIN_FILTER,
+          GL_LINEAR);
+      img = load_image((char *)"texture/umbigo.png");
+      glTexImage2D(GL_TEXTURE_2D, 0,
+            GL_RGB, 64, 64, 0,
+            GL_RGB, GL_UNSIGNED_BYTE,
+            img->pixels);
 
-  glBindTexture(GL_TEXTURE_2D, tex[5]);
-  glTexParameteri(GL_TEXTURE_2D,
-		  GL_TEXTURE_MAG_FILTER,
-		  GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D,
-		  GL_TEXTURE_MIN_FILTER,
-		  GL_LINEAR);  
-  img = load_image((char *)"texture/block-fixo/1.png");
-  glTexImage2D(GL_TEXTURE_2D, 0,
-	       GL_RGBA, 512, 512, 0,
-	       GL_RGBA, GL_UNSIGNED_BYTE,
-	       img->pixels);
-  glBindTexture(GL_TEXTURE_2D, tex[6]);
-  glTexParameteri(GL_TEXTURE_2D,
-		  GL_TEXTURE_MAG_FILTER,
-		  GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D,
-		  GL_TEXTURE_MIN_FILTER,
-		  GL_LINEAR);  
-  img = load_image((char *)"texture/block-fixo/5.png");
-  glTexImage2D(GL_TEXTURE_2D, 0,
-	       GL_RGBA, 512, 512, 0,
-	       GL_RGBA, GL_UNSIGNED_BYTE,
-	       img->pixels);
+      glBindTexture(GL_TEXTURE_2D, tex[5]);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MAG_FILTER,
+          GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MIN_FILTER,
+          GL_LINEAR);  
+      img = load_image((char *)"texture/block-fixo/1.png");
+      glTexImage2D(GL_TEXTURE_2D, 0,
+            GL_RGBA, 512, 512, 0,
+            GL_RGBA, GL_UNSIGNED_BYTE,
+            img->pixels);
+      glBindTexture(GL_TEXTURE_2D, tex[6]);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MAG_FILTER,
+          GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MIN_FILTER,
+          GL_LINEAR);  
+      img = load_image((char *)"texture/block-fixo/5.png");
+      glTexImage2D(GL_TEXTURE_2D, 0,
+            GL_RGBA, 512, 512, 0,
+            GL_RGBA, GL_UNSIGNED_BYTE,
+            img->pixels);
 
-// bloco final
-  glBindTexture(GL_TEXTURE_2D, tex[7]);
-  glTexParameteri(GL_TEXTURE_2D,
-		  GL_TEXTURE_MAG_FILTER,
-		  GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D,
-		  GL_TEXTURE_MIN_FILTER,
-		  GL_LINEAR);  
-  img = load_image((char *)"texture/block_final/1.png");
-  glTexImage2D(GL_TEXTURE_2D, 0,
-	       GL_RGBA, 512, 512, 0,
-	       GL_RGBA, GL_UNSIGNED_BYTE,
-	       img->pixels);
-// ---
-  glBindTexture(GL_TEXTURE_2D, tex[8]);
-  glTexParameteri(GL_TEXTURE_2D,
-		  GL_TEXTURE_MAG_FILTER,
-		  GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D,
-		  GL_TEXTURE_MIN_FILTER,
-		  GL_LINEAR);  
-  img = load_image((char *)"texture/block_final/2.png");
-  glTexImage2D(GL_TEXTURE_2D, 0,
-	       GL_RGBA, 512, 512, 0,
-	       GL_RGBA, GL_UNSIGNED_BYTE,
-	       img->pixels);
-  
-  
+    // bloco final
+      glBindTexture(GL_TEXTURE_2D, tex[7]);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MAG_FILTER,
+          GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MIN_FILTER,
+          GL_LINEAR);  
+      img = load_image((char *)"texture/block_final/1.png");
+      glTexImage2D(GL_TEXTURE_2D, 0,
+            GL_RGBA, 512, 512, 0,
+            GL_RGBA, GL_UNSIGNED_BYTE,
+            img->pixels);
+    // ---
+      glBindTexture(GL_TEXTURE_2D, tex[8]);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MAG_FILTER,
+          GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MIN_FILTER,
+          GL_LINEAR);  
+      img = load_image((char *)"texture/block_final/2.png");
+      glTexImage2D(GL_TEXTURE_2D, 0,
+            GL_RGBA, 512, 512, 0,
+            GL_RGBA, GL_UNSIGNED_BYTE,
+            img->pixels);
+      
+    }
   
   //if (literate) printf("Carrega Mapa\n");
   LoadMap(&GD, "mapa/fase01.txt");
@@ -1159,27 +1183,7 @@ int main( int argc, char* argv[] ){
     }
   }
   
-  // while( estadoJogo == EmJogo || estadoJogo==Pause) {
-  //   /* Process incoming events. */
-  //   process_events(&GD,&TelaMenu);
-
-  //   /* Draw the screen. */
-  //   if (estadoTela == Fase)
-  //     draw_screen(Window, &GD, tex);
-  //   else {
-  //     //draw_menu(Window, imgTelaMenu, imgArrow, arrowPosition);
-  //     draw_menu(Window, &TelaMenu, imgArrow);
-  //     //game over, next
-  //   }
-
   logfile.close();
-  /*
-   * EXERCISE:
-   * Record timings using SDL_GetTicks() and
-   * and print out frames per second at program
-   * end.
-   */
-  
-  /* Never reached. */
+
   return 0;
 }

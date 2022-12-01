@@ -377,27 +377,6 @@ void player::Rotaciona(bool clockwise){
     setRotacao(rotacoes[iRotacao]);
 }
 
-// void player::Copia(player * p){
-//     iRotacao = p->iRotacao;
-//     x=p->x;
-//     z=p->z;
-//     andarAtual = p->andarAtual;
-//     rotacao[0]= p->rotacao[0];
-//     rotacao[1]= p->rotacao[1];
-//     estaCaindo = p->estaCaindo;
-//     estaPendurado = p->estaPendurado;
-// }
-
-// void player::mexe(posicao _posLim, velocidade _vel){
-//     estado = Movimento;
-//     //setVel(velocidade(rotacao));
-//     setVel(velocidade(rotacao) + velocidade(vel));
-//     vMag = velPlayer;
-//     posLim->x = _posLim.x;
-//     posLim->y = _posLim.y;
-//     posLim->z = _posLim.z;
-// }
-
 // ------------------------------------------ BLOCO -----------------------------------
 block::block(){}
 
@@ -411,12 +390,15 @@ block::block(posicao p, int t) {
     tipo = static_cast<tipoBloco>(t-1);
 }
 
-// void block::mexe(posicao _posLim, velocidade _vel){
-//     estado = Movimento;
-//     setVel(_vel);
-//     vMag = velBlock;
-//     setPosLim(_posLim);
-// }
+block::block(posicao p, tipoBloco t) {
+    pos= new posicao(p);
+    vel = new velocidade();
+    posLim = new posicao();
+    prox = nullptr; 
+    ant = nullptr; 
+    estado = Parado;
+    tipo = t;
+}
 
 bool block::estaEmCoordenada(posicao p){
     return *pos == p;
@@ -460,18 +442,6 @@ string LLBlocos::ListaToString(){
 }
 
 void LLBlocos::AdicionaBloco(block * b){
-    // if (lista == nullptr) {
-    //     lista = b;
-    //     b->ant = nullptr;
-    //     b->prox = nullptr;
-    //     }
-
-    // else{
-    //     b->ant = nullptr;
-    //     lista->ant = b;
-    //     b->prox = lista;
-    //     lista = b;
-    // }
     if (lista == nullptr) lista = b;
     else {
         b ->prox = lista;
@@ -481,6 +451,11 @@ void LLBlocos::AdicionaBloco(block * b){
 }
 
 void LLBlocos::AdicionaBloco(posicao p, int t){
+    block * Bloco = new block(p, t);
+    AdicionaBloco(Bloco);
+}
+
+void LLBlocos::AdicionaBloco(posicao p, tipoBloco t){
     block * Bloco = new block(p, t);
     AdicionaBloco(Bloco);
 }
@@ -552,10 +527,15 @@ void LLBlocos::UneListas(LLBlocos * LLB){
 
 // ------------------------------------------ ANDAR ------------------------------------------
 
-andar::andar(){}
+andar::andar(){
+    Lista = new LLBlocos();
+    andar * prox = nullptr;
+    andar * ant = nullptr;
+}
 
 bool andar::coordenadaOcupada (posicao p){ return Lista->contem(p); }
 void andar::AdicionaBloco(posicao p, int t) { Lista->AdicionaBloco(p,t); }
+void andar::AdicionaBloco(posicao p, tipoBloco t) { Lista->AdicionaBloco(p,t); }
 void andar::AdicionaBloco(block * b) { Lista->AdicionaBloco(b); }
 void andar::RemoveBloco(posicao p){ Lista->RemoveBloco(p); }
 block * andar::RetornaBloco(posicao p) { return Lista->RetornaBloco(p); }
@@ -607,22 +587,6 @@ andar::andar(string s, int n){
     }
 }
 
-// void andar::Copia(andar * a){
-//     id = a->id;
-//     prox = nullptr;
-//     ant = nullptr;
-//     for (block * p = a->Lista; p != nullptr; p = p->prox){
-//         this->AdicionaBloco(p->x,p->z);
-//     }
-// }
-
-// void andar::Reset(){
-//     id = 0;
-//     ant = nullptr;
-//     prox = nullptr;
-//     deletaBlocoRec(Lista);
-// }
-
 bool andar::temSuporte (block * b){
     posicao p = posicao(b->pos);
     if (coordenadaOcupada(p + posicao(0,-1,0))) return true;
@@ -654,30 +618,20 @@ torre::torre (){
 string torre::TorreToString(){
     string s = "";
     s+="Torre:\n - Numero Andares = " + to_string(nAndares) + "\n";
-    s+=primeiroAndar->AndarToString();
-    // for (andar * a = primeiroAndar; a!= nullptr; a = a->prox)
-    //     s+= a->AndarToString() + "\n";
+    for (andar * a = primeiroAndar; a!=nullptr; a=a->prox)
+        s+=a->AndarToString() + "\n";
+
     return s;
 }
 
 // adiciona bloco no andar id = b->pos.y
 // se bloco em mov, para o bloco, se nao tem andar em y, destroi bloco
 void torre::adicionaBloco (block * b){
-    // if (b->emMovimento()) b->para();
-
-    // posicao aprox = b->pos->Aproximado();
-    // b->setPos(aprox);
     b->para();
     andar * a = retornaAndarN((int) b->pos->y);
-    // if (a == nullptr) delete b;
-    // else
+
     if (a != nullptr) a->AdicionaBloco(b);
 
-    // if (b->pos->y < 1 || b->pos->y > nAndares) delete b;
-    // else {
-    //     andar * a = retornaAndarN((int) b->pos->y);
-    //     a->AdicionaBloco(b);
-    // }
 }
 
 andar * torre::retornaAndarN (int n){
@@ -719,36 +673,8 @@ void torre::SetTorre(string filename){
         }           
     }
 
-    andarAtual = retornaAndarN(1);
+    //andarAtual = retornaAndarN(1);
 }
-
-void torre::vaiParaAndar(int n){
-    andarAtual = retornaAndarN(n);
-}
-void torre::sobeAndar(){
-    andarAtual = andarAtual->prox;
-}
-void torre::desceAndar(){
-    andarAtual = andarAtual->ant;
-}
-
-// void torre::Copia (torre * t){
-//     andar * ant;
-//     nAndares = t->nAndares;
-//     for (int i=1; i <= nAndares; i++){
-//         andar * a = new andar;
-//         a->Copia(t->retornaAndarN(i));
-//         if (i == 1){
-//             primeiroAndar = a;
-//             ant = a;
-//         }
-//         else {
-//             ant->prox = a;
-//             a->ant = ant;
-//         }
-//     }
-//     andarAtual = this->retornaAndarN(t->andarAtual->id);
-// }
 
 block * torre::retornaBloco (posicao p){
     andar * a = retornaAndarN((int) p.y);
@@ -897,39 +823,138 @@ bool torre::coordenadaOcupada (posicao p){
 }
 
 // ------------------------------------------ DESFAZ ------------------------------------------
-// desfaz::desfaz(){
-//     indexAtual = 0;
-//     for(int i = 0; i < NUM_DESFAZ; i++){
-//         ListaPlayerInstancias[i] = nullptr;
-//         ListaTorreInstancias[i] = nullptr;
-//     }
-// }
-//
-// void desfaz::CriaInstancia(torre * T, player * P){
-//     indexAtual ++;
-//     indexAtual = indexAtual%NUM_DESFAZ;
-//
-//     torre * Tnovo = new torre;
-//     player * Pnovo = new player;
-//
-//     Tnovo->Copia(T);
-//     Pnovo->Copia(P);
-//
-//     ListaTorreInstancias[indexAtual] = Tnovo;
-//     ListaPlayerInstancias[indexAtual] = Pnovo;
-// }
-//
-// bool desfaz::DesfazAcao(torre * T, player * P){
-//     indexAtual --;
-//     if (indexAtual < 0){
-//         indexAtual = 0;
-//         return false;
-//     }
-//
-//     T->Reset();
-//
-//     T->Copia(ListaTorreInstancias[indexAtual]);
-//     P->Copia(ListaPlayerInstancias[indexAtual]);
-//
-//     return true;
-// }
+
+desfaz::desfaz(){
+    indexAtual = 0;
+    for (int i = 0; i < NUM_DESFAZ; i++){
+        ListaTorreInstancias[i] = new torre();
+        ListaPlayerInstancias[i] = new player();
+    }
+}
+
+desfaz::~desfaz(){}
+
+andar * desfaz::CriaAndar(andar * A){
+    andar * Novo = new andar();
+    for (block * bl = A->Lista->lista; bl != nullptr; bl = bl->prox){
+        Novo->AdicionaBloco(posicao(bl->pos),bl->tipo);
+    }
+    Novo->prox = nullptr;
+    Novo->ant = nullptr;
+    return Novo;
+}
+
+void desfaz::copiaAndar(andar * A, torre * TorreAlvo){
+    cout << "\nentra copia andar\n";
+    TorreAlvo->nAndares = TorreAlvo->nAndares + 1;
+
+    // if (TorreAlvo->primeiroAndar==nullptr) {
+    //     cout << "aplica em primeiro andar\n";
+    //     TorreAlvo->primeiroAndar=CriaAndar(A);
+    // }
+    // else{
+    //     cout << "1o andar ocupado\n";
+    //     for (andar * p = TorreAlvo->primeiroAndar; p != nullptr; p=p->prox)
+    //         if (p->prox == nullptr){
+    //             cout << "chama criar\n";
+    //             p->prox=CriaAndar(A);
+    //             p->prox->ant = p;
+    //         }
+
+    // }
+    andar * p; // ponteiros para busca na lista
+    andar * atual; 
+
+    andar * Novo = CriaAndar(A);
+    Novo ->id = TorreAlvo->nAndares;
+    if (TorreAlvo->primeiroAndar==nullptr) TorreAlvo->primeiroAndar=Novo;
+    else{
+        for (p=TorreAlvo->primeiroAndar; p != nullptr; p=p->prox){
+            atual = p;
+        }
+        atual->prox=Novo;
+        Novo->ant = atual;
+    }
+
+    cout << "andar copiado com sucesso\n";
+
+}
+
+void desfaz::copiaTorre(torre * T){
+    cout << "\nentra torre\n";
+    torre * Tcopia = ListaTorreInstancias[indexAtual];
+    cout << "pega torre\n";
+    if (Tcopia->primeiroAndar != nullptr) Tcopia->Reset();
+    cout << "reseta torre\n";
+    for (andar * p = T->primeiroAndar; p != nullptr; p=p->prox){
+        copiaAndar(p, Tcopia);
+    }
+    cout << "torre copiada com sucesso\n";
+}
+
+void desfaz::copiaPlayer(player * P){
+    cout << "copia player entra \n";
+    player * Pcopia = ListaPlayerInstancias[indexAtual];
+    cout << "pega player de lista\n";
+    Pcopia->estado = P->estado;
+    Pcopia->estado2 = P->estado2;
+    Pcopia->animacao = P->animacao;
+    Pcopia->animacaoAnterior = P->animacaoAnterior;
+    Pcopia->iRotacao = P->iRotacao;
+    
+    Pcopia->setPos(posicao(P->pos));
+
+    Pcopia->setVel(velocidade(P->vel));
+
+    Pcopia->setRotacao(Pcopia->rotacoes[Pcopia->iRotacao]);
+    cout<<"player copiado com sucesso\n";
+}
+
+void desfaz::CriaInstancia(torre * T, player * P){
+    copiaPlayer(P);
+    copiaTorre(T);
+    indexAtual = (indexAtual + 1)%NUM_DESFAZ;
+}
+
+void desfaz::setTorre(torre * T){
+    torre * Tinst = ListaTorreInstancias[indexAtual];
+
+    if (T->primeiroAndar != nullptr) T->Reset();
+
+    for (andar * p = Tinst->primeiroAndar; p != nullptr; p=p->prox){
+        copiaAndar(p, T);
+    }
+}
+
+void desfaz::setPlayer(player * P){
+    player * Pcopia = ListaPlayerInstancias[indexAtual];
+    
+    P->estado = Pcopia->estado;
+    P->estado2 = Pcopia->estado2;
+    P->animacao = Pcopia->animacao;
+    P->animacaoAnterior = Pcopia->animacaoAnterior;
+    P->iRotacao = Pcopia->iRotacao;
+    
+    P->setPos(posicao(Pcopia->pos));
+    P->setVel(velocidade(Pcopia->vel));
+    P->setRotacao(P->rotacoes[P->iRotacao]);
+}
+
+// false se não conseguir (numero maximo de desfaz)
+bool desfaz::DesfazAcao(torre * T, player * P){
+    indexAtual = (indexAtual + NUM_DESFAZ -1)%NUM_DESFAZ;
+    if (ListaTorreInstancias[indexAtual]->primeiroAndar == nullptr)
+        return false;
+    else {
+        setPlayer(P);
+        setTorre(T);
+        return true;
+    }
+}
+
+void desfaz::ClearDesfaz(){
+        indexAtual = 0;
+    for (int i = 0; i < NUM_DESFAZ; i++){
+        ListaTorreInstancias[i]->Reset();
+    }
+}
