@@ -412,9 +412,14 @@ string LLBlocos::ListaToString(){
 void LLBlocos::AdicionaBloco(block * b){
     if (lista == nullptr) lista = b;
     else {
-        b ->prox = lista;
-        lista ->ant = b;
-        lista = b;
+        for (block * p = lista; p != nullptr; p=p->prox){
+            // se for ultimo da lista
+            if (p->prox==nullptr){
+                p->prox = b;
+                b->ant = p;
+                break;
+            }
+        }
     }
 }
 
