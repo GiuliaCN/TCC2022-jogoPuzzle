@@ -22,9 +22,10 @@
 using namespace std;
 
 #define literate true
-#define numTex 9
+#define numTex 15
 #define passoCam 2
 #define numFases 3
+#define numTelaInstrucoes 5
 
 #define PI 3.142857
 
@@ -33,13 +34,13 @@ using namespace std;
 Mix_Music *gMusic = NULL;
 
 ofstream logfile;
-
+int numTelaInstrucao = 1;
 bool bloqueiaMov = false;
 
 SDL_Rect arrowPosition;
 
 enum idTela {
-  MenuInicial, MenuPause, Next, GameOver, TelaInstrucoes
+  MenuInicial, MenuPause, Next, GameOver, idInstrucoes
 };
 
 enum estadosJogo {
@@ -73,6 +74,7 @@ struct Tela{
   int y1,y2;
   bool selecionaOpcao1 = true;
   bool temOpcao2 = true;
+  bool showArrow = true;
 };
 
 void CriaInstanciaDesfaz(struct GameData *GD){
@@ -216,7 +218,8 @@ void UpdateAndar(LLBlocos * ListaUpdate, torre * Torre, int n){
       aux = b;
       b = b->prox;
       //logfile << "\n checa suporte de " << aux->BlocoToString() << "\n";
-      if (aux ->tipo==Movel && ! base->temSuporte(aux)){
+      if ((aux ->tipo==Movel || aux ->tipo==FinalMovel || aux ->tipo==FinalMovelCompleto)
+         && ! base->temSuporte(aux)){
         logfile << "\n cai bloco \n ";
         houveMudanca = true;
         aux->setPosLim(posicao(aux->pos));
@@ -362,10 +365,15 @@ void move_player_sideways (struct GameData *GD,bool right){
   // se for canto
   else {
     if (posLivre){
-    Player->mexe(posDesejada + velocidade(Player->rotacao),velocidade(rotacaoLado) + velocidade(Player->rotacao));
+      Player->mexe(posDesejada + velocidade(Player->rotacao),velocidade(rotacaoLado) + velocidade(Player->rotacao));
+      if (right) Player->Rotaciona(1);
+      else Player->Rotaciona(0);
     }
-    if (right) Player->Rotaciona(1);
-    else Player->Rotaciona(0);
+    else {
+      Player->mexe(posicao(Player->pos),velocidade(0,0,0));
+      if (right) Player->Rotaciona(0);
+      else Player->Rotaciona(1);
+    }
   }
 
 }
@@ -378,7 +386,7 @@ void ProximaAcao (struct GameData *GD, struct Tela *tela){
   case MenuInicial:
     // inicia fase 1
     if (tela->selecionaOpcao1) {
-      GD->fase = 1;
+      GD->fase = 3;
       LoadMap(GD, "mapa/fase0" + to_string(GD->fase) +".txt");
       estadoJogo = EmJogo;
     }
@@ -389,8 +397,14 @@ void ProximaAcao (struct GameData *GD, struct Tela *tela){
     }
     break;
 
-  case TelaInstrucoes:
-    estadoJogo = Menu;
+  case idInstrucoes:
+    if (numTelaInstrucao<5){
+      numTelaInstrucao+=1;
+    }
+    else{
+      numTelaInstrucao = 1;
+      estadoJogo = Menu;
+    }    
     break;
 
   case Next:
@@ -420,6 +434,13 @@ void ProximaAcao (struct GameData *GD, struct Tela *tela){
   default:
     break;
   }
+}
+
+void PassaTelaInstrucao(struct Tela * tela){
+  string dirArquivo = "texture/TelasInstrucoes2/" + to_string(numTelaInstrucao) +".png";
+  //const char* str = st.c_str();
+  //tela->background = load_image((char*)dirArquivo);
+  tela->background = load_image((char*)dirArquivo.c_str());
 }
 
 static void handle_key( SDL_KeyboardEvent *key, struct GameData *GD, bool down, 
@@ -718,12 +739,6 @@ static void process_events(struct GameData *GD, struct Tela *tela = NULL){
 
 }
 
-// void find_player(struct GameData *GD,
-// 		 int *px, int *py, int *pz){
-//   *px = GD->Player->x;
-//   *py = GD->Player->andarAtual;
-//   *pz = GD->Player->x;
-// }
 
 void fix_player_direction(player * Player){
   switch (Player->iRotacao)
@@ -770,7 +785,10 @@ void draw_screen(SDL_Window *Window,
       SetInitialView(GD->theta_y, GD->zoom);      
       glTranslatef( dj*d*2.0, di*d*2.0, dk*d*2.0 );
       if (b->tipo == Fixo) draw_cube(d, tex, 5, 6);
-      if (b->tipo == FinalFase) draw_cube(d, tex, 7, 8);
+      else if (b->tipo == FinalFixo) draw_cube(d, tex, 7, 8);
+      else if (b->tipo == FinalFixoCompleto) draw_cube(d, tex, 9, 10);
+      else if (b->tipo == FinalMovel) draw_cube(d, tex, 11, 12);
+      else if (b->tipo == FinalMovelCompleto) draw_cube(d, tex, 13, 14);
       else draw_cube(d, tex, 0, 1);
     }
   
@@ -782,6 +800,10 @@ void draw_screen(SDL_Window *Window,
       SetInitialView(GD->theta_y, GD->zoom);       
       glTranslatef( dj*d*2.0, di*d*2.0, dk*d*2.0 );
       if (b->tipo == Fixo) draw_cube(d, tex, 5, 6);
+      else if (b->tipo == FinalFixo) draw_cube(d, tex, 7, 8);
+      else if (b->tipo == FinalFixoCompleto) draw_cube(d, tex, 9, 10);
+      else if (b->tipo == FinalMovel) draw_cube(d, tex, 11, 12);
+      else if (b->tipo == FinalMovelCompleto) draw_cube(d, tex, 13, 14);
       else draw_cube(d, tex, 0, 1);
   }
 
@@ -835,33 +857,6 @@ void draw_screen(SDL_Window *Window,
 }
 
 
-/*
-void draw_menu(SDL_Window *Window,
-		 struct Tela *tela, SDL_Surface *arrow){
-
-  SDL_Surface* gScreenSurface = SDL_GetWindowSurface( Window );
-  
-  //Apply the image
-  SDL_BlitSurface( tela->background, NULL, gScreenSurface, NULL );
-
-  if(tela->selecionaOpcao1){
-    arrowPosition.x=tela->x1;
-    arrowPosition.y=tela->y1;
-  }
-  else {
-    arrowPosition.x=tela->x2;
-    arrowPosition.y=tela->y2;
-  }
-  
-  //Apply the arrow
-  SDL_BlitSurface( arrow, NULL, gScreenSurface, &arrowPosition );
-
-  //Update the surface
-  SDL_UpdateWindowSurface( Window );
-}
-*/
-
-
 void draw_menu(SDL_Window *Window,
 		 struct Tela *tela, SDL_Surface *arrow){
   glDisable(GL_LIGHTING);
@@ -897,13 +892,15 @@ void draw_menu(SDL_Window *Window,
 	       GL_RGBA, GL_UNSIGNED_BYTE,
 	       tela->background->pixels);
 
-  glRasterPos3f(-tela->background->w/2 + arrowPosition.x,
-		 tela->background->h/2 - arrowPosition.y - arrow->h,
-		-(focallength+0.001));
-  glDrawPixels(arrow->w,
-	       arrow->h,
-	       GL_RGBA, GL_UNSIGNED_BYTE,
-	       arrow->pixels);
+  if (tela->showArrow){
+    glRasterPos3f(-tela->background->w/2 + arrowPosition.x,
+      tela->background->h/2 - arrowPosition.y - arrow->h,
+      -(focallength+0.001));
+    glDrawPixels(arrow->w,
+          arrow->h,
+          GL_RGBA, GL_UNSIGNED_BYTE,
+          arrow->pixels);
+  }
   //Apply the arrow
   //SDL_BlitSurface( arrow, NULL, gScreenSurface, &arrowPosition );
   
@@ -973,6 +970,7 @@ int main( int argc, char* argv[] ){
   struct Tela TelaPause;
   struct Tela TelaGameOver;
   struct Tela TelaNext;
+  struct Tela TelaInstrucoes;
 
   logfile.open ("logfile.txt");
   logfile << "Log\n";
@@ -1018,11 +1016,10 @@ int main( int argc, char* argv[] ){
   TelaNext.y1=352;
   TelaNext.temOpcao2 = false;
 
-  /*
-  SDL_Surface *imgTelaPause = NULL;
-  SDL_Surface *imgTelaGameOver = NULL;
-  SDL_Surface *imgTelaNext = NULL;
-  */
+  TelaInstrucoes.background = load_image((char*)"texture/TelasInstrucoes2/1.png");
+  TelaInstrucoes.nomeTela = idInstrucoes;
+  TelaInstrucoes.temOpcao2 = false;
+  TelaInstrucoes.showArrow = false;
   
 /* First, initialize SDL's video subsystem. */
 
@@ -1082,7 +1079,7 @@ int main( int argc, char* argv[] ){
       setup_opengl( width, height );
 
       glEnable(GL_TEXTURE_2D);
-      glGenTextures(6, tex);
+      glGenTextures(numTex, tex);
 
       glBindTexture(GL_TEXTURE_2D, tex[0]);
       glTexParameteri(GL_TEXTURE_2D,
@@ -1162,6 +1159,7 @@ int main( int argc, char* argv[] ){
             GL_RGBA, 512, 512, 0,
             GL_RGBA, GL_UNSIGNED_BYTE,
             img->pixels);
+
       glBindTexture(GL_TEXTURE_2D, tex[6]);
       glTexParameteri(GL_TEXTURE_2D,
           GL_TEXTURE_MAG_FILTER,
@@ -1182,12 +1180,13 @@ int main( int argc, char* argv[] ){
           GL_LINEAR);
       glTexParameteri(GL_TEXTURE_2D,
           GL_TEXTURE_MIN_FILTER,
-          GL_LINEAR);  
-      img = load_image((char *)"texture/block_final/1.png");
+          GL_LINEAR);
+      img = load_image((char *)"texture/block_final_fixo2/1_.png");
       glTexImage2D(GL_TEXTURE_2D, 0,
-            GL_RGBA, 512, 512, 0,
-            GL_RGBA, GL_UNSIGNED_BYTE,
+            GL_RGB, 512, 512, 0,
+            GL_RGB, GL_UNSIGNED_BYTE,
             img->pixels);
+
     // ---
       glBindTexture(GL_TEXTURE_2D, tex[8]);
       glTexParameteri(GL_TEXTURE_2D,
@@ -1195,8 +1194,88 @@ int main( int argc, char* argv[] ){
           GL_LINEAR);
       glTexParameteri(GL_TEXTURE_2D,
           GL_TEXTURE_MIN_FILTER,
+          GL_LINEAR);
+      img = load_image((char *)"texture/block_final_fixo/2.png");
+      glTexImage2D(GL_TEXTURE_2D, 0,
+            GL_RGBA, 512, 512, 0,
+            GL_RGBA, GL_UNSIGNED_BYTE,
+            img->pixels);  
+      
+            
+      // ---
+glBindTexture(GL_TEXTURE_2D, tex[9]);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MAG_FILTER,
+          GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MIN_FILTER,
           GL_LINEAR);  
-      img = load_image((char *)"texture/block_final/2.png");
+      img = load_image((char *)"texture/block_final_fixo/3.png");
+      glTexImage2D(GL_TEXTURE_2D, 0,
+            GL_RGBA, 512, 512, 0,
+            GL_RGBA, GL_UNSIGNED_BYTE,
+            img->pixels);         
+      // ---
+      glBindTexture(GL_TEXTURE_2D, tex[10]);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MAG_FILTER,
+          GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MIN_FILTER,
+          GL_LINEAR);  
+      img = load_image((char *)"texture/block_final_fixo/4.png");
+      glTexImage2D(GL_TEXTURE_2D, 0,
+            GL_RGBA, 512, 512, 0,
+            GL_RGBA, GL_UNSIGNED_BYTE,
+            img->pixels);  
+      // ---
+      glBindTexture(GL_TEXTURE_2D, tex[11]);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MAG_FILTER,
+          GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MIN_FILTER,
+          GL_LINEAR);  
+      img = load_image((char *)"texture/block_final_movel/1.png");
+      glTexImage2D(GL_TEXTURE_2D, 0,
+            GL_RGBA, 512, 512, 0,
+            GL_RGBA, GL_UNSIGNED_BYTE,
+            img->pixels);  
+      // ---
+      glBindTexture(GL_TEXTURE_2D, tex[12]);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MAG_FILTER,
+          GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MIN_FILTER,
+          GL_LINEAR);  
+      img = load_image((char *)"texture/block_final_movel/2.png");
+      glTexImage2D(GL_TEXTURE_2D, 0,
+            GL_RGBA, 512, 512, 0,
+            GL_RGBA, GL_UNSIGNED_BYTE,
+            img->pixels);  
+      // ---
+      glBindTexture(GL_TEXTURE_2D, tex[13]);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MAG_FILTER,
+          GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MIN_FILTER,
+          GL_LINEAR);  
+      img = load_image((char *)"texture/block_final_movel/3.png");
+      glTexImage2D(GL_TEXTURE_2D, 0,
+            GL_RGBA, 512, 512, 0,
+            GL_RGBA, GL_UNSIGNED_BYTE,
+            img->pixels);  
+      // ---
+      glBindTexture(GL_TEXTURE_2D, tex[14]);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MAG_FILTER,
+          GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D,
+          GL_TEXTURE_MIN_FILTER,
+          GL_LINEAR);  
+      img = load_image((char *)"texture/block_final_movel/4.png");
       glTexImage2D(GL_TEXTURE_2D, 0,
             GL_RGBA, 512, 512, 0,
             GL_RGBA, GL_UNSIGNED_BYTE,
@@ -1221,6 +1300,14 @@ int main( int argc, char* argv[] ){
       //printf("Menu...\n");
       process_events(&GD,&TelaMenu);
       draw_menu(Window, &TelaMenu, imgArrow);
+    }
+
+    if (estadoJogo == Instrucoes){
+      //printf("Menu...\n");
+      PassaTelaInstrucao(&TelaInstrucoes);
+      process_events(&GD,&TelaInstrucoes);
+      draw_menu(Window, &TelaInstrucoes, imgArrow);
+
     }
 
     if (estadoJogo == Pause){

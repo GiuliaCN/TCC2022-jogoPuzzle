@@ -506,6 +506,12 @@ andar::andar(){
     andar * ant = nullptr;
 }
 
+bool andar::AndarCompleto(){
+    for (block *b = Lista->lista; b != nullptr; b = b->prox)
+        if (b->tipo==FinalFixo || b->tipo==FinalMovel) return false;
+    return true;
+}
+
 bool andar::coordenadaOcupada (posicao p){ return Lista->contem(p); }
 void andar::AdicionaBloco(posicao p, int t) { Lista->AdicionaBloco(p,t); }
 void andar::AdicionaBloco(posicao p, tipoBloco t) { Lista->AdicionaBloco(p,t); }
@@ -572,7 +578,7 @@ tipoColisao andar::ColisaoAndar(entidade * e){
 }
 
 andar::~andar(){
-    cout << "deleta andar id =" << id << "\n";
+    //cout << "deleta andar id =" << id << "\n";
     if (prox == nullptr)
         delete Lista;
     else delete prox;
@@ -585,6 +591,12 @@ torre::torre (){
     //settings basicos:
     primeiroAndar=nullptr;
     nAndares=0;
+}
+
+bool torre::FaseCompleta(){
+    for (andar *a = primeiroAndar; a != nullptr; a = a->prox)
+        if (! a->AndarCompleto()) return false;
+    return true;
 }
 
 string torre::TorreToString(){
@@ -750,7 +762,19 @@ tipoColisao torre::ChecaColisaoPlayer(player * pl){
 
         // checa vitoria
         b = retornaBloco(pAprox + posicao(0,-1,0));
-        if (b!=nullptr && b->tipo == FinalFase) return BlocoVitoria;
+        if (b!=nullptr && b->tipo == FinalFixo) {
+            b->tipo = FinalFixoCompleto;
+            if (FaseCompleta()) return BlocoVitoria;
+            else return ColisaoDeApoio;
+        } //return BlocoVitoria;
+
+        // checa vitoria
+        b = retornaBloco(pAprox + posicao(0,-1,0));
+        if (b!=nullptr && b->tipo == FinalMovel) {
+            b->tipo = FinalMovelCompleto;
+            if (FaseCompleta()) return BlocoVitoria;
+            else return ColisaoDeApoio;
+        } //return BlocoVitoria;
 
         // tem bloco embaixo
         if (retornaBloco(pAprox + posicao(0,-1,0))!=nullptr) return ColisaoDeApoio;  
@@ -806,7 +830,7 @@ andar * desfaz::CriaAndar(andar * A){
 }
 
 void desfaz::copiaAndar(andar * A, torre * TorreAlvo){
-    cout << "\nentra copia andar\n";
+    //cout << "\nentra copia andar\n";
     TorreAlvo->nAndares = TorreAlvo->nAndares + 1;
     andar * p; // ponteiros para busca na lista
     andar * atual; 
@@ -821,25 +845,25 @@ void desfaz::copiaAndar(andar * A, torre * TorreAlvo){
         atual->prox=Novo;
         Novo->ant = atual;
     }
-    cout << "andar copiado com sucesso\n";
+    //cout << "andar copiado com sucesso\n";
 }
 
 void desfaz::copiaTorre(torre * T){
-    cout << "\nentra torre\n";
+    //cout << "\nentra torre\n";
     torre * Tcopia = ListaTorreInstancias[indexAtual];
-    cout << "pega torre\n";
+    //cout << "pega torre\n";
     if (Tcopia->primeiroAndar != nullptr) Tcopia->Reset();
-    cout << "reseta torre\n";
+    //cout << "reseta torre\n";
     for (andar * p = T->primeiroAndar; p != nullptr; p=p->prox){
         copiaAndar(p, Tcopia);
     }
-    cout << "torre copiada com sucesso\n";
+    //cout << "torre copiada com sucesso\n";
 }
 
 void desfaz::copiaPlayer(player * P){
-    cout << "copia player entra \n";
+    //cout << "copia player entra \n";
     player * Pcopia = ListaPlayerInstancias[indexAtual];
-    cout << "pega player de lista\n";
+    //cout << "pega player de lista\n";
     Pcopia->estado = P->estado;
     Pcopia->estado2 = P->estado2;
     Pcopia->animacao = P->animacao;
@@ -851,7 +875,7 @@ void desfaz::copiaPlayer(player * P){
     Pcopia->setVel(velocidade(P->vel));
 
     Pcopia->setRotacao(Pcopia->rotacoes[Pcopia->iRotacao]);
-    cout<<"player copiado com sucesso\n";
+    //cout<<"player copiado com sucesso\n";
 }
 
 void desfaz::CriaInstancia(torre * T, player * P){

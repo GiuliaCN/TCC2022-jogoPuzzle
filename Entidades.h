@@ -26,7 +26,7 @@ enum estadosPlayer { Morto, Pendurado, Normal, TentaPendurar};
 enum animacaoPlayer {AnimNormal, AnimPendurado, AnimPenduradoEsq, AnimPenduradoDir,
     AnimEmpurra, AnimPuxa, AnimAnda};
 
-enum tipoBloco { Movel, Fixo, FinalFase};
+enum tipoBloco { Movel, Fixo, FinalFixo, FinalFixoCompleto, FinalMovel, FinalMovelCompleto};
 /*
  * Parado = bloco diretamente abaixo
  * Caindo = só para com colisao
@@ -274,6 +274,8 @@ class andar
         void EjetaBloco(block * b);
         string AndarToString();
         tipoColisao ColisaoAndar(entidade * e);
+
+        bool AndarCompleto();
 };
 
 class torre
@@ -308,6 +310,7 @@ class torre
         string TorreToString();
 
         bool coordenadaOcupada (posicao p);
+        bool FaseCompleta();
 };
 
 class desfaz
