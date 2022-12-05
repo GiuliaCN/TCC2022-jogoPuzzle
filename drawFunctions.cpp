@@ -1082,7 +1082,6 @@ void DrawFluffy(){
   glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, white);
   glPolygonMode(GL_BACK, GL_FILL);
 
-  glTranslatef( 0.0, b*0.10,  0.0);
   /*
   sphere_z(20, 20,
 	   0.0, 360.0,
@@ -1134,6 +1133,11 @@ void DrawFluffy(){
   glPushMatrix();
   glTranslatef( a*0.95, 0.0,  c*0.75);
   draw_ellipsoid(a*0.15, b*0.30, c*0.40, 40);
+
+  glTranslatef(-a*0.06, 0.0,  c*0.21); 
+  draw_ellipsoid(a*0.18, b*0.26, c*0.20, 40);
+  glTranslatef( a*0.06, 0.0, -c*0.21);
+
   glTranslatef( -a*0.045, b*0.2, -c*0.1);  
   glRotatef(-45.0, 1.0, 0.0, 0.0 );
   glRotatef(-12.0, 0.0, 1.0, 0.0 );  
@@ -1142,6 +1146,11 @@ void DrawFluffy(){
   glPushMatrix();
   glTranslatef( -a*0.95, 0.0,  c*0.75);
   draw_ellipsoid(a*0.15, b*0.30, c*0.40, 40);
+
+  glTranslatef( a*0.06, 0.0,  c*0.21); 
+  draw_ellipsoid(a*0.18, b*0.26, c*0.20, 40);
+  glTranslatef(-a*0.06, 0.0, -c*0.21);
+
   glTranslatef( a*0.045, b*0.2, -c*0.1);  
   glRotatef(-45.0, 1.0, 0.0, 0.0 );
   glRotatef(12.0, 0.0, 1.0, 0.0 );  
@@ -1268,6 +1277,7 @@ void DrawFluffy(){
   glPopMatrix();
   */
 }
+
 
 
 void DrawFluffy_push(bool reset){

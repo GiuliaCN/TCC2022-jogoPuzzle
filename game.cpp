@@ -834,6 +834,8 @@ void draw_screen(SDL_Window *Window,
   SDL_GL_SwapWindow(Window);
 }
 
+
+/*
 void draw_menu(SDL_Window *Window,
 		 struct Tela *tela, SDL_Surface *arrow){
 
@@ -857,6 +859,60 @@ void draw_menu(SDL_Window *Window,
   //Update the surface
   SDL_UpdateWindowSurface( Window );
 }
+*/
+
+
+void draw_menu(SDL_Window *Window,
+		 struct Tela *tela, SDL_Surface *arrow){
+  glDisable(GL_LIGHTING);
+  glDisable(GL_TEXTURE_2D);
+
+  // Clear the color and depth buffers.
+  glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+  // We don't want to modify the projection matrix.
+  glMatrixMode( GL_MODELVIEW );
+  glLoadIdentity( );
+  
+  if(tela->selecionaOpcao1){
+    arrowPosition.x=tela->x1;
+    arrowPosition.y=tela->y1;
+  }
+  else {
+    arrowPosition.x=tela->x2;
+    arrowPosition.y=tela->y2;
+  }
+
+  float fovy = 60.0*(3.14159/180.0);
+  float height = 600;
+  float focallength = (height/2.0)/tan(fovy/2.0);
+  //printf("%f\n", focallength);
+  glRasterPos3f(-tela->background->w/2,
+		-tela->background->h/2,
+		-(focallength+0.1));
+  //printf("w: %d\n", tela->background->w);
+  //printf("h: %d\n", tela->background->h);
+  glDrawPixels(tela->background->w,
+	       tela->background->h,
+	       GL_RGBA, GL_UNSIGNED_BYTE,
+	       tela->background->pixels);
+
+  glRasterPos3f(-tela->background->w/2 + arrowPosition.x,
+		 tela->background->h/2 - arrowPosition.y - arrow->h,
+		-(focallength+0.001));
+  glDrawPixels(arrow->w,
+	       arrow->h,
+	       GL_RGBA, GL_UNSIGNED_BYTE,
+	       arrow->pixels);
+  //Apply the arrow
+  //SDL_BlitSurface( arrow, NULL, gScreenSurface, &arrowPosition );
+  
+  SDL_GL_SwapWindow(Window);
+  glEnable(GL_LIGHTING);
+  glEnable(GL_TEXTURE_2D);
+}
+
+
 
 static void setup_opengl( int width, int height ){
   float ratio = (float) width / (float) height;
@@ -932,36 +988,41 @@ int main( int argc, char* argv[] ){
 
   SDL_Surface *imgArrow = SDL_LoadBMP("texture/arrow.bmp");
 
-  TelaMenu.background = SDL_LoadBMP("texture/TelasMenuBMP/1.bmp");
+  //TelaMenu.background = SDL_LoadBMP("texture/TelasMenuBMP/1.bmp");
+  TelaMenu.background = load_image((char*)"texture/TelasMenu/1_.png");
   TelaMenu.nomeTela = MenuInicial;
   TelaMenu.x1=654;
   TelaMenu.y1=290;
   TelaMenu.x2=680;
   TelaMenu.y2=352;
 
-  TelaPause.background = SDL_LoadBMP("texture/TelasMenuBMP/2.bmp");
+  //TelaPause.background = SDL_LoadBMP("texture/TelasMenuBMP/2.bmp");
+  TelaPause.background = load_image((char*)"texture/TelasMenu/2_.png");
   TelaPause.nomeTela = MenuPause;
   TelaPause.x1=635;
   TelaPause.y1=288;
   TelaPause.x2=680;
   TelaPause.y2=349;
 
-  TelaGameOver.background = SDL_LoadBMP("texture/TelasMenuBMP/3.bmp");
+  //TelaGameOver.background = SDL_LoadBMP("texture/TelasMenuBMP/3.bmp");
+  TelaGameOver.background = load_image((char*)"texture/TelasMenu/3_.png");
   TelaGameOver.nomeTela = GameOver;
   TelaGameOver.x1=601;
   TelaGameOver.y1=288;
   TelaGameOver.temOpcao2 = false;
 
-  TelaNext.background = SDL_LoadBMP("texture/TelasMenuBMP/4.bmp");
+  //TelaNext.background = SDL_LoadBMP("texture/TelasMenuBMP/4.bmp");
+  TelaNext.background = load_image((char*)"texture/TelasMenu/4_.png");
   TelaNext.nomeTela = Next;
   TelaNext.x1=702;
   TelaNext.y1=352;
   TelaNext.temOpcao2 = false;
 
+  /*
   SDL_Surface *imgTelaPause = NULL;
   SDL_Surface *imgTelaGameOver = NULL;
   SDL_Surface *imgTelaNext = NULL;
-
+  */
   
 /* First, initialize SDL's video subsystem. */
 
@@ -1157,27 +1218,31 @@ int main( int argc, char* argv[] ){
   while( 1 ) {
 
     if (estadoJogo == Menu){
+      //printf("Menu...\n");
       process_events(&GD,&TelaMenu);
       draw_menu(Window, &TelaMenu, imgArrow);
     }
 
-
     if (estadoJogo == Pause){
+      //printf("Pause...\n");
       process_events(&GD,&TelaPause);
       draw_menu(Window, &TelaPause, imgArrow);
     }
 
     if (estadoJogo == EmJogo){
+      //printf("EmJogo...\n");
       process_events(&GD);
       draw_screen(Window, &GD, tex);
     }
 
     if (estadoJogo == Derrota){
+      //printf("Derrota...\n");
       process_events(&GD,&TelaGameOver);
       draw_menu(Window, &TelaGameOver, imgArrow);
     }
 
     if (estadoJogo == Vitoria){
+      //printf("Vitoria...\n");
       process_events(&GD,&TelaNext);
       draw_menu(Window, &TelaNext, imgArrow);
     }

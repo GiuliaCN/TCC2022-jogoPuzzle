@@ -215,7 +215,6 @@ class block: public entidade
         tipoBloco tipo;
 
         string BlocoToString();
-        //void mexe(posicao _posLim, velocidade _vel);
         bool estaEmCoordenada(posicao p);
 };
 

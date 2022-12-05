@@ -205,37 +205,6 @@ string camera::CameraToString(){
 }
 
 void camera::SetCamera(string s){
-    // pos = new posicao;
-    // posLim = new posicao;
-    // vel = new velocidade;
-    // estado = Parado;
-
-    // posicao p;
-    // string delim = ",";
-
-    // auto start = 0U;
-    // auto end = s.find(delim);
-    // p.x = stoi (s.substr(start, end - start));
-    // start = end + delim.length();
-    // end = s.find(delim, start);
-
-    // p.y = stoi (s.substr(start, end - start));
-    // start = end + delim.length();
-    // end = s.find(delim, start);
-
-    // p.z = stoi (s.substr(start, end - start));
-    // start = end + delim.length();
-    // end = s.find(delim, start);
-
-    // theta_y = stoi (s.substr(start, end));
-    // start = end + delim.length();
-    // end = s.find(delim, start);
-
-    // //theta_y = -30;
-
-    // setPos(p);
-
-    // setVel(velocidade(0,0,0));
 
 }
 
@@ -436,8 +405,7 @@ string LLBlocos::ListaToString(){
     for (block * b = lista; b != nullptr; b = b->prox ){
         i++;
         s+=to_string(i) + "o Bloco = " + b->pos->PosicaoToString() + ";";    
-    }
-    //s+="1o Bloco = " + Lista->lista->pos.PosicaoToString();    
+    }  
     return s;
 }
 
@@ -579,7 +547,6 @@ andar::andar(string s, int n){
         else {
             int t = c - '0';
             if (t > 0){
-                //cout << "criar bloco em "<< p.PosicaoToString() <<endl;
                 AdicionaBloco(p,t);
             }
             p.z+=1;
@@ -750,13 +717,6 @@ LLBlocos * torre::updateAndar(andar * a){
             {
                 // une listas ligadas
                 BlocosParaUpdate->UneListas(llb);
-                // BlocosParaUpdate = BlocosParaUpdate + llb;
-                // if (llb->lista != nullptr){
-                //     block * b;
-                //     for (b = llb->lista; b->prox != nullptr; b=b->prox){}
-                //     b->prox = BlocosParaUpdate->lista;
-                //     BlocosParaUpdate->lista->ant = b;
-                // }
             }
         return BlocosParaUpdate;
     }
@@ -771,10 +731,6 @@ tipoColisao torre::ChecaColisaoPlayer(player * pl){
     {
         // bloco esmagou
         if (retornaBloco(pAprox)!=nullptr) return ColisaoAgressiva;
-
-        // tem bloco na frente
-        // if (retornaBloco(pAprox + pl->rotacao)!=nullptr && retornaBloco(pAprox + posicao(0,-1,0))!=nullptr) 
-        //     return ColisaoMista;
 
         // tem bloco na frente
         b2 = retornaBloco(pAprox + pl->rotacao);
@@ -847,21 +803,6 @@ andar * desfaz::CriaAndar(andar * A){
 void desfaz::copiaAndar(andar * A, torre * TorreAlvo){
     cout << "\nentra copia andar\n";
     TorreAlvo->nAndares = TorreAlvo->nAndares + 1;
-
-    // if (TorreAlvo->primeiroAndar==nullptr) {
-    //     cout << "aplica em primeiro andar\n";
-    //     TorreAlvo->primeiroAndar=CriaAndar(A);
-    // }
-    // else{
-    //     cout << "1o andar ocupado\n";
-    //     for (andar * p = TorreAlvo->primeiroAndar; p != nullptr; p=p->prox)
-    //         if (p->prox == nullptr){
-    //             cout << "chama criar\n";
-    //             p->prox=CriaAndar(A);
-    //             p->prox->ant = p;
-    //         }
-
-    // }
     andar * p; // ponteiros para busca na lista
     andar * atual; 
 
@@ -875,9 +816,7 @@ void desfaz::copiaAndar(andar * A, torre * TorreAlvo){
         atual->prox=Novo;
         Novo->ant = atual;
     }
-
     cout << "andar copiado com sucesso\n";
-
 }
 
 void desfaz::copiaTorre(torre * T){
