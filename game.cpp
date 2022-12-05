@@ -986,7 +986,7 @@ int main( int argc, char* argv[] ){
   GLuint tex[numTex];
   SDL_Surface *img = NULL;
 
-  SDL_Surface *imgArrow = SDL_LoadBMP("texture/arrow.bmp");
+  SDL_Surface *imgArrow = load_image((char*)"texture/arrow.png");
 
   //TelaMenu.background = SDL_LoadBMP("texture/TelasMenuBMP/1.bmp");
   TelaMenu.background = load_image((char*)"texture/TelasMenu/1_.png");
