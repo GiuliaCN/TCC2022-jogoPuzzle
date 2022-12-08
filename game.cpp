@@ -259,14 +259,14 @@ void move_player_front(struct GameData *GD, bool push){
     logfile << "ComBlocoNaFrente \n";
     // esta empurrando
     logfile << "bloco tipo:" << b->tipo <<"\n";
-    if (push && b->tipo == Movel){
+    if (push && (b->tipo == Movel || b->tipo == FinalMovel || b->tipo == FinalMovelCompleto)){
       // checa se pode
       logfile << "ChecaEmpurrar \n";
-      posicao posBlocoAtras = posDesejada + velocidade(Player->rotacao);
-      if (Torre->retornaBloco(posBlocoAtras) == nullptr){
+      posicao posBlocoFrente = posDesejada + velocidade(Player->rotacao);
+      if (Torre->retornaBloco(posBlocoFrente) == nullptr){
         logfile << "Empurra \n";
         CriaInstanciaDesfaz(GD);
-        b->mexe(posBlocoAtras, velocidade(Player->rotacao));
+        b->mexe(posBlocoFrente, velocidade(Player->rotacao));
         Player->animacao = AnimEmpurra;
         Torre->EjetaBloco(b);
         GD->ListaUpdate->AdicionaBloco(b);
@@ -304,7 +304,8 @@ void move_player_back(struct GameData *GD, bool pull){
   if (podeIrAtras){
     logfile << "Sem bloco atras do player\n";
     // puxa se tiver bloco
-    if (pull && blocoNaFrente != nullptr && blocoNaFrente->tipo==Movel){
+    if (pull && blocoNaFrente != nullptr && (blocoNaFrente->tipo == Movel 
+    || blocoNaFrente->tipo == FinalMovel || blocoNaFrente->tipo == FinalMovelCompleto)){
       logfile << "move_player_back >> puxa\n";
       CriaInstanciaDesfaz(GD);
       blocoNaFrente->mexe(posicao(Player->pos), velocidade(Player->rotacao)*(-1));
@@ -386,7 +387,7 @@ void ProximaAcao (struct GameData *GD, struct Tela *tela){
   case MenuInicial:
     // inicia fase 1
     if (tela->selecionaOpcao1) {
-      GD->fase = 3;
+      GD->fase = 1;
       LoadMap(GD, "mapa/fase0" + to_string(GD->fase) +".txt");
       estadoJogo = EmJogo;
     }
@@ -398,8 +399,8 @@ void ProximaAcao (struct GameData *GD, struct Tela *tela){
     break;
 
   case idInstrucoes:
-    if (numTelaInstrucao<5){
-      numTelaInstrucao+=1;
+    if (numTelaInstrucao<numTelaInstrucoes){
+      numTelaInstrucao += 1;
     }
     else{
       numTelaInstrucao = 1;
@@ -438,9 +439,12 @@ void ProximaAcao (struct GameData *GD, struct Tela *tela){
 
 void PassaTelaInstrucao(struct Tela * tela){
   string dirArquivo = "texture/TelasInstrucoes2/" + to_string(numTelaInstrucao) +".png";
-  //const char* str = st.c_str();
-  //tela->background = load_image((char*)dirArquivo);
-  tela->background = load_image((char*)dirArquivo.c_str());
+  static int numTela_atual = -1;
+  if (numTela_atual != numTelaInstrucao){
+    SDL_FreeSurface (tela->background);
+    tela->background = load_image((char*)dirArquivo.c_str());
+    numTela_atual = numTelaInstrucao;
+  }
 }
 
 static void handle_key( SDL_KeyboardEvent *key, struct GameData *GD, bool down, 
@@ -987,7 +991,7 @@ int main( int argc, char* argv[] ){
   SDL_Surface *imgArrow = load_image((char*)"texture/arrow.png");
 
   //TelaMenu.background = SDL_LoadBMP("texture/TelasMenuBMP/1.bmp");
-  TelaMenu.background = load_image((char*)"texture/TelasMenu/1_.png");
+  TelaMenu.background = load_image((char*)"texture/TelasMenu/menu.png");
   TelaMenu.nomeTela = MenuInicial;
   TelaMenu.x1=654;
   TelaMenu.y1=290;
@@ -1181,10 +1185,10 @@ int main( int argc, char* argv[] ){
       glTexParameteri(GL_TEXTURE_2D,
           GL_TEXTURE_MIN_FILTER,
           GL_LINEAR);
-      img = load_image((char *)"texture/block_final_fixo2/1_.png");
+      img = load_image((char *)"texture/block_final_fixo/1.png");
       glTexImage2D(GL_TEXTURE_2D, 0,
-            GL_RGB, 512, 512, 0,
-            GL_RGB, GL_UNSIGNED_BYTE,
+            GL_RGBA, 512, 512, 0,
+            GL_RGBA, GL_UNSIGNED_BYTE,
             img->pixels);
 
     // ---
