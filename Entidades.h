@@ -1,6 +1,6 @@
 // Entidades.h
 
-#ifndef ENTIDADES_H // include guard
+#ifndef ENTIDADES_H
 #define ENTIDADES_H
 
 #include <iostream>
@@ -152,24 +152,6 @@ class entidade
         void setPos(posicao p);
         void setPosLim(posicao p);
         string EstadoToString();
-
-};
-
-class camera
-{
-    public:
-    camera();
-    ~camera();
-
-    float zoom;
-    float theta_y;
-    int cx, cz;
-
-    void SetCamera(string s);
-    void ZoomIn();
-    void ZoomOut();
-
-    string CameraToString();
 
 };
 

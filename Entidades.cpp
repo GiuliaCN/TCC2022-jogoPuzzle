@@ -189,26 +189,6 @@ void entidade::mexe(posicao _posLim, velocidade _vel){
     setPosLim(_posLim);
 }
 
-// ------------------------------------------ CAMERA -----------------------------------
-
-camera::camera(){}
-
-string camera::CameraToString(){
-    string s = "";
-    // s += "Camera (";
-    // s += "Pos = " + pos->PosicaoToString();
-    // s += ", Vel = " + vel->VelocidadeToString();
-    // s += ", Estado = " + EstadoToString();
-    // s += ", theta = " + to_string(theta_y);
-    // s += ")";
-    return s;
-}
-
-void camera::SetCamera(string s){
-
-}
-
-
 // ------------------------------------------ PLAYER -----------------------------------
 
 player::player(){

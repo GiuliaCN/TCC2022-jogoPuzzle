@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Mon Dec  5 12:04:29 2022
+# Make data base, printed on Mon Dec 19 16:54:38 2022
 
 # Variables
 
@@ -53,7 +53,7 @@ VSCODE_CODE_CACHE_PATH = /home/giulia/.config/Code/CachedData/74b1f979648cc44d38
 # environment
 LANG = C
 # environment
-XAUTHORITY = /run/user/1000/.mutter-Xwaylandauth.2EYBW1
+XAUTHORITY = /run/user/1000/.mutter-Xwaylandauth.LSMZX1
 # default
 .LOADED := 
 # default
@@ -87,13 +87,13 @@ MAKEFILE_LIST := Makefile
 # automatic
 @F = $(notdir $@)
 # environment
-VSCODE_PID = 5289
+VSCODE_PID = 7786
 # environment
 XDG_SESSION_TYPE = wayland
 # automatic
 ?D = $(patsubst %/,%,$(dir $?))
 # environment
-SESSION_MANAGER = local/Pandora:@/tmp/.ICE-unix/2043,unix/Pandora:/tmp/.ICE-unix/2043
+SESSION_MANAGER = local/Pandora:@/tmp/.ICE-unix/2028,unix/Pandora:/tmp/.ICE-unix/2028
 # automatic
 *F = $(notdir $*)
 # environment
@@ -135,7 +135,7 @@ LC_MONETARY = pt_BR.UTF-8
 # environment
 LC_TIME = pt_BR.UTF-8
 # environment
-INVOCATION_ID = 7f0f6f0bbd984619a2eb6e995b26ce7b
+INVOCATION_ID = 5c04c1ba665f4edfa7a4ff9c056954e7
 # environment
 USERNAME = giulia
 # environment
@@ -165,7 +165,7 @@ GIO_LAUNCHED_DESKTOP_FILE = /usr/share/applications/code.desktop
 # makefile
 .DEFAULT_GOAL := all
 # environment
-SYSTEMD_EXEC_PID = 2110
+SYSTEMD_EXEC_PID = 2101
 # environment
 DISPLAY = :0
 # environment
@@ -175,11 +175,11 @@ GTK_MODULES = gail:atk-bridge
 # default
 MAKE_VERSION := 4.3
 # environment
-MANAGERPID = 1856
+MANAGERPID = 1809
 # environment
 LC_MEASUREMENT = pt_BR.UTF-8
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 5289
+GIO_LAUNCHED_DESKTOP_FILE_PID = 7786
 # environment
 _ = /usr/share/code/code
 # environment
@@ -189,7 +189,7 @@ XDG_RUNTIME_DIR = /run/user/1000
 # environment
 LC_CTYPE = pt_BR.UTF-8
 # environment
-JOURNAL_STREAM = 8:37048
+JOURNAL_STREAM = 8:34298
 # environment
 XDG_SESSION_CLASS = user
 # environment
@@ -223,7 +223,7 @@ GDMSESSION = ubuntu
 # environment
 LC_IDENTIFICATION = pt_BR.UTF-8
 # variable set hash-table stats:
-# Load=106/1024=10%, Rehash=0, Collisions=3/140=2%
+# Load=106/1024=10%, Rehash=0, Collisions=3/139=2%
 
 # Pattern-specific Variable Values
 
@@ -231,7 +231,7 @@ LC_IDENTIFICATION = pt_BR.UTF-8
 
 # Directories
 
-# . (device 2052, inode 11407079): 24 files, no impossibilities.
+# . (device 2051, inode 11407079): 24 files, no impossibilities.
 
 # 24 files, no impossibilities in 1 directories.
 
@@ -243,28 +243,9 @@ LC_IDENTIFICATION = pt_BR.UTF-8
 
 game: Entidades.o drawFunctions.o game.cpp
 #  Implicit rule search has not been done.
-#  Implicit/static pattern stem: ''
-#  Last modified 2022-12-01 17:16:21.264110352
+#  Last modified 2022-12-11 19:54:05.849146788
 #  File has been updated.
-#  Needs to be updated (-q is set).
-# automatic
-# @ := game
-# automatic
-# * := 
-# automatic
-# < := Entidades.o
-# automatic
-# + := Entidades.o drawFunctions.o game.cpp
-# automatic
-# % := 
-# automatic
-# ^ := Entidades.o drawFunctions.o game.cpp
-# automatic
-# ? := game.cpp
-# automatic
-# | := 
-# variable set hash-table stats:
-# Load=8/32=25%, Rehash=0, Collisions=1/12=8%
+#  Successfully updated.
 #  recipe to execute (from 'Makefile', line 10):
 	$(CXX) Entidades.o drawFunctions.o -O3 game.cpp -lm -lSDL2 -lSDL2_image -lSDL2_gfx -lSDL2_mixer -lGL -lGLU -o game
 
@@ -298,6 +279,7 @@ entidades: Entidades.cpp
 
 # Not a target:
 .DEFAULT:
+ 
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
@@ -305,11 +287,28 @@ entidades: Entidades.cpp
 all: game
 #  Command line target.
 #  Implicit rule search has not been done.
+#  Implicit/static pattern stem: ''
 #  File does not exist.
 #  File has been updated.
 #  Needs to be updated (-q is set).
+# automatic
+# @ := all
+# automatic
+# * := 
+# automatic
+# < := game
+# automatic
+# + := game
+# automatic
+# % := 
+# automatic
+# ^ := game
+# automatic
+# ? := game
+# automatic
+# | := 
 # variable set hash-table stats:
-# Load=0/32=0%, Rehash=0, Collisions=0/4=0%
+# Load=8/32=25%, Rehash=0, Collisions=1/11=9%
 #  recipe to execute (from 'Makefile', line 2):
 	@echo "DONE"
 
@@ -322,14 +321,14 @@ drawFunctions.cpp:
 # Not a target:
 game.cpp:
 #  Implicit rule search has been done.
-#  Last modified 2022-12-03 20:19:45
+#  Last modified 2022-12-08 20:13:38.610815184
 #  File has been updated.
 #  Successfully updated.
 
 # Not a target:
 drawFunctions.o:
 #  Implicit rule search has been done.
-#  Last modified 2022-11-21 21:18:26.943735242
+#  Last modified 2022-12-05 12:07:46.304497396
 #  File has been updated.
 #  Successfully updated.
 
@@ -361,12 +360,11 @@ Entidades.cpp:
 # Not a target:
 Entidades.o:
 #  Implicit rule search has been done.
-#  Last modified 2022-12-01 17:16:16.004196657
+#  Last modified 2022-12-11 19:53:59.913594079
 #  File has been updated.
 #  Successfully updated.
 
 # files hash-table stats:
- 
 # Load=15/1024=1%, Rehash=0, Collisions=0/36=0%
 # VPATH Search Paths
 
@@ -380,6 +378,6 @@ Entidades.o:
 # strcache performance: lookups = 54 / hit rate = 38%
 # hash-table stats:
 # Load=33/8192=0%, Rehash=0, Collisions=0/54=0%
-# Finished Make data base on Mon Dec  5 12:04:29 2022
+# Finished Make data base on Mon Dec 19 16:54:38 2022
 
  

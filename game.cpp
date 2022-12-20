@@ -38,18 +38,19 @@ int numTelaInstrucao = 1;
 bool bloqueiaMov = false;
 
 SDL_Rect arrowPosition;
-
+/*
 enum idTela {
-  MenuInicial, MenuPause, Next, GameOver, idInstrucoes
+  MenuInicial, MenuPause, Next, GameOver, idInstrucoes, idTelaFinal
 };
-
+*/
 enum estadosJogo {
   Menu,
   Instrucoes,
   Pause,
   EmJogo,
   Vitoria,
-  Derrota
+  Derrota,
+  TelaFinal
   };
 estadosJogo estadoJogo = Menu;
 
@@ -68,7 +69,7 @@ struct GameData{
 };
 
 struct Tela{
-  idTela nomeTela;
+  estadosJogo nomeTela;
   SDL_Surface * background;
   int x1,x2;
   int y1,y2;
@@ -384,7 +385,14 @@ void ProximaAcao (struct GameData *GD, struct Tela *tela){
   logfile << "\nProximaAcao << entrou \n";
   switch (tela->nomeTela)
   {
-  case MenuInicial:
+    /*  Menu,
+  Instrucoes,
+  Pause,
+  EmJogo,
+  Vitoria,
+  Derrota,
+  TelaFinal*/
+  case Menu:
     // inicia fase 1
     if (tela->selecionaOpcao1) {
       GD->fase = 1;
@@ -398,7 +406,7 @@ void ProximaAcao (struct GameData *GD, struct Tela *tela){
     }
     break;
 
-  case idInstrucoes:
+  case Instrucoes:
     if (numTelaInstrucao<numTelaInstrucoes){
       numTelaInstrucao += 1;
     }
@@ -408,21 +416,21 @@ void ProximaAcao (struct GameData *GD, struct Tela *tela){
     }    
     break;
 
-  case Next:
+  case Vitoria:
     GD->fase +=1;
-    if (GD->fase > numFases) estadoJogo = Menu;
+    if (GD->fase > numFases) estadoJogo = TelaFinal;
     else {
       LoadMap(GD, "mapa/fase0" + to_string(GD->fase) +".txt");
       estadoJogo = EmJogo;
     }
     break;
 
-  case GameOver:
+  case Derrota:
     logfile << "\nProximaAcao << GameOver \n";
     estadoJogo = Menu;
     break;
 
-  case MenuPause:
+  case Pause:
     if (tela->selecionaOpcao1) {
       estadoJogo = EmJogo;
     }
@@ -430,6 +438,10 @@ void ProximaAcao (struct GameData *GD, struct Tela *tela){
     else {
       estadoJogo = Instrucoes;
     }
+    break;
+
+  case TelaFinal:
+    estadoJogo = Menu;
     break;
   
   default:
@@ -975,6 +987,7 @@ int main( int argc, char* argv[] ){
   struct Tela TelaGameOver;
   struct Tela TelaNext;
   struct Tela TelaInstrucoes;
+  struct Tela TelaTelaFinal;
 
   logfile.open ("logfile.txt");
   logfile << "Log\n";
@@ -992,7 +1005,7 @@ int main( int argc, char* argv[] ){
 
   //TelaMenu.background = SDL_LoadBMP("texture/TelasMenuBMP/1.bmp");
   TelaMenu.background = load_image((char*)"texture/TelasMenu/menu.png");
-  TelaMenu.nomeTela = MenuInicial;
+  TelaMenu.nomeTela = Menu;
   TelaMenu.x1=654;
   TelaMenu.y1=290;
   TelaMenu.x2=680;
@@ -1000,7 +1013,7 @@ int main( int argc, char* argv[] ){
 
   //TelaPause.background = SDL_LoadBMP("texture/TelasMenuBMP/2.bmp");
   TelaPause.background = load_image((char*)"texture/TelasMenu/2_.png");
-  TelaPause.nomeTela = MenuPause;
+  TelaPause.nomeTela = Pause;
   TelaPause.x1=635;
   TelaPause.y1=288;
   TelaPause.x2=680;
@@ -1008,22 +1021,27 @@ int main( int argc, char* argv[] ){
 
   //TelaGameOver.background = SDL_LoadBMP("texture/TelasMenuBMP/3.bmp");
   TelaGameOver.background = load_image((char*)"texture/TelasMenu/3_.png");
-  TelaGameOver.nomeTela = GameOver;
+  TelaGameOver.nomeTela = Derrota;
   TelaGameOver.x1=601;
   TelaGameOver.y1=288;
   TelaGameOver.temOpcao2 = false;
 
   //TelaNext.background = SDL_LoadBMP("texture/TelasMenuBMP/4.bmp");
   TelaNext.background = load_image((char*)"texture/TelasMenu/4_.png");
-  TelaNext.nomeTela = Next;
+  TelaNext.nomeTela = Vitoria;
   TelaNext.x1=702;
   TelaNext.y1=352;
   TelaNext.temOpcao2 = false;
 
   TelaInstrucoes.background = load_image((char*)"texture/TelasInstrucoes2/1.png");
-  TelaInstrucoes.nomeTela = idInstrucoes;
+  TelaInstrucoes.nomeTela = Instrucoes;
   TelaInstrucoes.temOpcao2 = false;
   TelaInstrucoes.showArrow = false;
+  
+  TelaTelaFinal.background = load_image((char*)"texture/TelasMenu/TelaFinal.png");
+  TelaTelaFinal.nomeTela = Instrucoes;
+  TelaTelaFinal.temOpcao2 = false;
+  TelaTelaFinal.showArrow = false;
   
 /* First, initialize SDL's video subsystem. */
 
@@ -1044,7 +1062,7 @@ int main( int argc, char* argv[] ){
  //https://www.looperman.com/loops/detail/314853/subspace-club-type-sample-free-115bpm-disco-pad-loop
   gMusic = Mix_LoadMUS( "music/looperman-l-5041336-0314853-subspace-club-type-sample.wav" );
   
-  Window = SDL_CreateWindow("OpenGL Test",
+  Window = SDL_CreateWindow("O Pesadelo de Fluffy",
 			    0, 0,
 			    width, height,
 			    SDL_WINDOW_OPENGL);
@@ -1336,6 +1354,11 @@ glBindTexture(GL_TEXTURE_2D, tex[9]);
       //printf("Vitoria...\n");
       process_events(&GD,&TelaNext);
       draw_menu(Window, &TelaNext, imgArrow);
+    }
+
+    if (estadoJogo == TelaFinal){
+      process_events(&GD,&TelaTelaFinal);
+      draw_menu(Window, &TelaTelaFinal, imgArrow);
     }
   }
   
