@@ -1,6 +1,6 @@
 // drawFunctions.h
 
-#ifndef DRAWFUNCTIONS_H // include guard
+#ifndef DRAWFUNCTIONS_H
 #define DRAWFUNCTIONS_H
 
 #include <GL/gl.h>
@@ -67,11 +67,6 @@ void draw_ellipsoid(float a,
 		    float c,
 		    int slices);
 
-void draw_RedDragon_Eyes(float a,
-			 float b,
-			 float c,
-			 int slices);
-
 
 
 void draw_ellipsoid_lune(float a,
@@ -112,20 +107,6 @@ void draw_Gielis_Equation(float A,
 			  float n3,
 			  int m,
 			  int slices);
-
-
-
-void draw_curved_Gielis_Equation(float bend_radius,
-				 float bend_ang0,
-				 float A,
-				 float B,
-				 float n1,
-				 float n2,
-				 float n3,
-				 int m,
-				 int slices);
-
-
 
 
 /*
@@ -170,16 +151,6 @@ void DrawFluffy_hangright();
 
 void DrawFluffy_hangleft();
 
-//Red Dragon:
-void DrawRedDragon();
-
-void DrawMonsterPlant(GLuint tex[], float theta_y);
-
 void SetInitialView(float theta_y, float zoom = -300, float rotacao = 35);
-
-void triangle(float x1, float y1, float z1,
-	      float x2, float y2, float z2,
-	      float x3, float y3, float z3);
-
 
 #endif

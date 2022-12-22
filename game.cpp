@@ -1,4 +1,3 @@
-//#include <SDL/SDL.h>
 #include <SDL2/SDL.h> 
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
@@ -21,8 +20,7 @@
 
 using namespace std;
 
-#define literate true
-#define numTex 15
+#define numTex 12
 #define passoCam 2
 #define numFases 3
 #define numTelaInstrucoes 5
@@ -38,11 +36,7 @@ int numTelaInstrucao = 1;
 bool bloqueiaMov = false;
 
 SDL_Rect arrowPosition;
-/*
-enum idTela {
-  MenuInicial, MenuPause, Next, GameOver, idInstrucoes, idTelaFinal
-};
-*/
+
 enum estadosJogo {
   Menu,
   Instrucoes,
@@ -54,11 +48,9 @@ enum estadosJogo {
   };
 estadosJogo estadoJogo = Menu;
 
-//GameScreen estadoTela = Fase;
 
 struct GameData{
   int fase;
-  //bool bloqueiaMov = false;
   torre * Torre;
   player * Player;
   float zoom;
@@ -104,14 +96,7 @@ SDL_Surface *load_image( char *filename ) {
     exit(1);
   }
   //If the image loaded 
-  //if( loadedImage != NULL ) { 
-    //Create an optimized image 
-    //optimizedImage = SDL_DisplayFormat( loadedImage ); 
-    //Free the old image 
-    //SDL_FreeSurface( loadedImage ); 
-  //}
-  //Return the optimized image 
-  return loadedImage; //optimizedImage; 
+  return loadedImage;  
 }
 
 void SetCamera (struct GameData *GD, string s){
@@ -162,23 +147,15 @@ void LoadMap (struct GameData *GD, string filename){
 
   arquivo.open (filename);
   if (arquivo.is_open()){
-    //if (literate) printf("Arquivo Mapa aberto\n");
-
     getline (arquivo,line);
-    //if (literate) printf("Set Player\n----\n");
     GD->Player->SetPlayer(line);
 
     getline (arquivo,line);
-    //if (literate) printf("Set Camera\n----\n");
     SetCamera(GD, line);
 
     arquivo.close();
 
-    if (literate)cout << GD->Player->PlayerToString() << endl;
-    //if (literate) printf("Set Torre\n");
     GD->Torre->SetTorre(filename);
-    //if (literate) printf("Mapa criado com sucesso\n");
-    //if (literate) cout << GD->Torre->TorreToString() << endl;
   }  
 
   else logfile << "Erro em abrir arquivo\n"; 
@@ -212,13 +189,11 @@ void UpdateAndar(LLBlocos * ListaUpdate, torre * Torre, int n){
   if (base != nullptr && atual != nullptr){
     logfile << "\n Dando Update em andar\n ";
     logfile << "\n Andar Atual antes: " << atual->AndarToString() << "\n";
-    //logfile << "\n Andar Base antes: " << base->AndarToString() << "\n";
     b = atual->Lista->lista;
     while (b != nullptr)
     {
       aux = b;
       b = b->prox;
-      //logfile << "\n checa suporte de " << aux->BlocoToString() << "\n";
       if ((aux ->tipo==Movel || aux ->tipo==FinalMovel || aux ->tipo==FinalMovelCompleto)
          && ! base->temSuporte(aux)){
         logfile << "\n cai bloco \n ";
@@ -229,10 +204,7 @@ void UpdateAndar(LLBlocos * ListaUpdate, torre * Torre, int n){
         ListaUpdate->AdicionaBloco(aux);
       }
     }
-    //logfile << "\n Andar atual depois: " << atual->AndarToString() << "\n";
-    //logfile << "\n Andar base depois: " << base->AndarToString() << "\n";
     if (houveMudanca) {
-      //logfile << "\n houve mudanca \n ";
       UpdateAndar(ListaUpdate, Torre, n+1);
     }
   }  
@@ -313,7 +285,6 @@ void move_player_back(struct GameData *GD, bool pull){
       Torre->EjetaBloco(blocoNaFrente);
       GD->ListaUpdate->AdicionaBloco(blocoNaFrente);
       Player->animacao = AnimPuxa;
-      //UpdateAndar(GD->ListaUpdate, Torre, blocoNaFrente->pos->y);
     }
     else Player->animacao = AnimAnda;
 
@@ -385,13 +356,6 @@ void ProximaAcao (struct GameData *GD, struct Tela *tela){
   logfile << "\nProximaAcao << entrou \n";
   switch (tela->nomeTela)
   {
-    /*  Menu,
-  Instrucoes,
-  Pause,
-  EmJogo,
-  Vitoria,
-  Derrota,
-  TelaFinal*/
   case Menu:
     // inicia fase 1
     if (tela->selecionaOpcao1) {
@@ -463,11 +427,7 @@ static void handle_key( SDL_KeyboardEvent *key, struct GameData *GD, bool down,
   struct Tela *tela = NULL)
   {
   static bool hold_ctrl = false;
-
-  //if (literate) logfile << "\nhandle key = " << teclado[key->keysym.sym] << "\n";
-  //if (literate) logfile << GD->Player->PlayerToString() + "\n";
   player * Player = GD->Player;
-  //camera * Camera = GD->Camera;
   bool podeMover = Player->estado == Parado && estadoJogo==EmJogo;
   bool emTela = estadoJogo!=EmJogo && tela!=NULL;
 
@@ -484,7 +444,6 @@ static void handle_key( SDL_KeyboardEvent *key, struct GameData *GD, bool down,
 
     case SDLK_LEFT:
       if(down) {   
-        //arrowPosition.x += 1;  
         if (podeMover){
           if (Player->estado2 == Pendurado){
             move_player_sideways(GD,1);
@@ -498,7 +457,6 @@ static void handle_key( SDL_KeyboardEvent *key, struct GameData *GD, bool down,
       
     case SDLK_RIGHT:
       if(down) {
-        //arrowPosition.x -= 1;
         if (podeMover){
           if (Player->estado2 == Pendurado){
             move_player_sideways(GD,0);
@@ -512,14 +470,12 @@ static void handle_key( SDL_KeyboardEvent *key, struct GameData *GD, bool down,
 
     case SDLK_DOWN:
       if(down) {
-        //arrowPosition.y += 1;
         if (podeMover){
           if (Player->estado2 == Pendurado){
             Player->estado2 = Normal;
             Player->cai();
             logfile << "\n handle_key >> solta da beirada \n";
             logfile << Player->PlayerToString();
-            //Player->mexe(posicao(Player->pos) + velocidade(0,-1,0),velocidade(0,-1,0));
           }
           else
             move_player_back(GD, hold_ctrl);
@@ -533,7 +489,6 @@ static void handle_key( SDL_KeyboardEvent *key, struct GameData *GD, bool down,
 
     case SDLK_UP:
       if(down) {
-        //arrowPosition.y -= 1;
         if (podeMover)
           move_player_front(GD, hold_ctrl);
         if (emTela){
@@ -609,8 +564,6 @@ static void handle_key( SDL_KeyboardEvent *key, struct GameData *GD, bool down,
 
     case SDLK_p:
       if(down) {
-        //logfile <<"\n" << CameraToString(GD) << "\n";
-        //logfile <<"\n" << ArrowToString() << "\n";
         logfile << GD->Torre->TorreToString() << "\n";
         }
       break; 
@@ -623,8 +576,6 @@ static void handle_key( SDL_KeyboardEvent *key, struct GameData *GD, bool down,
 
 // update player
 static void UpdatePlayer(player * Player, torre * Torre){
-  // update player
-  //logfile << Player->PlayerToString() << "\n";
   tipoColisao colisaoTorre;
   colisaoTorre = Torre->ChecaColisaoPlayer(Player);
   if (Player->pos->y < -2){
@@ -636,7 +587,6 @@ static void UpdatePlayer(player * Player, torre * Torre){
     logfile << "\n Player esmagado \n";
     estadoJogo = Derrota;
   }
-  //logfile << "\n UpdatePlayer >> colisao com torre = " << colisaoTorre <<"\n";
   switch (Player->estado)
   {
   case Caindo:
@@ -682,7 +632,6 @@ static void UpdateLista(LLBlocos * ListaUpdate, torre * Torre, player * Player){
   int n = 0;
   // update lista
   if (! ListaUpdate->estaVazia()){
-    //logfile << "\n Lista nao vazia \n";
     block * aux;
     block * b = ListaUpdate->lista; 
     while(b != nullptr){
@@ -698,15 +647,11 @@ static void UpdateLista(LLBlocos * ListaUpdate, torre * Torre, player * Player){
         tipoColisao colisao = Torre->ChecaColisao(aux);
         logfile << "\nUpdateLista >> tipo de colisao: " << colisao << " \n";
         if (colisao == ColisaoDeApoio){
-          //logfile << "\n Colisao de apoio \n";
           aux->para();
           ListaUpdate->EjetaBloco(aux);
           Torre->adicionaBloco(aux);
-          //logfile << "\n lista: " << ListaUpdate->ListaToString() << "\n";
-          //logfile << "\n andar: " << Torre->retornaAndarN(aux->pos->y)->AndarToString() << "\n";
           logfile << "\n ------------\n";
 
-          // gambiarra ?
           if (Player->animacao == AnimEmpurra) Player->animacao = AnimNormal;
         }
         else if (colisao == ColisaoAgressiva){
@@ -718,7 +663,6 @@ static void UpdateLista(LLBlocos * ListaUpdate, torre * Torre, player * Player){
       if (mudaEstado) UpdateAndar(ListaUpdate, Torre, n+1);
     }
   }
-  //else logfile << "\n----------lista update vazia\n";
 }
 
 static void process_events(struct GameData *GD, struct Tela *tela = NULL){
@@ -726,7 +670,6 @@ static void process_events(struct GameData *GD, struct Tela *tela = NULL){
 
     SDL_Event event;
 
-    //UpdateCamera(GD->Camera);
     if (estadoJogo == EmJogo){
       UpdateLista(GD->ListaUpdate, GD->Torre, GD->Player);
 
@@ -800,11 +743,11 @@ void draw_screen(SDL_Window *Window,
       dk = b->pos->x - GD->cx;
       SetInitialView(GD->theta_y, GD->zoom);      
       glTranslatef( dj*d*2.0, di*d*2.0, dk*d*2.0 );
-      if (b->tipo == Fixo) draw_cube(d, tex, 5, 6);
-      else if (b->tipo == FinalFixo) draw_cube(d, tex, 7, 8);
-      else if (b->tipo == FinalFixoCompleto) draw_cube(d, tex, 9, 10);
-      else if (b->tipo == FinalMovel) draw_cube(d, tex, 11, 12);
-      else if (b->tipo == FinalMovelCompleto) draw_cube(d, tex, 13, 14);
+      if (b->tipo == Fixo) draw_cube(d, tex, 2, 3);
+      else if (b->tipo == FinalFixo) draw_cube(d, tex, 4, 5);
+      else if (b->tipo == FinalFixoCompleto) draw_cube(d, tex, 6, 7);
+      else if (b->tipo == FinalMovel) draw_cube(d, tex, 8, 9);
+      else if (b->tipo == FinalMovelCompleto) draw_cube(d, tex, 10, 11);
       else draw_cube(d, tex, 0, 1);
     }
   
@@ -815,11 +758,11 @@ void draw_screen(SDL_Window *Window,
       dk = b->pos->x - GD->cx;
       SetInitialView(GD->theta_y, GD->zoom);       
       glTranslatef( dj*d*2.0, di*d*2.0, dk*d*2.0 );
-      if (b->tipo == Fixo) draw_cube(d, tex, 5, 6);
-      else if (b->tipo == FinalFixo) draw_cube(d, tex, 7, 8);
-      else if (b->tipo == FinalFixoCompleto) draw_cube(d, tex, 9, 10);
-      else if (b->tipo == FinalMovel) draw_cube(d, tex, 11, 12);
-      else if (b->tipo == FinalMovelCompleto) draw_cube(d, tex, 13, 14);
+      if (b->tipo == Fixo) draw_cube(d, tex, 2, 3);
+      else if (b->tipo == FinalFixo) draw_cube(d, tex, 4, 5);
+      else if (b->tipo == FinalFixoCompleto) draw_cube(d, tex, 6, 7);
+      else if (b->tipo == FinalMovel) draw_cube(d, tex, 8, 9);
+      else if (b->tipo == FinalMovelCompleto) draw_cube(d, tex, 10, 11);
       else draw_cube(d, tex, 0, 1);
   }
 
@@ -897,12 +840,9 @@ void draw_menu(SDL_Window *Window,
   float fovy = 60.0*(3.14159/180.0);
   float height = 600;
   float focallength = (height/2.0)/tan(fovy/2.0);
-  //printf("%f\n", focallength);
   glRasterPos3f(-tela->background->w/2,
 		-tela->background->h/2,
 		-(focallength+0.1));
-  //printf("w: %d\n", tela->background->w);
-  //printf("h: %d\n", tela->background->h);
   glDrawPixels(tela->background->w,
 	       tela->background->h,
 	       GL_RGBA, GL_UNSIGNED_BYTE,
@@ -918,7 +858,6 @@ void draw_menu(SDL_Window *Window,
           arrow->pixels);
   }
   //Apply the arrow
-  //SDL_BlitSurface( arrow, NULL, gScreenSurface, &arrowPosition );
   
   SDL_GL_SwapWindow(Window);
   glEnable(GL_LIGHTING);
@@ -946,11 +885,6 @@ static void setup_opengl( int width, int height ){
   glLightfv(GL_LIGHT0, GL_DIFFUSE,  light_dif);
   glLightfv(GL_LIGHT0, GL_SPECULAR, light_spe);
   glLightfv(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, light_att);
-
-  /* Culling. */
-  //CullFace( GL_BACK );
-  //FrontFace( GL_CCW );
-  //Enable( GL_CULL_FACE );
   
   /* Set the clear color. */
   glClearColor( 0, 0, 0, 0 );
@@ -966,11 +900,9 @@ static void setup_opengl( int width, int height ){
   glLoadIdentity( );
   
   gluPerspective( 60.0, ratio, 1.0, 1024.0 );
-  //glFrustum(-width/2, width/2, -height/2, height/2, 200.0, 1024.0);
 }
 
 int main( int argc, char* argv[] ){
-  //if (literate) printf("Cria estruturas\n");
   struct GameData GD;
   GD.Player = new player;
   GD.Torre = new torre;
@@ -1003,7 +935,6 @@ int main( int argc, char* argv[] ){
 
   SDL_Surface *imgArrow = load_image((char*)"texture/arrow.png");
 
-  //TelaMenu.background = SDL_LoadBMP("texture/TelasMenuBMP/1.bmp");
   TelaMenu.background = load_image((char*)"texture/TelasMenu/menu.png");
   TelaMenu.nomeTela = Menu;
   TelaMenu.x1=654;
@@ -1011,7 +942,6 @@ int main( int argc, char* argv[] ){
   TelaMenu.x2=680;
   TelaMenu.y2=352;
 
-  //TelaPause.background = SDL_LoadBMP("texture/TelasMenuBMP/2.bmp");
   TelaPause.background = load_image((char*)"texture/TelasMenu/2_.png");
   TelaPause.nomeTela = Pause;
   TelaPause.x1=635;
@@ -1019,14 +949,12 @@ int main( int argc, char* argv[] ){
   TelaPause.x2=680;
   TelaPause.y2=349;
 
-  //TelaGameOver.background = SDL_LoadBMP("texture/TelasMenuBMP/3.bmp");
   TelaGameOver.background = load_image((char*)"texture/TelasMenu/3_.png");
   TelaGameOver.nomeTela = Derrota;
   TelaGameOver.x1=601;
   TelaGameOver.y1=288;
   TelaGameOver.temOpcao2 = false;
 
-  //TelaNext.background = SDL_LoadBMP("texture/TelasMenuBMP/4.bmp");
   TelaNext.background = load_image((char*)"texture/TelasMenu/4_.png");
   TelaNext.nomeTela = Vitoria;
   TelaNext.x1=702;
@@ -1054,7 +982,6 @@ int main( int argc, char* argv[] ){
   if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 )
   {
       printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
-      //success = false;
   }
   
 
@@ -1068,7 +995,6 @@ int main( int argc, char* argv[] ){
 			    SDL_WINDOW_OPENGL);
   assert(Window);
   SDL_GLContext Context = SDL_GL_CreateContext(Window);
-  //SDL_SetWindowFullscreen(Window, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN_DESKTOP);
   
   /*
    * Now, we want to setup our requested
@@ -1128,48 +1054,8 @@ int main( int argc, char* argv[] ){
             GL_RGB, 512, 512, 0,
             GL_RGB, GL_UNSIGNED_BYTE,
             img->pixels);
-      
+
       glBindTexture(GL_TEXTURE_2D, tex[2]);
-      glTexParameteri(GL_TEXTURE_2D,
-          GL_TEXTURE_MAG_FILTER,
-          GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D,
-          GL_TEXTURE_MIN_FILTER,
-          GL_LINEAR);
-      img = load_image((char *)"texture/monsterplant_c.png");
-      glTexImage2D(GL_TEXTURE_2D, 0,
-            GL_RGB, 2048, 2048, 0,
-            GL_RGB, GL_UNSIGNED_BYTE,
-            img->pixels);
-
-      
-      glBindTexture(GL_TEXTURE_2D, tex[3]);
-      glTexParameteri(GL_TEXTURE_2D,
-          GL_TEXTURE_MAG_FILTER,
-          GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D,
-          GL_TEXTURE_MIN_FILTER,
-          GL_LINEAR);
-      img = load_image((char *)"texture/face_monsterplant_2.png");
-      glTexImage2D(GL_TEXTURE_2D, 0,
-            GL_RGB, 1024, 1024, 0,
-            GL_RGB, GL_UNSIGNED_BYTE,
-            img->pixels);
-
-      glBindTexture(GL_TEXTURE_2D, tex[4]);
-      glTexParameteri(GL_TEXTURE_2D,
-          GL_TEXTURE_MAG_FILTER,
-          GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D,
-          GL_TEXTURE_MIN_FILTER,
-          GL_LINEAR);
-      img = load_image((char *)"texture/umbigo.png");
-      glTexImage2D(GL_TEXTURE_2D, 0,
-            GL_RGB, 64, 64, 0,
-            GL_RGB, GL_UNSIGNED_BYTE,
-            img->pixels);
-
-      glBindTexture(GL_TEXTURE_2D, tex[5]);
       glTexParameteri(GL_TEXTURE_2D,
           GL_TEXTURE_MAG_FILTER,
           GL_LINEAR);
@@ -1182,7 +1068,7 @@ int main( int argc, char* argv[] ){
             GL_RGBA, GL_UNSIGNED_BYTE,
             img->pixels);
 
-      glBindTexture(GL_TEXTURE_2D, tex[6]);
+      glBindTexture(GL_TEXTURE_2D, tex[3]);
       glTexParameteri(GL_TEXTURE_2D,
           GL_TEXTURE_MAG_FILTER,
           GL_LINEAR);
@@ -1196,7 +1082,7 @@ int main( int argc, char* argv[] ){
             img->pixels);
 
     // bloco final
-      glBindTexture(GL_TEXTURE_2D, tex[7]);
+      glBindTexture(GL_TEXTURE_2D, tex[4]);
       glTexParameteri(GL_TEXTURE_2D,
           GL_TEXTURE_MAG_FILTER,
           GL_LINEAR);
@@ -1210,7 +1096,7 @@ int main( int argc, char* argv[] ){
             img->pixels);
 
     // ---
-      glBindTexture(GL_TEXTURE_2D, tex[8]);
+      glBindTexture(GL_TEXTURE_2D, tex[5]);
       glTexParameteri(GL_TEXTURE_2D,
           GL_TEXTURE_MAG_FILTER,
           GL_LINEAR);
@@ -1225,7 +1111,7 @@ int main( int argc, char* argv[] ){
       
             
       // ---
-glBindTexture(GL_TEXTURE_2D, tex[9]);
+glBindTexture(GL_TEXTURE_2D, tex[6]);
       glTexParameteri(GL_TEXTURE_2D,
           GL_TEXTURE_MAG_FILTER,
           GL_LINEAR);
@@ -1238,7 +1124,7 @@ glBindTexture(GL_TEXTURE_2D, tex[9]);
             GL_RGBA, GL_UNSIGNED_BYTE,
             img->pixels);         
       // ---
-      glBindTexture(GL_TEXTURE_2D, tex[10]);
+      glBindTexture(GL_TEXTURE_2D, tex[7]);
       glTexParameteri(GL_TEXTURE_2D,
           GL_TEXTURE_MAG_FILTER,
           GL_LINEAR);
@@ -1251,7 +1137,7 @@ glBindTexture(GL_TEXTURE_2D, tex[9]);
             GL_RGBA, GL_UNSIGNED_BYTE,
             img->pixels);  
       // ---
-      glBindTexture(GL_TEXTURE_2D, tex[11]);
+      glBindTexture(GL_TEXTURE_2D, tex[8]);
       glTexParameteri(GL_TEXTURE_2D,
           GL_TEXTURE_MAG_FILTER,
           GL_LINEAR);
@@ -1264,7 +1150,7 @@ glBindTexture(GL_TEXTURE_2D, tex[9]);
             GL_RGBA, GL_UNSIGNED_BYTE,
             img->pixels);  
       // ---
-      glBindTexture(GL_TEXTURE_2D, tex[12]);
+      glBindTexture(GL_TEXTURE_2D, tex[9]);
       glTexParameteri(GL_TEXTURE_2D,
           GL_TEXTURE_MAG_FILTER,
           GL_LINEAR);
@@ -1277,7 +1163,7 @@ glBindTexture(GL_TEXTURE_2D, tex[9]);
             GL_RGBA, GL_UNSIGNED_BYTE,
             img->pixels);  
       // ---
-      glBindTexture(GL_TEXTURE_2D, tex[13]);
+      glBindTexture(GL_TEXTURE_2D, tex[10]);
       glTexParameteri(GL_TEXTURE_2D,
           GL_TEXTURE_MAG_FILTER,
           GL_LINEAR);
@@ -1290,7 +1176,7 @@ glBindTexture(GL_TEXTURE_2D, tex[9]);
             GL_RGBA, GL_UNSIGNED_BYTE,
             img->pixels);  
       // ---
-      glBindTexture(GL_TEXTURE_2D, tex[14]);
+      glBindTexture(GL_TEXTURE_2D, tex[11]);
       glTexParameteri(GL_TEXTURE_2D,
           GL_TEXTURE_MAG_FILTER,
           GL_LINEAR);
@@ -1305,7 +1191,6 @@ glBindTexture(GL_TEXTURE_2D, tex[9]);
       
     }
   
-  //if (literate) printf("Carrega Mapa\n");
   LoadMap(&GD, "mapa/fase01.txt");
 
   /*
@@ -1319,13 +1204,11 @@ glBindTexture(GL_TEXTURE_2D, tex[9]);
   while( 1 ) {
 
     if (estadoJogo == Menu){
-      //printf("Menu...\n");
       process_events(&GD,&TelaMenu);
       draw_menu(Window, &TelaMenu, imgArrow);
     }
 
     if (estadoJogo == Instrucoes){
-      //printf("Menu...\n");
       PassaTelaInstrucao(&TelaInstrucoes);
       process_events(&GD,&TelaInstrucoes);
       draw_menu(Window, &TelaInstrucoes, imgArrow);
@@ -1333,25 +1216,21 @@ glBindTexture(GL_TEXTURE_2D, tex[9]);
     }
 
     if (estadoJogo == Pause){
-      //printf("Pause...\n");
       process_events(&GD,&TelaPause);
       draw_menu(Window, &TelaPause, imgArrow);
     }
 
     if (estadoJogo == EmJogo){
-      //printf("EmJogo...\n");
       process_events(&GD);
       draw_screen(Window, &GD, tex);
     }
 
     if (estadoJogo == Derrota){
-      //printf("Derrota...\n");
       process_events(&GD,&TelaGameOver);
       draw_menu(Window, &TelaGameOver, imgArrow);
     }
 
     if (estadoJogo == Vitoria){
-      //printf("Vitoria...\n");
       process_events(&GD,&TelaNext);
       draw_menu(Window, &TelaNext, imgArrow);
     }

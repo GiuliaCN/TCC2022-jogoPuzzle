@@ -15,8 +15,5 @@ lib: drawFunctions.cpp
 clean:
 	$(RM) *~ *.o game -f
 
-testes: testes/testeEntidades.cpp Entidades.cpp
-	$(CXX) testes/testeEntidades.cpp Entidades.cpp
-
 entidades: Entidades.cpp
 	$(CXX) Entidades.cpp -c

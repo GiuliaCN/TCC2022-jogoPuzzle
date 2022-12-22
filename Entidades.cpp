@@ -276,7 +276,6 @@ string player::AnimacaoPlayerToString(){
 string player::PlayerToString(){
     string s = "";
     s += "Player (";
-    //(estado ="+ to_string(estado + ", estado2 =" + estado2;
     s += "Rotacao =" + rotacao->VelocidadeToString();
     s += ", Pos = " + pos->PosicaoToString();
     s += ", Vel = " + vel->VelocidadeToString();
@@ -351,13 +350,11 @@ block::block(posicao p, tipoBloco t) {
 
 bool block::estaEmCoordenada(posicao p){
     return *pos == p;
-    // return pos.igualXZ(p);
 }
 
 string block::BlocoToString(){
     string s = "";
     s += "Bloco (";
-    //(estado ="+ to_string(estado + ", estado2 =" + estado2;
     s += "Pos = " + pos->PosicaoToString();
     s += ", Vel = " + vel->VelocidadeToString();
     s += ", Estado = " + EstadoToString();
@@ -366,7 +363,6 @@ string block::BlocoToString(){
 }
 
 block::~block(){
-    //printf("\n --- Bloco [x=%d, z=%d] apagado\n",x,z);
 }
 
 
@@ -458,7 +454,6 @@ void LLBlocos::EjetaBloco(block * b){
     }
     else { 
         // é o primeiro da lista
-        //if (lista->pos == b->pos) 
         lista = b->prox;
         if (lista != nullptr) lista->ant = nullptr;
     }
@@ -512,7 +507,6 @@ string andar::AndarToString(){
         i++;
         s+=to_string(i) + "o Bloco = " + b->pos->PosicaoToString() + ";";    
     }
-    //s+="1o Bloco = " + Lista->lista->pos.PosicaoToString();    
     return s;
 }
 
@@ -522,7 +516,6 @@ andar::andar(string s, int n){
     ant = nullptr;
     Lista = new LLBlocos();
     id = n;
-    //cout << "\nrecebido: "<<s<<endl;
     int x = -1; // pois s começa com '/'
     int z = 0;
     char c;
@@ -558,7 +551,6 @@ tipoColisao andar::ColisaoAndar(entidade * e){
 }
 
 andar::~andar(){
-    //cout << "deleta andar id =" << id << "\n";
     if (prox == nullptr)
         delete Lista;
     else delete prox;
@@ -619,16 +611,12 @@ void torre::SetTorre(string filename){
     // 2 primeiras linhas sao info do player e camera (pega e joga fora)
     getline (arquivo,line);
     getline (arquivo,line);
-    //cout << line << "\n";
-
+    
     // cria matriz andar apartir de arquivo
     while ( getline (arquivo,line) )
     {
-        //cout << line << "\n";
-
         //marca fim de um andar
         if (line == "-"){
-            //cout << "\nandar criado de: " << conjunto << "\n\n";
             adicionaAndar(conjunto);
             conjunto = "";
         }
@@ -637,7 +625,6 @@ void torre::SetTorre(string filename){
         }           
     }
 
-    //andarAtual = retornaAndarN(1);
 }
 
 block * torre::retornaBloco (posicao p){
@@ -740,21 +727,20 @@ tipoColisao torre::ChecaColisaoPlayer(player * pl){
         if (pl->estado2 ==Pendurado &&
              retornaBloco(pAprox + pl->rotacao)!=nullptr) return ColisaoLateral;
 
-        // checa vitoria
+        // checa vitoria - final fixo
         b = retornaBloco(pAprox + posicao(0,-1,0));
         if (b!=nullptr && b->tipo == FinalFixo) {
             b->tipo = FinalFixoCompleto;
             if (FaseCompleta()) return BlocoVitoria;
             else return ColisaoDeApoio;
-        } //return BlocoVitoria;
-
-        // checa vitoria
+        } 
+        // checa vitoria - final movel
         b = retornaBloco(pAprox + posicao(0,-1,0));
         if (b!=nullptr && b->tipo == FinalMovel) {
             b->tipo = FinalMovelCompleto;
             if (FaseCompleta()) return BlocoVitoria;
             else return ColisaoDeApoio;
-        } //return BlocoVitoria;
+        }
 
         // tem bloco embaixo
         if (retornaBloco(pAprox + posicao(0,-1,0))!=nullptr) return ColisaoDeApoio;  
@@ -770,7 +756,7 @@ tipoColisao torre::ChecaColisao(block * b){
     if (pAprox == posicao(b->pos)){
         andar * a = retornaAndarN((int) pAprox.y - 1);
 
-        if (a == nullptr) return ColisaoAgressiva; // bloco ja saiu da torre, deve ser destruido?
+        if (a == nullptr) return ColisaoAgressiva; // bloco ja saiu da torre, deve ser destruido
 
         if (a->temSuporte(b)) return ColisaoDeApoio;
     }
@@ -810,7 +796,6 @@ andar * desfaz::CriaAndar(andar * A){
 }
 
 void desfaz::copiaAndar(andar * A, torre * TorreAlvo){
-    //cout << "\nentra copia andar\n";
     TorreAlvo->nAndares = TorreAlvo->nAndares + 1;
     andar * p; // ponteiros para busca na lista
     andar * atual; 
@@ -825,25 +810,18 @@ void desfaz::copiaAndar(andar * A, torre * TorreAlvo){
         atual->prox=Novo;
         Novo->ant = atual;
     }
-    //cout << "andar copiado com sucesso\n";
 }
 
 void desfaz::copiaTorre(torre * T){
-    //cout << "\nentra torre\n";
     torre * Tcopia = ListaTorreInstancias[indexAtual];
-    //cout << "pega torre\n";
     if (Tcopia->primeiroAndar != nullptr) Tcopia->Reset();
-    //cout << "reseta torre\n";
     for (andar * p = T->primeiroAndar; p != nullptr; p=p->prox){
         copiaAndar(p, Tcopia);
     }
-    //cout << "torre copiada com sucesso\n";
 }
 
 void desfaz::copiaPlayer(player * P){
-    //cout << "copia player entra \n";
     player * Pcopia = ListaPlayerInstancias[indexAtual];
-    //cout << "pega player de lista\n";
     Pcopia->estado = P->estado;
     Pcopia->estado2 = P->estado2;
     Pcopia->animacao = P->animacao;
@@ -855,7 +833,6 @@ void desfaz::copiaPlayer(player * P){
     Pcopia->setVel(velocidade(P->vel));
 
     Pcopia->setRotacao(Pcopia->rotacoes[Pcopia->iRotacao]);
-    //cout<<"player copiado com sucesso\n";
 }
 
 void desfaz::CriaInstancia(torre * T, player * P){
