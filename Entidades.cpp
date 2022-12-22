@@ -44,11 +44,6 @@ velocidade operator* (velocidade const &obj, int const &obj1){
     return res;
 }
 
-bool posicao::igualXZ (posicao p){
-    p.y = y;
-    return *this == p;
-}
-
 // aproxima posicao para valores inteiros
 posicao posicao::Aproximado(){
     return posicao(round(x), round(y), round(z));

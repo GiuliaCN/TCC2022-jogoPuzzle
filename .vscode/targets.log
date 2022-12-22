@@ -5,8 +5,9 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
+ 
 
-# Make data base, printed on Mon Dec 19 16:54:38 2022
+# Make data base, printed on Thu Dec 22 16:41:25 2022
 
 # Variables
 
@@ -189,6 +190,7 @@ XDG_RUNTIME_DIR = /run/user/1000
 # environment
 LC_CTYPE = pt_BR.UTF-8
 # environment
+ 
 JOURNAL_STREAM = 8:34298
 # environment
 XDG_SESSION_CLASS = user
@@ -223,7 +225,7 @@ GDMSESSION = ubuntu
 # environment
 LC_IDENTIFICATION = pt_BR.UTF-8
 # variable set hash-table stats:
-# Load=106/1024=10%, Rehash=0, Collisions=3/139=2%
+# Load=106/1024=10%, Rehash=0, Collisions=3/140=2%
 
 # Pattern-specific Variable Values
 
@@ -231,9 +233,9 @@ LC_IDENTIFICATION = pt_BR.UTF-8
 
 # Directories
 
-# . (device 2051, inode 11407079): 24 files, no impossibilities.
+# . (device 2051, inode 11407079): 21 files, no impossibilities.
 
-# 24 files, no impossibilities in 1 directories.
+# 21 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -243,16 +245,35 @@ LC_IDENTIFICATION = pt_BR.UTF-8
 
 game: Entidades.o drawFunctions.o game.cpp
 #  Implicit rule search has not been done.
-#  Last modified 2022-12-11 19:54:05.849146788
+#  Implicit/static pattern stem: ''
+#  Last modified 2022-12-22 16:38:34.560360645
 #  File has been updated.
-#  Successfully updated.
+#  Needs to be updated (-q is set).
+# automatic
+# @ := game
+# automatic
+# * := 
+# automatic
+# < := Entidades.o
+# automatic
+# + := Entidades.o drawFunctions.o game.cpp
+# automatic
+# % := 
+# automatic
+# ^ := Entidades.o drawFunctions.o game.cpp
+# automatic
+# ? := game.cpp
+# automatic
+# | := 
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=1/12=8%
 #  recipe to execute (from 'Makefile', line 10):
 	$(CXX) Entidades.o drawFunctions.o -O3 game.cpp -lm -lSDL2 -lSDL2_image -lSDL2_gfx -lSDL2_mixer -lGL -lGLU -o game
 
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-10-20 17:59:39.895963115
+#  Last modified 2022-12-22 16:40:06.570621544
 #  File has been updated.
 #  Successfully updated.
 
@@ -274,41 +295,24 @@ entidades: Entidades.cpp
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 22):
+#  recipe to execute (from 'Makefile', line 19):
 	$(CXX) Entidades.cpp -c
 
 # Not a target:
 .DEFAULT:
- 
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
+ 
 
 all: game
 #  Command line target.
 #  Implicit rule search has not been done.
-#  Implicit/static pattern stem: ''
 #  File does not exist.
 #  File has been updated.
 #  Needs to be updated (-q is set).
-# automatic
-# @ := all
-# automatic
-# * := 
-# automatic
-# < := game
-# automatic
-# + := game
-# automatic
-# % := 
-# automatic
-# ^ := game
-# automatic
-# ? := game
-# automatic
-# | := 
 # variable set hash-table stats:
-# Load=8/32=25%, Rehash=0, Collisions=1/11=9%
+# Load=0/32=0%, Rehash=0, Collisions=0/4=0%
 #  recipe to execute (from 'Makefile', line 2):
 	@echo "DONE"
 
@@ -321,29 +325,16 @@ drawFunctions.cpp:
 # Not a target:
 game.cpp:
 #  Implicit rule search has been done.
-#  Last modified 2022-12-08 20:13:38.610815184
+#  Last modified 2022-12-22 16:39:52.650867048
 #  File has been updated.
 #  Successfully updated.
 
 # Not a target:
 drawFunctions.o:
 #  Implicit rule search has been done.
-#  Last modified 2022-12-05 12:07:46.304497396
+#  Last modified 2022-12-22 16:23:40.928990362
 #  File has been updated.
 #  Successfully updated.
-
-# Not a target:
-testes/testeEntidades.cpp:
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-
-testes: testes/testeEntidades.cpp Entidades.cpp
-#  Implicit rule search has not been done.
-#  Modification time never checked.
-#  File has not been updated.
-#  recipe to execute (from 'Makefile', line 19):
-	$(CXX) testes/testeEntidades.cpp Entidades.cpp
 
 # Not a target:
 Entidades.cpp:
@@ -360,24 +351,24 @@ Entidades.cpp:
 # Not a target:
 Entidades.o:
 #  Implicit rule search has been done.
-#  Last modified 2022-12-11 19:53:59.913594079
+#  Last modified 2022-12-22 16:38:32.644400093
 #  File has been updated.
 #  Successfully updated.
 
 # files hash-table stats:
-# Load=15/1024=1%, Rehash=0, Collisions=0/36=0%
+# Load=13/1024=1%, Rehash=0, Collisions=0/32=0%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 33 / storage = 324 B / avg = 9 B
-# current buf: size = 8162 B / used = 324 B / count = 33 / avg = 9 B
+# strcache buffers: 1 (0) / strings = 29 / storage = 275 B / avg = 9 B
+# current buf: size = 8162 B / used = 275 B / count = 29 / avg = 9 B
 
-# strcache performance: lookups = 54 / hit rate = 38%
+# strcache performance: lookups = 47 / hit rate = 38%
 # hash-table stats:
-# Load=33/8192=0%, Rehash=0, Collisions=0/54=0%
-# Finished Make data base on Mon Dec 19 16:54:38 2022
+# Load=29/8192=0%, Rehash=0, Collisions=0/47=0%
+# Finished Make data base on Thu Dec 22 16:41:25 2022
 
  

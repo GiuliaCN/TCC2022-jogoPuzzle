@@ -64,7 +64,6 @@ class posicao {
         };
         posicao operator= (posicao const &obj){ return obj; };
 
-        bool igualXZ (posicao p);
         posicao Aproximado();
         string PosicaoToString();
 };
@@ -139,15 +138,15 @@ class entidade
 
         estadosEntidade estado;
 
-        //virtual void mexe() = 0;
         void atualizaPos();
         void mexe(posicao _posLim, velocidade _vel);
         bool emMovimento();
         bool emQueda() { return vel->vy != 0; }
         tipoColisao colisao(entidade * e);
-        void entraEmMovimento (posicao pLim, velocidade v, double vM);
+//        void entraEmMovimento (posicao pLim, velocidade v, double vM);
         void para();
         void cai();
+
         void setVel(velocidade v);
         void setPos(posicao p);
         void setPosLim(posicao p);
@@ -173,7 +172,6 @@ class player: public entidade
         void setAgarrar (posicao p);
 
         void Rotaciona(bool clockwise);
-        //void mexe(posicao _posLim, velocidade _vel);
         void SetPlayer(string s);
         void setRotacao(velocidade r);
         string PlayerToString();
@@ -184,8 +182,6 @@ class player: public entidade
 
 class block: public entidade
 {
-    // private:
-    //     int x,y,z;
     public:
         block();
         block(posicao p, int t);
@@ -211,8 +207,6 @@ class LLBlocos
 
         // primeiro da lista
         block * lista;
-
-        // LLBlocos& operator+(LLBlocos const &obj)
 
         block * RetornaBloco(posicao p);
         void EjetaBloco(block * b);
@@ -275,14 +269,12 @@ class torre
         andar * primeiroAndar;
         andar * andarAtual;
 
-        // bool posicaoLivre (posicao p);
         block * retornaBloco (posicao p);
         void EjetaBloco (block * b);
         void DeletaBloco (posicao p);
         andar * retornaAndarN (int n);
         void SetTorre (string filename);
         LLBlocos * updateAndar (andar * a);
-        //void Copia (torre * t);
         void Reset();
         void adicionaBloco (block * b);
         LLBlocos * EjetaBlocosSemSuporte(andar * a);
